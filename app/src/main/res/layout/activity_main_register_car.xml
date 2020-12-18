@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@android:style/Widget.ScrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context=".MainActivityRegisterTutor">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <ImageView
+            android:id="@+id/image13"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:src="@drawable/ic_car"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/image23"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/ic_car"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/image13" />
+
+
+        <ImageView
+            android:id="@+id/image33"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_marginStart="6dp"
+
+            android:src="@drawable/ic_car"
+            app:layout_constraintStart_toEndOf="@+id/image13"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <ImageView
+            android:id="@+id/image43"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/ic_car"
+            app:layout_constraintStart_toEndOf="@+id/image23"
+            app:layout_constraintTop_toBottomOf="@+id/image33" />
+
+        <EditText
+            android:id="@+id/nameMen3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:ems="8"
+            android:hint="שם"
+            android:inputType="textPersonName"
+            app:layout_constraintBottom_toBottomOf="@+id/phone3"
+            app:layout_constraintStart_toEndOf="@+id/phone3"
+            app:layout_constraintTop_toTopOf="@+id/phone3" />
+
+        <EditText
+            android:id="@+id/phone3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:ems="8"
+            android:hint="פלאפון"
+            android:inputType="number"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/image23" />
+
+
+        <EditText
+            android:id="@+id/manyDay3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:ems="8"
+            android:hint="מחיר לשיעור"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="@+id/nameMen3"
+            app:layout_constraintStart_toStartOf="@+id/nameMen3"
+            app:layout_constraintTop_toBottomOf="@+id/nameMen3" />
+
+
+        <EditText
+            android:id="@+id/city3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="16dp"
+            android:ems="8"
+            android:hint="עיר/ישוב"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="@+id/phone3"
+            app:layout_constraintStart_toStartOf="@+id/phone3"
+            app:layout_constraintTop_toBottomOf="@+id/manyDay3" />
+
+        <Button
+            android:id="@+id/upgrade3"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:text="לחץ על התמונות להעלאת תמונות"
+
+            android:textSize="11dp"
+            app:backgroundTint="#A19797"
+            app:layout_constraintBottom_toTopOf="@+id/image43"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/image33"
+            app:layout_constraintTop_toBottomOf="@+id/image33" />
+
+        <Spinner
+            android:id="@+id/spinnerArea3"
+            android:layout_width="150dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="68dp"
+            app:layout_constraintStart_toEndOf="@+id/city3"
+            app:layout_constraintTop_toTopOf="@+id/city3" />
+
+        <Button
+            android:id="@+id/buttonReturnMainPage"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="לפרסום"
+            app:layout_constraintBottom_toBottomOf="@+id/buttonMyPage"
+            app:layout_constraintEnd_toStartOf="@+id/buttonMyPage"
+            app:layout_constraintTop_toTopOf="@+id/buttonMyPage" />
+
+        <EditText
+            android:id="@+id/remarksRegisterCar3"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="8"
+            android:hint="הוסף הערות כגון: לפחות להשכרה של שלושה ימים"
+            android:inputType="textPersonName"
+            android:textSize="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/city3" />
+
+
+        <Button
+            android:id="@+id/buttonMyPage"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="לעמוד שלי"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/listViewMainAddexp" />
+
+        <TextView
+            android:id="@+id/warnArea"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textColor="#EF2B2B"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/spinnerArea3"
+            app:layout_constraintEnd_toEndOf="@+id/spinnerArea3"
+            app:layout_constraintStart_toStartOf="@+id/spinnerArea3" />
+
+
+        <TextView
+            android:id="@+id/warnAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textColor="#EF2B2B"
+
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/buttonReturnMainPage"
+            app:layout_constraintEnd_toEndOf="@+id/buttonReturnMainPage"
+            app:layout_constraintStart_toStartOf="@+id/buttonReturnMainPage" />
+
+        <TextView
+            android:id="@+id/warnImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="TextView"
+            android:textColor="#EF2B2B"
+
+            android:textSize="10sp"
+
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/upgrade3"
+            app:layout_constraintStart_toStartOf="@+id/upgrade3"
+            app:layout_constraintTop_toBottomOf="@+id/upgrade3" />
+
+        <Button
+            android:id="@+id/buttonDelete"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="מחיקת כרטיס"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/buttonMyPage"
+            app:layout_constraintStart_toEndOf="@+id/buttonMyPage"
+            app:layout_constraintTop_toTopOf="@+id/buttonMyPage" />
+
+        <EditText
+            android:id="@+id/editTextRejection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="5"
+            android:hint="הסבר סירוב"
+            android:inputType="textPersonName"
+            android:textSize="12dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/buttonMyPage"
+            app:layout_constraintEnd_toEndOf="@+id/buttonMyPage" />
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="תמונה ראשית"
+            app:layout_constraintEnd_toEndOf="@+id/image43"
+            app:layout_constraintStart_toEndOf="@+id/image23"
+            app:layout_constraintTop_toBottomOf="@+id/image43" />
+
+        <Button
+            android:id="@+id/buttonExpertise"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="13dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="10dp"
+            android:text="הוספת מקצועות"
+            android:textColor="#887D7D"
+            app:backgroundTint="#FFF6F6"
+            app:layout_constraintEnd_toEndOf="@+id/phone3"
+            app:layout_constraintEnd_toStartOf="@+id/manyDay3"
+            app:layout_constraintStart_toStartOf="@+id/phone3"
+            app:layout_constraintTop_toBottomOf="@+id/phone3" />
+
+        <ListView
+            android:id="@+id/listViewMainAddexp"
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="@+id/remarksRegisterCar3"
+            app:layout_constraintStart_toStartOf="@+id/remarksRegisterCar3"
+            app:layout_constraintTop_toBottomOf="@+id/remarksRegisterCar3" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</ScrollView>

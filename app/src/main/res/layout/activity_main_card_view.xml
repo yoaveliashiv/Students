@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+
+    tools:context=".MainActivityCardView">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorWarng">
+
+        <TextView
+            android:id="@+id/textViewFeedbackGrade"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="5dp"
+            android:layoutDirection="ltr"
+            android:text="דירוג: 9 מ 10"
+            android:textColor="#FFEB3B"
+            android:textSize="20sp"
+            android:textStyle="bold|italic"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/buttonSeeFeedback"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageMainM"
+            android:layout_width="200dp"
+            android:layout_height="150dp"
+            android:src="@drawable/ic_car"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/buttonImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:shadowColor="#BCB2B2"
+            android:text="לתמונה הבאה"
+            android:visibility="visible"
+            app:backgroundTint="#8BC34A"
+            app:layout_constraintEnd_toEndOf="@+id/imageMainM"
+            app:layout_constraintStart_toStartOf="@+id/imageMainM"
+            app:layout_constraintTop_toBottomOf="@+id/imageMainM"
+            app:strokeColor="#8BC34A" />
+
+        <TextView
+            android:id="@+id/textViewPriceAndAreaM"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+
+            android:layoutDirection="ltr"
+            android:text="מחיר ליום:200        אזור צפון: חיפה"
+            android:textColor="#FFEB3B"
+            android:textSize="20sp"
+            android:textStyle="bold|italic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/buttonImage" />
+
+        <TextView
+            android:id="@+id/textViewInsuranceAndPhoneM"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="10dp"
+            android:text="   צור קשר : יואב-  0544540189"
+
+            android:textColor="#FFEB3B"
+            android:textIsSelectable="true"
+            android:textSize="20sp"
+            android:textStyle="bold|italic"
+            app:layout_constraintEnd_toEndOf="@+id/textViewRemarksM"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/textViewRemarksM"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewRemarksM" />
+
+        <TextView
+            android:id="@+id/textViewRemarksM"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+
+            android:layout_marginTop="10dp"
+            android:text="רק לשלושה ימים ורק אנשים אחראים"
+            android:textColor="#FFEB3B"
+            android:textSize="18sp"
+            android:textStyle="bold|italic"
+            app:layout_constraintEnd_toEndOf="@+id/listViewCardViewExpeirince"
+            app:layout_constraintStart_toStartOf="@+id/listViewCardViewExpeirince"
+            app:layout_constraintTop_toBottomOf="@+id/listViewCardViewExpeirince" />
+
+        <Button
+            android:id="@+id/buttonMainM"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="20dp"
+            android:text="לעמוד הראשי"
+            app:backgroundTint="#8BC34A"
+            app:layout_constraintEnd_toEndOf="@+id/textViewInsuranceAndPhoneM"
+            app:layout_constraintStart_toStartOf="@+id/textViewInsuranceAndPhoneM"
+            app:layout_constraintTop_toBottomOf="@+id/textViewInsuranceAndPhoneM" />
+
+        <Button
+            android:id="@+id/buttonSeeFeedback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="5dp"
+            android:text="לצפייה במשובים"
+            app:backgroundTint="#8BC34A"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <Button
+            android:id="@+id/buttonSendFeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="תן משוב"
+            app:backgroundTint="#8BC34A"
+            app:layout_constraintBottom_toBottomOf="@+id/buttonMainM"
+            app:layout_constraintEnd_toStartOf="@+id/buttonMainM"
+            app:layout_constraintTop_toTopOf="@+id/buttonMainM" />
+
+        <TextView
+            android:id="@+id/textViewWarnFeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="אנא התחבר או הירשם "
+            android:textSize="10sp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/buttonSendFeed"
+            app:layout_constraintTop_toBottomOf="@+id/buttonSendFeed" />
+
+        <ListView
+            android:id="@+id/listViewCardViewExpeirince"
+            android:layout_width="match_parent"
+            android:layout_height="190dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="9dp"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewPriceAndAreaM" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
+
