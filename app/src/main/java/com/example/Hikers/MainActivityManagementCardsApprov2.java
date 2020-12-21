@@ -1,8 +1,4 @@
-package com.example.students;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.Hikers;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -15,23 +11,33 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-
+import com.example.students.CardCarAdapter;
+import com.example.students.CardTutor;
+import com.example.students.Feedback;
+import com.example.students.FeedbeckAdapter;
+import com.example.students.MainActivityCardView;
+import com.example.students.MainActivityRegisterTutor;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import com.example.R;
 
-public class MainActivityManagementCardsApprov extends AppCompatActivity {
+public class MainActivityManagementCardsApprov2 extends AppCompatActivity {
     private Dialog d;
 
     private DatabaseReference cardRef2;
@@ -53,8 +59,44 @@ public class MainActivityManagementCardsApprov extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_management_cards_approv);
+        setContentView(R.layout.activity_main_management_cards_approv2);
 
+        Button buttonDo=findViewById(R.id.buttonDoGrohp);
+        buttonDo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference cardRef = FirebaseDatabase.getInstance().getReference("NamesGroups");
+
+                cardRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                           @Override
+                                                           public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                               EditText editTextFrom = findViewById(R.id.editTextGropeFrom);
+                                                               EditText editTexto = findViewById(R.id.editTextGrohpTo);
+                                                               String from=editTextFrom.getText().toString();
+                                                               String to=editTexto.getText().toString();
+                                                               Boolean flagExsis=false;
+                                                               for (DataSnapshot child : snapshot.getChildren()) {
+                                                                   String grohp=child.getValue(String.class);
+                                                                   if (("" + from + "-" + to).equals(grohp))
+                                                                       flagExsis=true;
+                                                               }
+                                                                  if(!flagExsis) {
+                                                                      DatabaseReference cardRef2 = FirebaseDatabase.getInstance().getReference("NamesGroups").push();
+                                                                      cardRef2.setValue("" + from + "-" + to);
+
+                                                                  }
+                                                               Intent intent = new Intent(MainActivityManagementCardsApprov2.this, MainActivityManagementCardsApprov2.class);
+                                                               startActivityForResult(intent, 0);
+                                                           }
+
+                                                           @Override
+                                                           public void onCancelled(@NonNull DatabaseError error) {
+
+                                                           }
+                                                       });
+
+            }
+        });
         setNumUsers();
         setId();
         numFeed("FeedbackWaitApprov");
@@ -83,7 +125,7 @@ public class MainActivityManagementCardsApprov extends AppCompatActivity {
         buttonMainReturn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivityManagementCardsApprov.this, MainActivity1.class);
+                Intent intent = new Intent(MainActivityManagementCardsApprov2.this, MainActivity2.class);
                 startActivityForResult(intent, 0);
             }
         });
@@ -234,7 +276,7 @@ public class MainActivityManagementCardsApprov extends AppCompatActivity {
                     boolean flagSee = type.equals("CardsApprov");
                     int x = 1;
                     if (type.equals("CardsDeleteHistory")) x = 2;
-                    cardCarAdapter = new CardCarAdapter(MainActivityManagementCardsApprov.this, 0, 0, arrayListCards2, flagSee, x);
+                    cardCarAdapter = new CardCarAdapter(MainActivityManagementCardsApprov2.this, 0, 0, arrayListCards2, flagSee, x);
                     //phase 4 reference to listview
                     lv1 = (ListView) findViewById(R.id.lvMange);
                     lv1.setAdapter(cardCarAdapter);
@@ -243,17 +285,17 @@ public class MainActivityManagementCardsApprov extends AppCompatActivity {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             if (type.equals("CardsDeleteHistory")) {
-                                Intent intent = new Intent(MainActivityManagementCardsApprov.this, MainActivityCardView.class);
+                                Intent intent = new Intent(MainActivityManagementCardsApprov2.this, MainActivityCardView.class);
                                 intent.putExtra("flagMain", true);
                                 pass(intent, arrayListCards2.get(i));
                                 startActivityForResult(intent, 0);
                                 return;
                             }
-                            Intent intent = new Intent(MainActivityManagementCardsApprov.this, MainActivityRegisterTutor.class);
+                            Intent intent = new Intent(MainActivityManagementCardsApprov2.this, MainActivityRegisterTutor.class);
                             intent.putExtra("flagManagement", true);
                             intent.putExtra("flagEdit", false);
                             intent.putExtra("flagMain", true);
-                            Toast.makeText(MainActivityManagementCardsApprov.this, "" + i + "kk" + arrayListCards2.size(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivityManagementCardsApprov2.this, "" + i + "kk" + arrayListCards2.size(), Toast.LENGTH_LONG).show();
 
                             pass(intent, arrayListCards2.get(i));
                             startActivityForResult(intent, 0);
@@ -292,7 +334,7 @@ public class MainActivityManagementCardsApprov extends AppCompatActivity {
 
                 //   Toast.makeText(MainActivityManagementCardsApprov.this, "sss"+arrayListFeed.size(), Toast.LENGTH_LONG).show();
 //
-                FeedbeckAdapter feedbeckAdapter = new FeedbeckAdapter(MainActivityManagementCardsApprov.this, 0, 0, arrayListFeed, true);
+                FeedbeckAdapter feedbeckAdapter = new FeedbeckAdapter(MainActivityManagementCardsApprov2.this, 0, 0, arrayListFeed, true);
                 //phase 4 reference to listview
                 lv1 = (ListView) findViewById(R.id.lvMange);
                 lv1.setAdapter(feedbeckAdapter);
@@ -357,7 +399,7 @@ public class MainActivityManagementCardsApprov extends AppCompatActivity {
                 ref2.child(feedback.getKey()).removeValue();
                 feedback.setKey(keyApprov);
                 ref.setValue(feedback);
-                Intent intent = new Intent(MainActivityManagementCardsApprov.this, MainActivityManagementCardsApprov.class);
+                Intent intent = new Intent(MainActivityManagementCardsApprov2.this, MainActivityManagementCardsApprov2.class);
                 startActivityForResult(intent, 0);
             }
         });
@@ -370,7 +412,7 @@ public class MainActivityManagementCardsApprov extends AppCompatActivity {
                 ref2.child(feedback.getKey()).removeValue();
                 feedback.setKey(keyApprov);
                 ref.setValue(feedback);
-                Intent intent = new Intent(MainActivityManagementCardsApprov.this, MainActivityManagementCardsApprov.class);
+                Intent intent = new Intent(MainActivityManagementCardsApprov2.this, MainActivityManagementCardsApprov2.class);
 
                 startActivityForResult(intent, 0);
             }
@@ -380,7 +422,7 @@ public class MainActivityManagementCardsApprov extends AppCompatActivity {
             public void onClick(View view) {
                 DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference(type);
                 ref2.child(feedback.getKey()).removeValue();
-                Intent intent = new Intent(MainActivityManagementCardsApprov.this, MainActivityManagementCardsApprov.class);
+                Intent intent = new Intent(MainActivityManagementCardsApprov2.this, MainActivityManagementCardsApprov2.class);
 
                 startActivityForResult(intent, 0);
 
@@ -427,11 +469,11 @@ public class MainActivityManagementCardsApprov extends AppCompatActivity {
         Intent intent2;
         switch (item.getItemId()) {
             case R.id.mainMenuManaga:
-                intent2 = new Intent(MainActivityManagementCardsApprov.this, MainActivity1.class);
+                intent2 = new Intent(MainActivityManagementCardsApprov2.this, MainActivity2.class);
                 startActivity(intent2);
                 return true;
             case R.id.mainIconMenuManga:
-                intent2 = new Intent(MainActivityManagementCardsApprov.this, MainActivity1.class);
+                intent2 = new Intent(MainActivityManagementCardsApprov2.this, MainActivity2.class);
                 startActivity(intent2);
                 return true;
             case R.id.cardsAproveMenu:
@@ -537,7 +579,7 @@ public class MainActivityManagementCardsApprov extends AppCompatActivity {
                 cardRef3.child(cardTutorPass.getKey()).removeValue();
                 cardTutorPass.setKey(cardRef4.getKey());
                 cardRef4.setValue(cardTutorPass);
-                Intent intent = new Intent(MainActivityManagementCardsApprov.this, MainActivityManagementCardsApprov.class);
+                Intent intent = new Intent(MainActivityManagementCardsApprov2.this, MainActivityManagementCardsApprov2.class);
 
                 startActivityForResult(intent, 0);
 
@@ -546,7 +588,7 @@ public class MainActivityManagementCardsApprov extends AppCompatActivity {
         buttonView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivityManagementCardsApprov.this, MainActivityCardView.class);
+                Intent intent = new Intent(MainActivityManagementCardsApprov2.this, MainActivityCardView.class);
                 intent.putExtra("flagMain", true);
                 pass(intent, cardTutorPass);
                 startActivityForResult(intent, 0);

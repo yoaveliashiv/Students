@@ -5,19 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".MainActivity1">
+    tools:context=".Hikers.MainActivity2">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ListView
-            android:id="@+id/lvMange2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="320dp"
-
-            />
 
         <TextView
             android:id="@+id/title"
@@ -156,7 +149,34 @@
             app:layout_constraintEnd_toStartOf="@+id/editTextProfession"
             app:layout_constraintTop_toTopOf="@+id/editTextProfession" />
 
+        <Button
+            android:id="@+id/buttonMyGrop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="הקבוצות שלי"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/search" />
 
+        <Button
+            android:id="@+id/buttonAllGrop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:text="כל הקבוצות"
+            app:layout_constraintBottom_toBottomOf="@+id/buttonMyGrop"
+            app:layout_constraintEnd_toStartOf="@+id/buttonMyGrop"
+            app:layout_constraintTop_toTopOf="@+id/buttonMyGrop" />
+
+        <ListView
+            android:id="@+id/lvMange2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:layout_marginTop="350dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

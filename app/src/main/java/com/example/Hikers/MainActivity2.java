@@ -1,14 +1,16 @@
-package com.example.students;
+package com.example.Hikers;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
+import com.example.R;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
+import android.media.audiofx.BassBoost;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
@@ -34,6 +36,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import com.example.chat.ActivitySettings;
+import com.example.chat.MainActivity3;
+import com.example.students.CardCarAdapter;
+import com.example.students.CardTutor;
+import com.example.students.ErrWarn;
+import com.example.students.MainActivityCardView;
+import com.example.students.MainActivityRegisterTutor;
+import com.example.students.MainActivity_Feedback;
+import com.example.students.RegisterInformation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -51,8 +62,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity2 extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     private FirebaseAuth mAuth;
     private CheckBox checkBox;
@@ -86,17 +96,14 @@ public class MainActivity extends AppCompatActivity {
     private String price = "";
     private List<CardTutor> arrayListCards;
     private List<CardTutor> arrayListCards2;
-
-    private Boolean flagConnected;
+private  String email ;
+    private Boolean flagConnected=false;
     private TextView textViewWarnSearch;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+        setContentView(R.layout.activity_main2);
         progressDialog = new ProgressDialog(this);
 
         flagCode = false;
@@ -132,8 +139,25 @@ public class MainActivity extends AppCompatActivity {
             registerButton.setText("לעמוד שלי");
         }
 
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+         email = "";
+        if (firebaseUser != null) {
+            try {
+                if (!firebaseUser.getEmail().toString().isEmpty())
+                    email = firebaseUser.getEmail().toString();
+                else email = firebaseUser.getPhoneNumber().toString();
+            } catch (RuntimeException e) {
+                email = firebaseUser.getPhoneNumber().toString();
+            }
 
-        viewCards();//make cards list view
+        }
+
+         if(email.length()==0)
+             viewAllGroupsׂ();
+         else
+             viewMyGroups();
+
+        // viewCards();//make cards list view
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,9 +174,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if (flagConnected) {
-                    Toast.makeText(MainActivity.this, "!!!!!!!!!!!!!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity2.this, "!!!!!!!!!!!!!", Toast.LENGTH_SHORT).show();
                     mAuth.signOut();
-                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                    Intent intent = new Intent(MainActivity2.this, MainActivity2.class);
                     startActivity(intent);
 
 
@@ -166,11 +190,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if (flagConnected) {
-                    Intent intent = new Intent(MainActivity.this, MainActivityPageUser.class);
+                    Intent intent = new Intent(MainActivity2.this, MainActivityPageUser2.class);
                     startActivity(intent);
 
                 } else {
-                    Intent intent = new Intent(MainActivity.this, MainActivityRegister.class);
+                    Intent intent = new Intent(MainActivity2.this, MainActivityRegister2.class);
                     startActivity(intent);
                 }
             }
@@ -187,32 +211,103 @@ public class MainActivity extends AppCompatActivity {
         feedbekButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-                String emailReport = "";
-                if (firebaseUser != null) {
-                    try {
-                        if (!firebaseUser.getEmail().toString().isEmpty())
-                            emailReport = firebaseUser.getEmail().toString();
-                        else emailReport = firebaseUser.getPhoneNumber().toString();
-                    } catch (RuntimeException e) {
-                        emailReport = firebaseUser.getPhoneNumber().toString();
-                    }
-
-                } else {
-                    Toast.makeText(MainActivity.this, "אנא התחבר או הירשם", Toast.LENGTH_SHORT).show();
-
-                    feedbekButton.setError("אנא הירשם או התחבר");
-                    feedbekButton.requestFocus();
-                    return;
-                }
-
-                Intent intent = new Intent(MainActivity.this, MainActivity_Feedback.class);
-                intent.putExtra("flag", true);
-                intent.putExtra("emailReporting", emailReport);
+                Intent intent = new Intent(MainActivity2.this, MainActivity3.class);
                 startActivity(intent);
+//                FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//                String emailReport = "";
+//                if (firebaseUser != null) {
+//                    try {
+//                        if (!firebaseUser.getEmail().toString().isEmpty())
+//                            emailReport = firebaseUser.getEmail().toString();
+//                        else emailReport = firebaseUser.getPhoneNumber().toString();
+//                    } catch (RuntimeException e) {
+//                        emailReport = firebaseUser.getPhoneNumber().toString();
+//                    }
+//
+//                } else {
+//                    Toast.makeText(MainActivity2.this, "אנא התחבר או הירשם", Toast.LENGTH_SHORT).show();
+//
+//                    feedbekButton.setError("אנא הירשם או התחבר");
+//                    feedbekButton.requestFocus();
+//                    return;
+//                }
+//
+//                Intent intent = new Intent(MainActivity2.this, MainActivity_Feedback.class);
+//                intent.putExtra("flag", true);
+//                intent.putExtra("emailReporting", emailReport);
+//                startActivity(intent);
             }
         });
         setDate();
+    }
+
+    private void viewMyGroups() {
+        DatabaseReference cardRef = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
+
+        cardRef.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                RegisterInformation2 registerInformation = new RegisterInformation2();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    registerInformation = child.getValue(RegisterInformation2.class);
+                }
+                if(registerInformation.getHitchhikingGroups().size()==0){
+                    viewAllGroupsׂ();
+                    return;
+                }
+                ListView lv1 = findViewById(R.id.lvMange2);
+                MyGroupsAdapter myGroupsAdapter = new MyGroupsAdapter(MainActivity2.this, 0, 0, registerInformation.getHitchhikingGroups(),email);
+                lv1.setAdapter(myGroupsAdapter);
+                lv1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void viewAllGroupsׂ() {
+        DatabaseReference cardRef = FirebaseDatabase.getInstance().getReference("NamesGroups");
+
+        cardRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<String> arrayList=new ArrayList<>();
+              //  buttonSeeAll.setText("ff");
+
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    String grohp=child.getValue(String.class);
+                    arrayList.add(grohp);
+                  //  buttonSeeAll.setText(""+grohp);
+
+                }
+                ListView lv1 = findViewById(R.id.lvMange2);
+                AllGroupsAdapter allGroupsAdapter = new AllGroupsAdapter(MainActivity2.this, 0, 0, arrayList,email);
+                lv1.setAdapter(allGroupsAdapter);
+                lv1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
     }
 
 
@@ -234,14 +329,14 @@ public class MainActivity extends AppCompatActivity {
                     //phase 4 reference to listview
 
                     buttonSeeAll.setVisibility(View.VISIBLE);
-                    toyAdapter1 = new CardCarAdapter(MainActivity.this, 0, 0, arrayListCards2, false, 2);
+                    toyAdapter1 = new CardCarAdapter(MainActivity2.this, 0, 0, arrayListCards2, false, 2);
                     lv11 = (ListView) findViewById(R.id.lvMange2);
                     lv11.setAdapter(toyAdapter1);
 
                     lv11.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            Intent intent = new Intent(MainActivity.this, MainActivityCardView.class);
+                            Intent intent = new Intent(MainActivity2.this, MainActivityCardView.class);
                             intent.putExtra("flagMain", true);
                             pass(intent, arrayListCards2.get(i));
 
@@ -266,8 +361,8 @@ public class MainActivity extends AppCompatActivity {
         EditText editTextCourse = findViewById(R.id.editTextCourse);
         String course = "" + editTextCourse.getText();
         EditText editTextProfession = findViewById(R.id.editTextProfession);
-String profession=""+editTextProfession.getText();
-        if ((course.length()==0&&profession.length()==0)||(checkProfessionAndCourse(course,card)||checkProfessionAndCourse(profession,card))){
+        String profession = "" + editTextProfession.getText();
+        if ((course.length() == 0 && profession.length() == 0) || (checkProfessionAndCourse(course, card) || checkProfessionAndCourse(profession, card))) {
             if (area.equals(card.getArea()) || area.length() == 0 || area.equals("בחר אזור")) {
 
                 if (price.length() == 0 || price.equals("טווח מחיר")) {
@@ -291,12 +386,11 @@ String profession=""+editTextProfession.getText();
                 } else if (price.equals("550+")) {
                     if (priceCard >= 550) arrayListCards2.add(card);
                 }
-            }}
+            }
+        }
 
 
     }
-
-
 
 
     private void viewCards() {
@@ -321,7 +415,7 @@ String profession=""+editTextProfession.getText();
                 if (arrayListCards.size() > 0) {
                     buttonSeeAll.setVisibility(View.GONE);
 
-                    cardCarAdapter = new CardCarAdapter(MainActivity.this, 0, 0, arrayListCards, false, 2);
+                    cardCarAdapter = new CardCarAdapter(MainActivity2.this, 0, 0, arrayListCards, false, 2);
                     //phase 4 reference to listview
                     lv1 = (ListView) findViewById(R.id.lvMange2);
                     lv1.setAdapter(cardCarAdapter);
@@ -329,7 +423,7 @@ String profession=""+editTextProfession.getText();
                     lv1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            Intent intent = new Intent(MainActivity.this, MainActivityCardView.class);
+                            Intent intent = new Intent(MainActivity2.this, MainActivityCardView.class);
                             intent.putExtra("flagMain", true);
                             pass(intent, arrayListCards.get(i));
                             startActivityForResult(intent, 0);
@@ -510,10 +604,10 @@ String profession=""+editTextProfession.getText();
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(MainActivity.this, "הכניסה הצליחה", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity2.this, "הכניסה הצליחה", Toast.LENGTH_SHORT).show();
                             loginButtonMain.setText("יציאה");
                             progressDialog.dismiss();
-                            Intent intent = new Intent(MainActivity.this, MainActivityPageUser.class);
+                            Intent intent = new Intent(MainActivity2.this, MainActivityPageUser2.class);
                             startActivity(intent);
                             d.dismiss();
                         } else {
@@ -522,7 +616,7 @@ String profession=""+editTextProfession.getText();
 //                                textViewWarnAll.setVisibility(View.VISIBLE);
                             editTextPassword.setError("אימייל או סיסמא לא נכונים");
                             editTextPassword.requestFocus();
-                            Toast.makeText(MainActivity.this, "הכניסה נכשלה", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity2.this, "הכניסה נכשלה", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -548,7 +642,7 @@ String profession=""+editTextProfession.getText();
 
             @Override
             public void onVerificationFailed(FirebaseException e) {
-                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity2.this, e.getMessage(), Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -583,7 +677,7 @@ String profession=""+editTextProfession.getText();
         mAuth = FirebaseAuth.getInstance();
 
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(MainActivity2.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -605,7 +699,7 @@ String profession=""+editTextProfession.getText();
                                     } else {
                                         progressDialog.dismiss();
                                         d.dismiss();
-                                        Intent intent = new Intent(MainActivity.this, MainActivityPageUser.class);
+                                        Intent intent = new Intent(MainActivity2.this, MainActivityPageUser2.class);
                                         startActivity(intent);
                                     }
                                 }
@@ -636,7 +730,7 @@ String profession=""+editTextProfession.getText();
         cardRef4.setValue(registerInformation);
         progressDialog.dismiss();
         d.dismiss();
-        Intent intent = new Intent(MainActivity.this, MainActivityPageUser.class);
+        Intent intent = new Intent(MainActivity2.this, MainActivityPageUser2.class);
         startActivity(intent);
     }
 
@@ -644,7 +738,7 @@ String profession=""+editTextProfession.getText();
         PhoneAuthOptions options = PhoneAuthOptions.newBuilder(mAuth)
                 .setPhoneNumber("+972" + mobile)
                 .setTimeout(60L, TimeUnit.SECONDS)
-                .setActivity(MainActivity.this)
+                .setActivity(MainActivity2.this)
                 .setCallbacks(mCallBacks)
                 .build();
         PhoneAuthProvider.verifyPhoneNumber(options);
@@ -681,7 +775,7 @@ String profession=""+editTextProfession.getText();
     }
 
     public boolean dateSearch(String dateStartUser, String dateEndUser) {
-//        Toast.makeText(MainActivity.this, "" + dateStartUser + " " + dateEndUser + ";" + dateStart + " " + dateEnd, Toast.LENGTH_LONG).show();
+//        Toast.makeText(MainActivity1.this, "" + dateStartUser + " " + dateEndUser + ";" + dateStart + " " + dateEnd, Toast.LENGTH_LONG).show();
 //        final Button buttonData = findViewById(R.id.buttonDate2);
 //        buttonData.setTextSize(8);
 
@@ -726,32 +820,44 @@ String profession=""+editTextProfession.getText();
         Intent intent2;
         switch (item.getItemId()) {
             case R.id.mainMenu:
-                intent2 = new Intent(MainActivity.this, MainActivity.class);
+                intent2 = new Intent(MainActivity2.this, MainActivity2.class);
                 startActivity(intent2);
                 return true;
             case R.id.mainIconMenu:
-                intent2 = new Intent(MainActivity.this, MainActivity.class);
+                intent2 = new Intent(MainActivity2.this, MainActivity2.class);
                 startActivity(intent2);
                 return true;
             case R.id.myPageMenu:
-                intent2 = new Intent(MainActivity.this, MainActivityPageUser.class);
+                intent2 = new Intent(MainActivity2.this, MainActivityPageUser2.class);
                 startActivity(intent2);
                 return true;
             case R.id.cardCarMenu:
-                intent2 = new Intent(MainActivity.this, MainActivityRegisterTutor.class);
+                intent2 = new Intent(MainActivity2.this, MainActivityRegisterTutor.class);
                 startActivity(intent2);
+                return true;
+            case R.id.settingsMenu:
+                if(!flagConnected){
+                    intent2 = new Intent(MainActivity2.this, MainActivityRegister2.class);
+                    startActivity(intent2);
+                }
+                else {
+                    intent2 = new Intent(MainActivity2.this, ActivitySettings.class);
+                    intent2.putExtra("email",email);
+                    startActivity(intent2);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-    private boolean checkProfessionAndCourse(String course, CardTutor card) {
-        if(course.length()==0)return false;
-        ArrayList<String> arrayList=new ArrayList<>(card.getArrayListExpertise());
-       for(int i=0;i<arrayList.size();i++){
-           if(arrayList.get(i).contains(course))return true;
 
-       }
-       return false;
+    private boolean checkProfessionAndCourse(String course, CardTutor card) {
+        if (course.length() == 0) return false;
+        ArrayList<String> arrayList = new ArrayList<>(card.getArrayListExpertise());
+        for (int i = 0; i < arrayList.size(); i++) {
+            if (arrayList.get(i).contains(course)) return true;
+
+        }
+        return false;
     }
 }

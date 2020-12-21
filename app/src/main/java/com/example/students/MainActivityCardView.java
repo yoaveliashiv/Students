@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -62,7 +63,7 @@ public class MainActivityCardView extends AppCompatActivity {
         buttonReturnMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivityCardView.this, MainActivity.class);
+                Intent intent = new Intent(MainActivityCardView.this, MainActivity1.class);
                 startActivity(intent);
             }
         });

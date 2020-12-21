@@ -16,6 +16,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import com.example.R;
 
 public class MainActivity_Feedback extends AppCompatActivity {
     private EditText editTextFeedback, editTextEmailCar;
@@ -83,7 +84,7 @@ public class MainActivity_Feedback extends AppCompatActivity {
                 cardRef.setValue(feedback);
                 Toast.makeText(MainActivity_Feedback.this, "נשלח בהצלחה", Toast.LENGTH_SHORT).show();
 
-                Intent intent = new Intent(MainActivity_Feedback.this, MainActivity.class);
+                Intent intent = new Intent(MainActivity_Feedback.this, MainActivity1.class);
                 startActivity(intent);
 
 
@@ -92,7 +93,7 @@ public class MainActivity_Feedback extends AppCompatActivity {
         buttonReturnMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity_Feedback.this, MainActivity.class);
+                Intent intent = new Intent(MainActivity_Feedback.this, MainActivity1.class);
                 startActivity(intent);
             }
         });

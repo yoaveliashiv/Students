@@ -4,14 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.util.Pair;
 
 import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,8 +30,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -47,10 +43,9 @@ import com.google.firebase.storage.UploadTask;
 
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
+import com.example.R;
 
 public class MainActivityRegisterTutor extends AppCompatActivity {
     private RegisterInformation registerInformation;
@@ -826,11 +821,11 @@ public class MainActivityRegisterTutor extends AppCompatActivity {
         Intent intent2;
         switch (item.getItemId()) {
             case R.id.mainMenu:
-                intent2 = new Intent(MainActivityRegisterTutor.this, MainActivity.class);
+                intent2 = new Intent(MainActivityRegisterTutor.this, MainActivity1.class);
                 startActivity(intent2);
                 return true;
             case R.id.mainIconMenu:
-                intent2 = new Intent(MainActivityRegisterTutor.this, MainActivity.class);
+                intent2 = new Intent(MainActivityRegisterTutor.this, MainActivity1.class);
                 startActivity(intent2);
                 return true;
             case R.id.myPageMenu:

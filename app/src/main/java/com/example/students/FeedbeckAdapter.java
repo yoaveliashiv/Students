@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import com.example.R;
 
 public class FeedbeckAdapter extends ArrayAdapter<Feedback> {
 

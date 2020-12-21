@@ -19,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import com.example.R;
 
 public class MainActivityListFeedbackPage extends AppCompatActivity {
     private Button pageMainButton;
@@ -83,7 +84,7 @@ public class MainActivityListFeedbackPage extends AppCompatActivity {
         pageMainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivityListFeedbackPage.this, MainActivity.class);
+                Intent intent = new Intent(MainActivityListFeedbackPage.this, MainActivity1.class);
                 startActivity(intent);
             }
         });

@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.R;
 
 import java.util.List;
 
@@ -102,7 +103,7 @@ public class CardCarAdapter extends ArrayAdapter<CardTutor> {
             remark.setText("הערות: " + temp.getRemarks());
         else remark.setText("");
 
-        ListView lv1 = (ListView) view.findViewById(R.id.listViewExpertise);
+        ListView lv1 = (ListView) view.findViewById(R.id.listViewChat);
         ExpertiseAdapter expertiseAdapter = new ExpertiseAdapter(context, 0, 0, temp.getArrayListExpertise());
         lv1.setAdapter(expertiseAdapter);
         lv1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -117,14 +118,14 @@ public class CardCarAdapter extends ArrayAdapter<CardTutor> {
                if (flag==0){
                    Intent intent = new Intent(context, MainActivityRegisterTutor.class);
                    intent.putExtra("position", position);
-                   MainActivity.pass(intent, objects.get(position));
+                   MainActivity1.pass(intent, objects.get(position));
                    intent.putExtra("flagEdit", true);
                    ((Activity) context).startActivityForResult(intent,0);
                }
                else  if (flag==1){
                    Intent intent = new Intent(context, MainActivityRegisterTutor.class);
                    intent.putExtra("position", position);
-                   MainActivity.pass(intent, objects.get(position));
+                   MainActivity1.pass(intent, objects.get(position));
                    intent.putExtra("flagManagement", true);
                    intent.putExtra("flagEdit", false);
                    intent.putExtra("flagMain", true);
@@ -133,7 +134,7 @@ public class CardCarAdapter extends ArrayAdapter<CardTutor> {
                else  if (flag==2){
                    Intent intent = new Intent(context, MainActivityCardView.class);
                    intent.putExtra("position", position);
-                   MainActivity.pass(intent, objects.get(position));
+                   MainActivity1.pass(intent, objects.get(position));
                    intent.putExtra("flagMain", true);
                    ((Activity) context).startActivityForResult(intent,0);
                }

@@ -1,15 +1,16 @@
-package com.example.students;
+package com.example.Hikers;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
 import com.example.R;
 
-public class MainActivityAddExpertise extends AppCompatActivity {
+public class MainActivityChat extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_add_expertise);
+        setContentView(R.layout.activity_main_chat);
     }
 }

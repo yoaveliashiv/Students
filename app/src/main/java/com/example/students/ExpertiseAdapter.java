@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.R;
 
 public class ExpertiseAdapter extends ArrayAdapter<String> {
 
