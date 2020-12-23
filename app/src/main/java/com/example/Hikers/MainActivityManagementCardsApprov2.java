@@ -53,14 +53,15 @@ public class MainActivityManagementCardsApprov2 extends AppCompatActivity {
     private int numCards = -1;
     private CardTutor cardTutor;
     private ArrayList<CardTutor> arrayListCardsPassDate;
-
+    EditText editTextFrom;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_management_cards_approv2);
-
+        editTextFrom = findViewById(R.id.editTextGropeFrom);
+        editTextFrom.setText("אריאל");
         Button buttonDo=findViewById(R.id.buttonDoGrohp);
         buttonDo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,23 +71,25 @@ public class MainActivityManagementCardsApprov2 extends AppCompatActivity {
                 cardRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                                            @Override
                                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                               EditText editTextFrom = findViewById(R.id.editTextGropeFrom);
+
                                                                EditText editTexto = findViewById(R.id.editTextGrohpTo);
                                                                String from=editTextFrom.getText().toString();
                                                                String to=editTexto.getText().toString();
                                                                Boolean flagExsis=false;
                                                                for (DataSnapshot child : snapshot.getChildren()) {
-                                                                   String grohp=child.getValue(String.class);
-                                                                   if (("" + from + "-" + to).equals(grohp))
+                                                                   String grohp=child.getKey();
+                                                                   if (("" + from + "-" + to).equals(grohp)||to.length()<3)
                                                                        flagExsis=true;
+                                                                   editTexto.setError("הקבוצה קיימת או קצרה");
+                                                                   editTexto.requestFocus();
                                                                }
                                                                   if(!flagExsis) {
-                                                                      DatabaseReference cardRef2 = FirebaseDatabase.getInstance().getReference("NamesGroups").push();
-                                                                      cardRef2.setValue("" + from + "-" + to);
-
+                                                                      DatabaseReference cardRef2 = FirebaseDatabase.getInstance().getReference("NamesGroups");
+                                                                      cardRef2.child("" + from + "-" + to).setValue("");
+                                                                      Intent intent = new Intent(MainActivityManagementCardsApprov2.this, MainActivityManagementCardsApprov2.class);
+                                                                      startActivityForResult(intent, 0);
                                                                   }
-                                                               Intent intent = new Intent(MainActivityManagementCardsApprov2.this, MainActivityManagementCardsApprov2.class);
-                                                               startActivityForResult(intent, 0);
+
                                                            }
 
                                                            @Override

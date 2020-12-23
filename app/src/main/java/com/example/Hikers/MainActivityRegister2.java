@@ -4,6 +4,9 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.bumptech.glide.Glide;
+import com.example.chat.ActivitySettings;
 import com.example.students.ErrWarn;
 import com.example.students.MainActivity1;
 import com.example.students.MainActivityPageUser;
@@ -45,6 +50,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import com.example.R;
@@ -58,7 +67,7 @@ public class MainActivityRegister2 extends AppCompatActivity {
 
     private TextView textViewWarnEmail, textViewWarnPassword1, textViewWarnPassword2, textViewWarnAll;
     private FirebaseAuth mAuth;
-    private RegisterInformation2 registerInformation = null;
+    private RegisterInformation2 registerInformation ;
     private Button loginButtonIn;
     private Button registerButton, buttonPhone, buttonSmsCode;
     private Button returnButton;
@@ -141,6 +150,9 @@ public class MainActivityRegister2 extends AppCompatActivity {
                 openImage();
             }
         });
+
+
+
     }
 
 
@@ -189,10 +201,12 @@ public class MainActivityRegister2 extends AppCompatActivity {
             return;
         }
         EditText editTextName=findViewById(R.id.editTextNameRegister);
-        registerInformation.setName(""+editTextName.getText().toString());
         registerInformation = new RegisterInformation2();
+        registerInformation.setName(""+editTextName.getText().toString());
+
         registerInformation.setEmail(email);
         registerInformation.setPassword(pass1);
+       // editTextName.setText(email+"ll"+pass1);
         registerFirebase(email, pass1);            //register
 
 
@@ -364,17 +378,16 @@ public class MainActivityRegister2 extends AppCompatActivity {
     }
 
     private void saveRegisterDataFireBase() {
-        registerInformation.foundId();
+       // registerInformation.foundId();
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         registerInformation.setIdFirebase(uid);
-        editTextEmail.setText(uid);
         DatabaseReference cardRef4 = FirebaseDatabase.getInstance().getReference("RegisterInformation2").child(uid);
         cardRef4.setValue(registerInformation);
 
         d.dismiss();
 
-        Intent intent = new Intent(MainActivityRegister2.this, MainActivityPageUser.class);
+        Intent intent = new Intent(MainActivityRegister2.this, MainActivityPageUser2.class);
         startActivity(intent);
     }
 

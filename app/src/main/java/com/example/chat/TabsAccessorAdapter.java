@@ -4,9 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import java.util.ArrayList;
 
@@ -34,11 +32,14 @@ public Fragment createFragment(int i){
                 ChatFragment chatFragment=new ChatFragment();
                 return  chatFragment;
             case 1:
-                GroupsFragment groupsFragment=new GroupsFragment();
-                return  groupsFragment;
+                MyGroupsFragment myGroupsFragment =new MyGroupsFragment();
+                return myGroupsFragment;
             case 2:
                 ContactsFragment contactsFragment=new ContactsFragment();
                 return  contactsFragment;
+            case 3:
+                AllGroupsFragment allGroupsFragment=new AllGroupsFragment();
+                return  allGroupsFragment;
             default:
                 return null;
         }
@@ -46,7 +47,7 @@ public Fragment createFragment(int i){
 
     @Override
     public int getCount() {
-        return 3;
+        return 4;
     }
 
     @Nullable
@@ -57,10 +58,11 @@ public Fragment createFragment(int i){
             case 0:
                 return  "שיחות";
             case 1:
-                GroupsFragment groupsFragment=new GroupsFragment();
-                return  "קבוצות";
+                return  "הקבוצות שלי";
             case 2:
                 return  "אנשי קשר";
+            case 3:
+                return  "כל הקבוצות";
             default:
                 return null;
         }

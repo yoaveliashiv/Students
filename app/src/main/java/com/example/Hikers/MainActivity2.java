@@ -284,7 +284,7 @@ private  String email ;
               //  buttonSeeAll.setText("ff");
 
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    String grohp=child.getValue(String.class);
+                    String grohp=child.getKey();
                     arrayList.add(grohp);
                   //  buttonSeeAll.setText(""+grohp);
 

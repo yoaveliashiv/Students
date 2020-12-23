@@ -16,7 +16,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".chat.ActivitySettings"></activity>
+        <activity android:name=".chat.ProfileActivity"></activity>
+        <activity android:name=".chat.GroupChatActivity" />
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
+        <activity android:name=".chat.ActivitySettings" />
         <activity android:name=".chat.MainActivity3" />
         <activity android:name=".Hikers.MainActivityChat" />
         <activity android:name=".Hikers.MainActivity2" />

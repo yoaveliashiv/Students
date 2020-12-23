@@ -1,17 +1,21 @@
 package com.example.chat;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -31,11 +35,18 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class ActivitySettings extends AppCompatActivity {
 private Uri uriImage=null;
    private ImageView imageView;
    private RegisterInformation2 registerInformation;
+   private static final int GallaryPick=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,12 +55,16 @@ private Uri uriImage=null;
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openImage();
+                Intent intentGallary=new Intent();
+                intentGallary.setAction(Intent.ACTION_GET_CONTENT);
+                intentGallary.setType("image/*");
+                startActivityForResult(intentGallary,GallaryPick);
+              //  openImage();
             }
         });
         final EditText editTextName = findViewById(R.id.edit_name);
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
         databaseReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -85,6 +100,7 @@ private Uri uriImage=null;
 
             }
         });
+
     }
 
     public void openImage() {
@@ -105,28 +121,38 @@ private Uri uriImage=null;
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
-        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
-        switch (requestCode) {
-//            case 0:
-////                if (resultCode == RESULT_OK) {
-//                    Uri selectedImage = imageReturnedIntent.getData();
-//                    imageViewTemp.setImageURI(selectedImage);
-//                    setUriImage(selectedImage);
-//                    arrayListImageViewUri.add(selectedImage);
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+if(requestCode== GallaryPick&&resultCode==RESULT_OK &&data!=null){
+//    CropImage.activity()
+//            .setGuidelines(CropImageView.Guidelines.ON)
 //
-//                }
+//            .start(this);
+//    if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+//        CropImage.ActivityResult result = CropImage.getActivityResult(data);
+//       // if(resultCode==RESULT_OK) {
+//            uriImage = result.getUri();
+//            imageView.setImageURI(uriImage);
+//      //  }
+//    }
+    uriImage = data.getData();
+    imageView.setImageURI(uriImage);
+}
+    }
+    //    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+//        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+//        switch (requestCode) {
+//
+//            case 1:
+//
+//                uriImage = imageReturnedIntent.getData();
+//                imageView.setImageURI(uriImage);
+//
 //
 //                break;
-            case 1:
-
-                uriImage = imageReturnedIntent.getData();
-                imageView.setImageURI(uriImage);
-
-
-                break;
-        }
-    }
+//        }
+//    }
 
     public void fireBaseImage(final String name) {
         if (uriImage == null){
@@ -146,7 +172,6 @@ private Uri uriImage=null;
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
                         taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
