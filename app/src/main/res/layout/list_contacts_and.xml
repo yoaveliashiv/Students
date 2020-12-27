@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:orientation="horizontal"
+        >
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circleimageview_list"
+            android:layout_width="85dp"
+            android:layout_height="85dp"
+            android:src="@drawable/profile_image"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/textView_name_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="textStart"
+                android:textSize="18sp"
+                android:text="אריאל-אשקלון"
+                android:textStyle="bold"
+                />
+            <TextView
+                android:id="@+id/textView_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="textEnd"
+                android:textSize="12sp"
+                android:text="22:22"
+                android:textStyle="normal"
+                />
+
+
+        </LinearLayout>
+            <TextView
+                android:id="@+id/textView_message_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:text="מה?"
+                android:layout_margin="7dp"
+                android:textAlignment="textStart"
+                android:textSize="16sp" />
+
+    </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

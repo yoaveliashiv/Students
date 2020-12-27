@@ -5,8 +5,10 @@ public class Contact {
     private Message message;
     private String name = "";
     private String image = "";
-    private String uid = "";
+    private String uidContacts = "";
+    private String uidI = "";
 
+    private int notifications = 0;
 
     public Contact() {
     }
@@ -15,13 +17,7 @@ public class Contact {
         return message;
     }
 
-    public String getUid() {
-        return uid;
-    }
 
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
 
     public void setMessage(Message message) {
         this.message=new Message(message);
@@ -41,5 +37,29 @@ public class Contact {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public int getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(int notifications) {
+        this.notifications = notifications;
+    }
+
+    public String getUidContacts() {
+        return uidContacts;
+    }
+
+    public void setUidContacts(String uidContacts) {
+        this.uidContacts = uidContacts;
+    }
+
+    public String getUidI() {
+        return uidI;
+    }
+
+    public void setUidI(String uidI) {
+        this.uidI = uidI;
     }
 }

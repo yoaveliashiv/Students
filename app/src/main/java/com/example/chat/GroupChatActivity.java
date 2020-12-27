@@ -48,7 +48,7 @@ public class GroupChatActivity extends AppCompatActivity {
     private ScrollView scrollView;
     private String nameGroup;
     private RegisterInformation2 registerInformation;
-    private String uid ;
+    private String uid;
     private DatabaseReference databaseReference;
     private ArrayList<Message> arrayListMessage;
     private MessageAdapter arrayAdapter;
@@ -62,7 +62,8 @@ public class GroupChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_group_chat);
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         nameGroup = getIntent().getExtras().getString("nameGroup");
-        Boolean flag=getIntent().getExtras().getBoolean("flagAllGroup");
+        Boolean flag = getIntent().getExtras().getBoolean("flagAllGroup");
+
 
         databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups").child(nameGroup);
 
@@ -93,10 +94,10 @@ public class GroupChatActivity extends AppCompatActivity {
         // String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         arrayListMessage = new ArrayList<>();
 
-        arrayAdapter = new MessageAdapter(GroupChatActivity.this, 0,0, arrayListMessage,uid);
+        arrayAdapter = new MessageAdapter(GroupChatActivity.this, 0, 0, arrayListMessage, uid);
         listView.setAdapter(arrayAdapter);
-        final Button button=findViewById(R.id.button_goin);
-        if(!flag)button.setVisibility(View.GONE);
+        final Button button = findViewById(R.id.button_goin);
+        if (!flag) button.setVisibility(View.GONE);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,7 +112,7 @@ public class GroupChatActivity extends AppCompatActivity {
 
     }
 
-    private void saveDatabase(String sms, String nameGroup) {
+    private void saveDatabase(String sms, final String nameGroup) {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         String date = simpleDateFormat.format(calendar.getTime());
@@ -120,17 +121,35 @@ public class GroupChatActivity extends AppCompatActivity {
         simpleDateFormat = new SimpleDateFormat("HH:mm");
         String time = simpleDateFormat.format(calendar.getTime());
 
-        Message message = new Message();
+       final Message message = new Message();
         message.setDate(date);
         message.setMessage(sms);
         message.setName(registerInformation.getName());
         message.setPhone(registerInformation.getEmail());
         message.setUid(uid);
         message.setTime(time);
-        databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups").child(nameGroup).push();
+        DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("GroupIdNotificationsNumMessage");
+        databaseReference2.child(nameGroup).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int id=0;
+                if (snapshot.exists()) id = snapshot.getValue(Integer.class);
+                id++;
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                        .getReference("GroupIdNotificationsNumMessage").child(nameGroup);
+                databaseReference3.setValue(id);
+                message.setId(id);
+                databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups").child(nameGroup).push();
 
-//databaseReference.getKey();
-        databaseReference.setValue(message);
+                databaseReference.setValue(message);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
 
     }
 
@@ -169,7 +188,7 @@ public class GroupChatActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
+    protected void onStart() {//TODO:
         super.onStart();
 
         databaseReference.addChildEventListener(new ChildEventListener() {
@@ -209,6 +228,9 @@ public class GroupChatActivity extends AppCompatActivity {
         Message message;
 
         message = snapshot.getValue(Message.class);
+        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                .getReference("NotificationsIdSeeLast").child(uid).child(nameGroup);//set Notifications
+        databaseReference3.setValue(message.getId());
 //        String sms;
 //        if (!message.getName().isEmpty())
 //            sms = message.getName() + " :\n" + message.getMessage() + "\n" + message.getTime() + "\n";
@@ -222,22 +244,23 @@ public class GroupChatActivity extends AppCompatActivity {
 // Force scroll to the top of the scroll view.
 // Because, when the list view gets loaded it focuses the list view
 // automatically at the bottom of this page.
-        listView.setSelection(listView.getAdapter().getCount()-1);
+        listView.setSelection(listView.getAdapter().getCount() - 1);
 
 
     }
+
     private void saveNotifications() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NotificationsGroups");
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups");
         databaseReference.child(uid).child(nameGroup).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     int num = snapshot.getValue(Integer.class);
                     num++;
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Notifications");
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NotificationsGroups");
                     databaseReference.child(uid).child(nameGroup).setValue(num);
                 } else {
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Notifications");
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NotificationsGroups");
                     databaseReference.child(uid).child(nameGroup).setValue(1);
                 }
             }

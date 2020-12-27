@@ -3,7 +3,6 @@ package com.example.chat;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
-
 public class Message {
     private String message="";
     private String name="";
@@ -11,7 +10,7 @@ public class Message {
     private String date="";
     private String time="";
     private String uid="";
-
+    private int id=0;
     public Message() {
     }
     public Message(Message message) {
@@ -21,6 +20,7 @@ public class Message {
         this.time=message.time;
         this.phone=message.phone;
         this.uid=message.uid;
+        this.id=message.id;
 
     }
     public String getMessage() {
@@ -69,5 +69,13 @@ public class Message {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

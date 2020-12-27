@@ -43,10 +43,9 @@ import java.util.Calendar;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
-    private Toolbar toolbar;
+
     private RegisterInformation2 registerInformationSend;
     private RegisterInformation2 registerInformationRecive;
-    private Menu menu2;
     private DatabaseReference databaseReference;
     private ArrayList<Message> arrayListMessage;
     private MessageAdapter arrayAdapter;
@@ -54,43 +53,18 @@ public class ChatActivity extends AppCompatActivity {
     private ListView listView;
     private String uidSend;
     private String uidRecive;
-    CircleImageView circleImageView;
+   private CircleImageView circleImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         circleImageView = findViewById(R.id.profile_image);
-
         getSupportActionBar().hide();
         uidSend = getIntent().getExtras().getString("send_message_user_id");
         uidRecive = getIntent().getExtras().getString("to_message_user_id");
 
-//<include
-//        android:id="@+id/chat_toolbar"
-//        layout="@layout/app_bar_layout"
-//                ></include>
-//        toolbar = (Toolbar) findViewById(R.id.chat_toolbar);
-//        setSupportActionBar(toolbar);
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setDisplayShowHomeEnabled(true);
-//        actionBar.setDisplayShowCustomEnabled(true);
-//        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        View actionBarView = layoutInflater.inflate(R.layout.chat_bar, null);
-//        actionBar.setCustomView(actionBarView);
 
-//        CircleImageView circleImageView=findViewById(R.id.profile_image);
-//        TextView textViewName=findViewById(R.id.textView_name_chat);
-//        textViewName.setText(name);
-//        if(!image.isEmpty())
-//        Glide.with(ChatActivity.this)
-//                .load(registerInformation.getImageUrl())
-//                .into(circleImageView);
-//        else
-//            Glide.with(ChatActivity.this)
-//                    .load(R.drawable.profile_image)
-//                    .into(circleImageView);
-        // getSupportActionBar().setTitle(name);
         databaseReference = FirebaseDatabase.getInstance().getReference("Contacts").child(uidSend).child(uidRecive);
 
         ImageButton imageButton = findViewById(R.id.imageButtonSendMassege);
@@ -109,7 +83,8 @@ public class ChatActivity extends AppCompatActivity {
                 }
 
                 saveDatabase(sms);
-                saveNotifications();
+
+
                 editText.setText("");
             }
         });
@@ -186,21 +161,35 @@ public class ChatActivity extends AppCompatActivity {
         simpleDateFormat = new SimpleDateFormat("HH:mm");
         String time = simpleDateFormat.format(calendar.getTime());
 
-        Message message = new Message();
+        final Message message = new Message();
         message.setDate(date);
         message.setMessage(sms);
         message.setName(registerInformationSend.getName());
         message.setPhone(registerInformationSend.getEmail());
         message.setUid(uidSend);
         message.setTime(time);
-        DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Contacts")
-                .child(uidSend).child(uidRecive).push();
-        DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Contacts")
-                .child(uidRecive).child(uidSend).push();
+        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("Contacts")
+                .child(uidSend).child(uidRecive);
+        databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int num = 0;
+              if(snapshot.exists())  num = (int) snapshot.getChildrenCount();
+                message.setId(num);
+                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Contacts")
+                        .child(uidSend).child(uidRecive).push();
+                DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Contacts")
+                        .child(uidRecive).child(uidSend).push();
 
-//databaseReference.getKey();
-        databaseReference1.setValue(message);
-        databaseReference2.setValue(message);
+                databaseReference1.setValue(message);
+                databaseReference2.setValue(message);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
 
     }
@@ -281,13 +270,9 @@ public class ChatActivity extends AppCompatActivity {
         Message message;
 
         message = snapshot.getValue(Message.class);
-//        String sms;
-//        if (!message.getName().isEmpty())
-//            sms = message.getName() + " :\n" + message.getMessage() + "\n" + message.getTime() + "\n";
-//        else
-//            sms = message.getPhone() + " :\n" + message.getMessage() + "\n" + message.getTime() + "\n";
-        //   textViewDisplay.setHint(message.getUid());
-        //  textViewDisplay.append(sms);
+        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                .getReference("NotificationsIdSeeLast").child(uidSend).child(uidRecive);//set Notifications
+        databaseReference3.setValue(message.getId());
         arrayListMessage.add(message);
 
         arrayAdapter.notifyDataSetChanged();
@@ -347,10 +332,10 @@ public class ChatActivity extends AppCompatActivity {
                 if (snapshot.exists()) {
                     int num = snapshot.getValue(Integer.class);
                     num++;
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Notifications");
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NotificationsPrivate");
                     databaseReference.child(uidRecive).child(uidSend).setValue(num);
                 } else {
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Notifications");
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NotificationsPrivate");
                     databaseReference.child(uidRecive).child(uidSend).setValue(1);
                 }
             }

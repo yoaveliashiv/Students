@@ -14,9 +14,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.Hikers.RegisterInformation2;
 import com.example.R;
+import com.example.students.MainActivityRegisterTutor;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -92,6 +94,7 @@ public class ChatFragment extends Fragment {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Contacts");
 
         final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Toast.makeText(getContext(), uid, Toast.LENGTH_LONG).show();
 
         databaseReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -124,7 +127,8 @@ public class ChatFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getContext(), ChatActivity.class);
                 intent.putExtra("send_message_user_id", uid);
-                intent.putExtra("to_message_user_id", contactArrayList.get(i).getUid());
+                intent.putExtra("to_message_user_id", contactArrayList.get(i).getUidContacts());
+                Toast.makeText(getContext(), uid, Toast.LENGTH_LONG).show();
 
                 startActivityForResult(intent, 0);
 //                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -160,15 +164,8 @@ public class ChatFragment extends Fragment {
                             messageContact = child.getValue(Message.class);
 
                         }
-                        Contact contact = new Contact();
-                        contact.setImage(imageContact);
-                        contact.setMessage(messageContact);
-                        contact.setName(nameContact);
-                        contact.setUid(uidContact.get(0));
-                        contactArrayList.add(contact);
-                        contactsAdapter.notifyDataSetChanged();
-                        uidContact.remove(0);
-                        if (uidContact.size() > 0) addContact(uidContact, uid);
+                        notifications(uidContact, uid);
+
 
 
                     }
@@ -179,6 +176,42 @@ public class ChatFragment extends Fragment {
                     }
                 });
 
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void notifications(final ArrayList<String> uidContact,final String uid) {
+        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                .getReference("NotificationsIdSeeLast").child(uid)
+                .child(uidContact.get(0));
+        databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+
+
+                Contact contact = new Contact();
+
+                    int lastSee=0;
+                if(snapshot.exists())  lastSee= snapshot.getValue(Integer.class);
+                    int numNewMessage= messageContact.getId()-lastSee;
+                    contact.setNotifications(numNewMessage);
+
+
+                contact.setImage(imageContact);
+                contact.setMessage(messageContact);
+                contact.setName(nameContact);
+                contact.setUidI(uid);
+                contact.setUidContacts(uidContact.get(0));
+                contactArrayList.add(contact);
+                contactsAdapter.notifyDataSetChanged();
+                uidContact.remove(0);
+                if (uidContact.size() > 0) addContact(uidContact, uid);
             }
 
             @Override
