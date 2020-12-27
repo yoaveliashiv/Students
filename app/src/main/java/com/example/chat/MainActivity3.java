@@ -67,15 +67,11 @@ private TabsAccessorAdapter tabsAccessorAdapter;
                 startActivity(intent2);
                 return true;
             case R.id.settingsMenu:
-              //  if(!flagConnected){
-                    intent2 = new Intent(MainActivity3.this, MainActivityRegister2.class);
+
+                    intent2 = new Intent(MainActivity3.this, ActivitySettings.class);
+
                     startActivity(intent2);
-//                }
-//                else {
-//                    intent2 = new Intent(MainActivity3.this, ActivitySettings.class);
-//                    intent2.putExtra("email",email);
-//                    startActivity(intent2);
-//                }
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

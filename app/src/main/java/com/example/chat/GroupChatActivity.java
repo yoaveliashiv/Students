@@ -8,15 +8,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.Hikers.MainActivityPageUser2;
 import com.example.Hikers.RegisterInformation2;
 import com.example.R;
+import com.example.students.MainActivityRegisterTutor;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -45,10 +48,10 @@ public class GroupChatActivity extends AppCompatActivity {
     private ScrollView scrollView;
     private String nameGroup;
     private RegisterInformation2 registerInformation;
-    private String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private String uid ;
     private DatabaseReference databaseReference;
-    private ArrayList<String> arrayListMessage;
-    private ArrayAdapter<String> arrayAdapter;
+    private ArrayList<Message> arrayListMessage;
+    private MessageAdapter arrayAdapter;
     EditText editText;
     ListView listView;
 
@@ -59,6 +62,7 @@ public class GroupChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_group_chat);
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         nameGroup = getIntent().getExtras().getString("nameGroup");
+        Boolean flag=getIntent().getExtras().getBoolean("flagAllGroup");
 
         databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups").child(nameGroup);
 
@@ -89,9 +93,22 @@ public class GroupChatActivity extends AppCompatActivity {
         // String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         arrayListMessage = new ArrayList<>();
 
-        arrayAdapter = new ArrayAdapter<String>(GroupChatActivity.this,
-                android.R.layout.simple_list_item_1, arrayListMessage);
+        arrayAdapter = new MessageAdapter(GroupChatActivity.this, 0,0, arrayListMessage,uid);
         listView.setAdapter(arrayAdapter);
+        final Button button=findViewById(R.id.button_goin);
+        if(!flag)button.setVisibility(View.GONE);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("MyGroups")
+                        .child(uid).child(nameGroup);
+                databaseReference1.setValue("");
+                button.setVisibility(View.GONE);
+                Toast.makeText(GroupChatActivity.this, "הצטרפת לקבוצה בהצלחה", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
     }
 
     private void saveDatabase(String sms, String nameGroup) {
@@ -100,7 +117,7 @@ public class GroupChatActivity extends AppCompatActivity {
         String date = simpleDateFormat.format(calendar.getTime());
 
         calendar = Calendar.getInstance();
-        simpleDateFormat = new SimpleDateFormat("hh:mm a");
+        simpleDateFormat = new SimpleDateFormat("HH:mm");
         String time = simpleDateFormat.format(calendar.getTime());
 
         Message message = new Message();
@@ -189,20 +206,46 @@ public class GroupChatActivity extends AppCompatActivity {
 
     private void displayMessage(DataSnapshot snapshot) {
 
-        getSupportActionBar().setTitle(snapshot.toString());
         Message message;
 
         message = snapshot.getValue(Message.class);
-        String sms;
-        if (!message.getName().isEmpty())
-            sms = message.getName() + " :\n" + message.getMessage() + "\n" + message.getTime() + "\n\n\n";
-        else
-            sms = message.getPhone() + " :\n" + message.getMessage() + "\n" + message.getTime() + "\n\n\n";
+//        String sms;
+//        if (!message.getName().isEmpty())
+//            sms = message.getName() + " :\n" + message.getMessage() + "\n" + message.getTime() + "\n";
+//        else
+//            sms = message.getPhone() + " :\n" + message.getMessage() + "\n" + message.getTime() + "\n";
         //   textViewDisplay.setHint(message.getUid());
         //  textViewDisplay.append(sms);
-        arrayListMessage.add(sms);
-        arrayAdapter.notifyDataSetChanged();
-        scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+        arrayListMessage.add(message);
 
+        arrayAdapter.notifyDataSetChanged();
+// Force scroll to the top of the scroll view.
+// Because, when the list view gets loaded it focuses the list view
+// automatically at the bottom of this page.
+        listView.setSelection(listView.getAdapter().getCount()-1);
+
+
+    }
+    private void saveNotifications() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NotificationsGroups");
+        databaseReference.child(uid).child(nameGroup).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    int num = snapshot.getValue(Integer.class);
+                    num++;
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Notifications");
+                    databaseReference.child(uid).child(nameGroup).setValue(num);
+                } else {
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Notifications");
+                    databaseReference.child(uid).child(nameGroup).setValue(1);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }

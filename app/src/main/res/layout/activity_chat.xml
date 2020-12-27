@@ -4,43 +4,60 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".chat.GroupChatActivity">
-    <androidx.constraintlayout.widget.ConstraintLayout
+    tools:context=".chat.ChatActivity">
+    <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/con">
+        android:background="@color/colorPrimary"
+        android:id="@+id/app_bar"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <Button
-            android:id="@+id/button_goin"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/textView_name_chat"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="לחץ להצטרפות לקבוצה"
-            android:textColor="#201F22"
-            android:textStyle="italic"
-            android:visibility="visible"
-            app:backgroundTint="#E1DFC8"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="80dp" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:text="שם משתמש"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginRight="10dp"
 
+            android:textColor="@android:color/background_light"/>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="47dp"
+            android:layout_height="47dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:cropToPadding="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/profile_image"
+            />
+
+
+
+
+
+
+    </androidx.appcompat.widget.Toolbar>
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/app_bar"
         android:layout_above="@id/linearLayout"
-android:layout_below="@id/con"
         android:nestedScrollingEnabled="true"
         android:layout_marginBottom="-11dp"
+        android:layout_marginTop="5dp"
         android:fillViewport="true"
         >
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
 
             android:orientation="vertical">
-
-
             <ListView
                 android:id="@+id/list_view_message"
 
@@ -74,6 +91,12 @@ android:layout_below="@id/con"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:src="@drawable/send_message" />
+        <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/profile_image"
+        android:visibility="gone"/>
     </LinearLayout>
 
 </RelativeLayout>

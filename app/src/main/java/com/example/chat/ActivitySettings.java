@@ -52,6 +52,8 @@ private Uri uriImage=null;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         imageView=findViewById(R.id.profile_image);
+        getSupportActionBar().setTitle("הגדרות חשבון");
+       
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

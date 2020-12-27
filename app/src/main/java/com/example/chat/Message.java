@@ -14,7 +14,15 @@ public class Message {
 
     public Message() {
     }
+    public Message(Message message) {
+        this.message=message.message;
+        this.name=message.name;
+        this.date=message.date;
+        this.time=message.time;
+        this.phone=message.phone;
+        this.uid=message.uid;
 
+    }
     public String getMessage() {
         return message;
     }

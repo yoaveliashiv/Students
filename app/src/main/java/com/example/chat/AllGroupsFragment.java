@@ -104,6 +104,7 @@ public class AllGroupsFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                Intent intent2 = new Intent(getContext(), GroupChatActivity.class);
                 intent2.putExtra("nameGroup",arrayListGroups.get(i));
+                intent2.putExtra("flagAllGroup",true);
                 startActivity(intent2);
 //                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 //                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");

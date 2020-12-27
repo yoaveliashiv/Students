@@ -34,10 +34,8 @@ public Fragment createFragment(int i){
             case 1:
                 MyGroupsFragment myGroupsFragment =new MyGroupsFragment();
                 return myGroupsFragment;
+
             case 2:
-                ContactsFragment contactsFragment=new ContactsFragment();
-                return  contactsFragment;
-            case 3:
                 AllGroupsFragment allGroupsFragment=new AllGroupsFragment();
                 return  allGroupsFragment;
             default:
@@ -47,7 +45,7 @@ public Fragment createFragment(int i){
 
     @Override
     public int getCount() {
-        return 4;
+        return 3;
     }
 
     @Nullable
@@ -59,9 +57,8 @@ public Fragment createFragment(int i){
                 return  "שיחות";
             case 1:
                 return  "הקבוצות שלי";
+
             case 2:
-                return  "אנשי קשר";
-            case 3:
                 return  "כל הקבוצות";
             default:
                 return null;
