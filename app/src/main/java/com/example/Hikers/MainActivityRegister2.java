@@ -78,13 +78,15 @@ public class MainActivityRegister2 extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_register2);
         if( FirebaseAuth.getInstance().getCurrentUser()!=null)
         {
             Intent intent = new Intent(MainActivityRegister2.this, MainActivity3.class);
             startActivity(intent);
+            finish();
         }
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main_register2);
+
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         setmCallBacks();//register phone

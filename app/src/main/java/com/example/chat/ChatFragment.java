@@ -43,7 +43,11 @@ public class ChatFragment extends Fragment {
     private ArrayList<Contact> contactArrayList;
     private String nameContact;
     private String imageContact;
-    ContactsAdapter contactsAdapter;
+    private ContactsAdapter contactsAdapter;
+    private DatabaseReference reference;
+    private ListView listView;
+    private String uid;
+
     private Message messageContact = new Message();
     private View viewContacts;
     // TODO: Rename and change types of parameters
@@ -86,15 +90,23 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         viewContacts = inflater.inflate(R.layout.fragment_chat, container, false);
-        final ListView listView = (ListView) viewContacts.findViewById(R.id.list_view);
+        listView = (ListView) viewContacts.findViewById(R.id.list_view);
+        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        reference = FirebaseDatabase.getInstance().getReference("Contacts").child(uid);
+
+       list();
+
+        return viewContacts;
+    }
+
+    private void list() {
         contactArrayList = new ArrayList<>();
+listView.clearDisappearingChildren();
         contactsAdapter = new ContactsAdapter(getContext(), 0, 0, contactArrayList);
 
         listView.setAdapter(contactsAdapter);
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Contacts");
 
-        final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Toast.makeText(getContext(), uid, Toast.LENGTH_LONG).show();
 
         databaseReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -108,7 +120,6 @@ public class ChatFragment extends Fragment {
 
                     String uidContact = child.getKey();
                     arrayList.add(uidContact);
-
                 }
                 addContact(arrayList, uid);
 
@@ -131,13 +142,8 @@ public class ChatFragment extends Fragment {
                 Toast.makeText(getContext(), uid, Toast.LENGTH_LONG).show();
 
                 startActivityForResult(intent, 0);
-//                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-//                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
-//                databaseReference.child(uid).child("hitchhikingGroups").setValue(arrayListGroups.get(i));
             }
         });
-        // Inflate the layout for this fragment
-        return viewContacts;
     }
 
     private void addContact(final ArrayList<String> uidContact, final String uid) {
@@ -167,7 +173,6 @@ public class ChatFragment extends Fragment {
                         notifications(uidContact, uid);
 
 
-
                     }
 
                     @Override
@@ -185,7 +190,7 @@ public class ChatFragment extends Fragment {
         });
     }
 
-    private void notifications(final ArrayList<String> uidContact,final String uid) {
+    private void notifications(final ArrayList<String> uidContact, final String uid) {
         DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
                 .getReference("NotificationsIdSeeLast").child(uid)
                 .child(uidContact.get(0));
@@ -194,13 +199,12 @@ public class ChatFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
 
-
                 Contact contact = new Contact();
 
-                    int lastSee=0;
-                if(snapshot.exists())  lastSee= snapshot.getValue(Integer.class);
-                    int numNewMessage= messageContact.getId()-lastSee;
-                    contact.setNotifications(numNewMessage);
+                int lastSee = 0;
+                if (snapshot.exists()) lastSee = snapshot.getValue(Integer.class);
+                int numNewMessage = messageContact.getId() - lastSee;
+                contact.setNotifications(numNewMessage);
 
 
                 contact.setImage(imageContact);
@@ -219,6 +223,40 @@ public class ChatFragment extends Fragment {
 
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    reference.addChildEventListener(new ChildEventListener() {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+        }
+
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+            if (snapshot.exists()) {
+                list();
+            }
+        }
+
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+
+        }
+    });
+
     }
 
 }
