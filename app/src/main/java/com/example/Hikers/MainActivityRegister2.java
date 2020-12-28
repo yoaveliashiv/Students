@@ -4,9 +4,6 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,13 +23,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.bumptech.glide.Glide;
-import com.example.chat.ActivitySettings;
+import com.example.chat.MainActivity3;
 import com.example.students.ErrWarn;
 import com.example.students.MainActivity1;
-import com.example.students.MainActivityPageUser;
 
-import com.example.students.MainActivityRegisterTutor;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,7 +34,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -50,10 +43,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import com.example.R;
@@ -91,6 +80,11 @@ public class MainActivityRegister2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_register2);
+        if( FirebaseAuth.getInstance().getCurrentUser()!=null)
+        {
+            Intent intent = new Intent(MainActivityRegister2.this, MainActivity3.class);
+            startActivity(intent);
+        }
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         setmCallBacks();//register phone
@@ -104,7 +98,7 @@ public class MainActivityRegister2 extends AppCompatActivity {
         registerButton = findViewById(R.id.register);
         buttonSmsCode = findViewById(R.id.buttonCodeGo);
         buttonPhone = findViewById(R.id.buttonRegisterPhone);
-        returnButton = findViewById(R.id.mainPage);
+        returnButton = findViewById(R.id.login_in_register);
         editTextSmsCode = findViewById(R.id.editTextSmsCode);
         editTextPhone = findViewById(R.id.editTextPhone);
         editTextEmail = findViewById(R.id.email);
@@ -346,7 +340,7 @@ public class MainActivityRegister2 extends AppCompatActivity {
 
                                     } else {
                                         d.dismiss();
-                                        Intent intent = new Intent(MainActivityRegister2.this, MainActivityPageUser2.class);
+                                        Intent intent = new Intent(MainActivityRegister2.this, MainActivity3.class);
 
                                         startActivity(intent);
 
@@ -387,7 +381,7 @@ public class MainActivityRegister2 extends AppCompatActivity {
 
         d.dismiss();
 
-        Intent intent = new Intent(MainActivityRegister2.this, MainActivityPageUser2.class);
+        Intent intent = new Intent(MainActivityRegister2.this, MainActivity3.class);
         startActivity(intent);
     }
 

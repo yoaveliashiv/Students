@@ -38,6 +38,9 @@ public Fragment createFragment(int i){
             case 2:
                 AllGroupsFragment allGroupsFragment=new AllGroupsFragment();
                 return  allGroupsFragment;
+            case 3:
+                LinksWhatsAppFragment linksWhatsAppFragment=new LinksWhatsAppFragment();
+                return  linksWhatsAppFragment;
             default:
                 return null;
         }
@@ -45,7 +48,7 @@ public Fragment createFragment(int i){
 
     @Override
     public int getCount() {
-        return 3;
+        return 4;
     }
 
     @Nullable
@@ -60,6 +63,8 @@ public Fragment createFragment(int i){
 
             case 2:
                 return  "כל הקבוצות";
+            case 3:
+                return  "קישורים לווצאפ";
             default:
                 return null;
         }

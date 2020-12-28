@@ -40,7 +40,7 @@ private TabsAccessorAdapter tabsAccessorAdapter;
     public boolean onCreateOptionsMenu(Menu menu) {
        // if (flagConnected) {
             MenuInflater menuInflater = getMenuInflater();
-            menuInflater.inflate(R.menu.menu_app, menu);
+            menuInflater.inflate(R.menu.menu_chat, menu);
             return true;
      //   }
      //   return false;
@@ -50,28 +50,24 @@ private TabsAccessorAdapter tabsAccessorAdapter;
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         Intent intent2;
         switch (item.getItemId()) {
-            case R.id.mainMenu:
-                intent2 = new Intent(MainActivity3.this, MainActivity3.class);
-                startActivity(intent2);
-                return true;
+
             case R.id.mainIconMenu:
                 intent2 = new Intent(MainActivity3.this, MainActivity3.class);
                 startActivity(intent2);
                 return true;
-            case R.id.myPageMenu:
-                intent2 = new Intent(MainActivity3.this, MainActivityPageUser2.class);
-                startActivity(intent2);
-                return true;
-            case R.id.cardCarMenu:
-                intent2 = new Intent(MainActivity3.this, MainActivityRegisterTutor.class);
-                startActivity(intent2);
-                return true;
+
             case R.id.settingsMenu:
-
                     intent2 = new Intent(MainActivity3.this, ActivitySettings.class);
-
                     startActivity(intent2);
-
+                return true;
+            case R.id.logout:
+                FirebaseAuth.getInstance().signOut();
+                intent2 = new Intent(MainActivity3.this, MainActivityRegister2.class);
+                startActivity(intent2);
+                return true;
+            case R.id.refresh:
+                intent2 = new Intent(MainActivity3.this, MainActivity3.class);
+                startActivity(intent2);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

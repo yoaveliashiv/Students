@@ -85,52 +85,52 @@ public class MyGroupsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         viewContacts = inflater.inflate(R.layout.fragment_my_groups, container, false);
-//        final ListView listView = (ListView) viewContacts.findViewById(R.id.list_view);
-//        contactArrayList = new ArrayList<>();
-//        contactsAdapter = new GroupsAdapter(getContext(), 0, 0, contactArrayList);
-//
-//        listView.setAdapter(contactsAdapter);
-//        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups");
-//
-//        final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-//
-//        databaseReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//
-//                ArrayList<String> arrayList = new ArrayList<>();
-//                for (DataSnapshot child : snapshot.getChildren()) {
-//
-//                    String uidContact = child.getKey();
-//                    arrayList.add(uidContact);
-//
-//                }
-//                addContact(arrayList, uid);
-//
-////  contactsAdapter.notifyDataSetChanged();
-//
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Intent intent2 = new Intent(getContext(), GroupChatActivity.class);
-//                intent2.putExtra("nameGroup", contactArrayList.get(i).getName());
-//                intent2.putExtra("flagAllGroup", false);
-//                startActivity(intent2);
-////                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-////                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
-////                databaseReference.child(uid).child("hitchhikingGroups").setValue(arrayListGroups.get(i));
-//            }
-//        });
-//        // Inflate the layout for this fragment
+        final ListView listView = (ListView) viewContacts.findViewById(R.id.list_view);
+        contactArrayList = new ArrayList<>();
+        contactsAdapter = new GroupsAdapter(getContext(), 0, 0, contactArrayList);
+
+        listView.setAdapter(contactsAdapter);
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups");
+
+        final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        databaseReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+if(!snapshot.exists())return;
+
+                ArrayList<String> arrayList = new ArrayList<>();
+                for (DataSnapshot child : snapshot.getChildren()) {
+
+                    String uidContact = child.getKey();
+                    arrayList.add(uidContact);
+
+                }
+                addContact(arrayList, uid);
+
+//  contactsAdapter.notifyDataSetChanged();
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent2 = new Intent(getContext(), GroupChatActivity.class);
+                intent2.putExtra("nameGroup", contactArrayList.get(i).getName());
+                intent2.putExtra("flagAllGroup", false);
+                startActivity(intent2);
+//                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
+//                databaseReference.child(uid).child("hitchhikingGroups").setValue(arrayListGroups.get(i));
+            }
+        });
+        // Inflate the layout for this fragment
         return viewContacts;
     }
 
@@ -144,11 +144,16 @@ public class MyGroupsFragment extends Fragment {
                     messageContact = child.getValue(Message.class);
 
                 }
-                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("NotificationsGroups");
+                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("NotificationsIdSeeLast");
                 databaseReference1.child(uid).child(uidContact.get(0)).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Contact contact = new Contact();
+                        int lastSee=0;
+                        if(snapshot.exists())  lastSee= snapshot.getValue(Integer.class);
+                        int numNewMessage= messageContact.getId()-lastSee;
+                        contact.setNotifications(numNewMessage);
+
                         contact.setMessage(messageContact);
                         contact.setName(uidContact.get(0));
                         contact.setUidI(uid);

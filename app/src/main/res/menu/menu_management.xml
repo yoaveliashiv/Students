@@ -12,12 +12,12 @@
         android:title="לדף הראשי"
         app:showAsAction="never" />
     <item
-        android:id="@+id/cards"
-        android:title="כרטיסים"
+        android:id="@+id/groups"
+        android:title="קבוצות טרמפים"
         app:showAsAction="never">
         <menu>
             <item
-                android:id="@+id/cardsRejecsenMenu"
+                android:id="@+id/make_groups"
                 android:title="כרטיסים שסורבו"
                 app:showAsAction="never"/>
             <item

@@ -2,6 +2,7 @@ package com.example.chat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,10 +69,15 @@ public class GroupsAdapter extends ArrayAdapter<Contact> {
         TextView textViewMessage = (TextView) view.findViewById(R.id.textView_message_list);
         textViewMessage.setText(name + ": " + contact.getMessage().getMessage());
 
-//            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups");
-//            databaseReference.child(contact.getUid()).child().addListenerForSingleValueEvent(new);
-
         TextView textViewTime = (TextView) view.findViewById(R.id.textView_time);
+
+        if (contact.getNotifications() > 0) {
+            textViewTime.setText(contact.getMessage().getTime() + "\n" + contact.getNotifications() + " הודעות חדשות");
+            textViewTime.setTextSize(15);
+            textViewTime.setTextColor(Color.BLUE);
+            return view;
+
+        }
         textViewTime.setText(contact.getMessage().getTime());
         return view;
     }

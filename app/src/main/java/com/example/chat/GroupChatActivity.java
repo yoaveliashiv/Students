@@ -128,16 +128,14 @@ public class GroupChatActivity extends AppCompatActivity {
         message.setPhone(registerInformation.getEmail());
         message.setUid(uid);
         message.setTime(time);
-        DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("GroupIdNotificationsNumMessage");
+        DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("NamesGroups");
         databaseReference2.child(nameGroup).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 int id=0;
-                if (snapshot.exists()) id = snapshot.getValue(Integer.class);
-                id++;
-                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
-                        .getReference("GroupIdNotificationsNumMessage").child(nameGroup);
-                databaseReference3.setValue(id);
+                if (snapshot.exists()) id = (int)snapshot.getChildrenCount();
+
+
                 message.setId(id);
                 databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups").child(nameGroup).push();
 
