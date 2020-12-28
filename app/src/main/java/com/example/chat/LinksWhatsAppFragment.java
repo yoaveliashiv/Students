@@ -11,7 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.R;
 import com.google.firebase.database.DataSnapshot;
@@ -28,7 +31,11 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class LinksWhatsAppFragment extends Fragment {
-
+    private TextView textViewNoFond;
+    private EditText editTextSearch;
+    private Button buttonSearch;
+    private Button buttonSeeAllGroups;
+    private ListView listView;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -73,8 +80,39 @@ public class LinksWhatsAppFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View viewGroup = inflater.inflate(R.layout.fragment_links_whats_app, container, false);
-        ListView listView = (ListView) viewGroup.findViewById(R.id.list_view_link);
-        // String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        listView = (ListView) viewGroup.findViewById(R.id.list_view);
+        textViewNoFond = viewGroup.findViewById(R.id.textView_no_found);
+        editTextSearch = viewGroup.findViewById(R.id.editText_search);
+        buttonSearch = viewGroup.findViewById(R.id.button_search);
+        buttonSeeAllGroups = viewGroup.findViewById(R.id.button_all_groups);
+       allLinks();
+        buttonSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                search();
+            }
+        });
+        buttonSeeAllGroups.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                allLinks();
+                buttonSeeAllGroups.setVisibility(View.GONE);
+                textViewNoFond.setVisibility(View.GONE);
+            }
+        });
+
+        // Inflate the layout for this fragment
+        return viewGroup;
+
+    }
+
+    private void search() {
+        final String groupSearch = editTextSearch.getText().toString();
+        if (groupSearch.isEmpty()) {
+            editTextSearch.setError("אנא הכנס קבוצה");
+            editTextSearch.requestFocus();
+            return;
+        }
         final ArrayList<LinksToWhatsApp> arrayListLink = new ArrayList<>();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("LinksToWhatsApp");
 
@@ -85,9 +123,52 @@ public class LinksWhatsAppFragment extends Fragment {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+                if (!snapshot.exists())
+                    return;
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    arrayListLink.add(child.getValue(LinksToWhatsApp.class));
+
+                    LinksToWhatsApp linksToWhatsApp = new LinksToWhatsApp();
+                    String nameGroup=child.getKey();
+                    if(nameGroup.contains(groupSearch)) {
+                        linksToWhatsApp.setNameGroup(nameGroup);
+                        linksToWhatsApp.setLink(child.getValue(String.class));
+                        arrayListLink.add(linksToWhatsApp);
+                    }
+                }
+                if (arrayListLink.size() == 0) {
+                    textViewNoFond.setVisibility(View.VISIBLE);
+                }
+
+                buttonSeeAllGroups.setVisibility(View.VISIBLE);
+                linksToWhatsAppAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void allLinks() {
+        final ArrayList<LinksToWhatsApp> arrayListLink = new ArrayList<>();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("LinksToWhatsApp");
+
+        final LinksToWhatsAppAdapter linksToWhatsAppAdapter = new LinksToWhatsAppAdapter(getContext(), 0, 0, arrayListLink);
+
+        listView.setAdapter(linksToWhatsAppAdapter);
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists())
+                    return;
+                for (DataSnapshot child : snapshot.getChildren()) {
+
+                    LinksToWhatsApp linksToWhatsApp = new LinksToWhatsApp();
+                    linksToWhatsApp.setNameGroup(child.getKey());
+                    linksToWhatsApp.setLink(child.getValue(String.class));
+                    arrayListLink.add(linksToWhatsApp);
                 }
 
                 linksToWhatsAppAdapter.notifyDataSetChanged();
@@ -98,8 +179,5 @@ public class LinksWhatsAppFragment extends Fragment {
 
             }
         });
-
-        // Inflate the layout for this fragment
-        return viewGroup;
-
-    }}
+    }
+}

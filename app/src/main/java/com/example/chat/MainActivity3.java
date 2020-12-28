@@ -66,6 +66,15 @@ private TabsAccessorAdapter tabsAccessorAdapter;
                 startActivity(intent2);
                 return true;
             case R.id.refresh:
+                try {
+
+                    if (FirebaseAuth.getInstance().getCurrentUser().
+                            getPhoneNumber().equals("+972544540185")){
+                        intent2 = new Intent(MainActivity3.this, Management.class);
+                        startActivity(intent2);
+                        return true;
+                    }
+                }catch (RuntimeException e){}
                 intent2 = new Intent(MainActivity3.this, MainActivity3.class);
                 startActivity(intent2);
                 return true;

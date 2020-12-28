@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/mainIconMenuManga"
+        android:icon="@drawable/student_icon"
+        android:title="׳׳“׳£ ׳”׳¨׳׳©׳™"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/mainMenuManaga"
+        android:title="׳׳“׳£ ׳”׳¨׳׳©׳™"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/cards"
+        android:title="׳›׳¨׳˜׳™׳¡׳™׳"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/cardsRejecsenMenu"
+                android:title="׳›׳¨׳˜׳™׳¡׳™׳ ׳©׳¡׳•׳¨׳‘׳•"
+                app:showAsAction="never"/>
+            <item
+                android:id="@+id/cardsAproveMenu"
+                android:title="׳›׳¨׳˜׳™׳¡׳™׳ ׳©׳׳•׳©׳¨׳•"
+                app:showAsAction="never"/>
+            <item
+                android:id="@+id/cardsWaitAproveMenu"
+                android:title="׳›׳¨׳˜׳™׳¡׳™׳ ׳©׳׳—׳›׳™׳ ׳׳׳™׳©׳•׳¨"
+                app:showAsAction="never"/>
+            <item
+                android:id="@+id/cardsDeleteHistotyMenu"
+                android:title="׳›׳¨׳˜׳™׳¡׳™׳ ׳©׳ ׳׳—׳§׳•"
+                app:showAsAction="never"/>
+
+        </menu>
+    </item>
+    <item
+        android:id="@+id/feeds"
+        android:title="׳׳©׳•׳‘׳™׳"
+        app:showAsAction="never" >
+        <menu>
+            <item
+                android:id="@+id/feedsRejecsenMenu"
+                android:title="׳׳©׳•׳‘׳™׳ ׳©׳¡׳•׳¨׳‘׳•"
+                app:showAsAction="never"/>
+            <item
+                android:id="@+id/feedsAproveMenu"
+                android:title="׳׳©׳•׳‘׳™׳ ׳©׳׳•׳©׳¨׳•"
+                app:showAsAction="never"/>
+            <item
+                android:id="@+id/feedsWaitAproveMenu"
+                android:title="׳׳©׳•׳‘׳™׳ ׳©׳׳—׳›׳™׳ ׳׳׳™׳©׳•׳¨"
+                app:showAsAction="never"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/deletePassDateMenu"
+        android:title="׳›׳¨׳˜׳™׳¡׳™׳ ׳©׳¢׳‘׳¨ ׳×׳׳¨׳™׳"
+        app:showAsAction="never" />
+
+</menu>

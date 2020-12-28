@@ -14,27 +14,12 @@
     <item
         android:id="@+id/groups"
         android:title="קבוצות טרמפים"
-        app:showAsAction="never">
-        <menu>
-            <item
-                android:id="@+id/make_groups"
-                android:title="כרטיסים שסורבו"
-                app:showAsAction="never"/>
-            <item
-                android:id="@+id/cardsAproveMenu"
-                android:title="כרטיסים שאושרו"
-                app:showAsAction="never"/>
-            <item
-                android:id="@+id/cardsWaitAproveMenu"
-                android:title="כרטיסים שמחכים לאישור"
-                app:showAsAction="never"/>
-            <item
-                android:id="@+id/cardsDeleteHistotyMenu"
-                android:title="כרטיסים שנמחקו"
-                app:showAsAction="never"/>
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/link_groups"
+        android:title="לינקים לווצאפ"
+        app:showAsAction="never"/>
 
-        </menu>
-    </item>
     <item
         android:id="@+id/feeds"
         android:title="משובים"
@@ -54,9 +39,6 @@
                 app:showAsAction="never"/>
         </menu>
     </item>
-    <item
-        android:id="@+id/deletePassDateMenu"
-        android:title="כרטיסים שעבר תאריך"
-        app:showAsAction="never" />
+
 
 </menu>

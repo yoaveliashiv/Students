@@ -11,7 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.Hikers.MainActivity2;
 import com.example.R;
@@ -30,6 +33,11 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class AllGroupsFragment extends Fragment {
+    private TextView textViewNoFond;
+    private EditText editTextSearch;
+    private Button buttonSearch;
+    private Button buttonSeeAllGroups;
+    private ListView listView;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -75,8 +83,34 @@ public class AllGroupsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View viewGroup = inflater.inflate(R.layout.fragment_all_groups, container, false);
-        ListView listView = (ListView) viewGroup.findViewById(R.id.list_view);
-       // String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        listView = (ListView) viewGroup.findViewById(R.id.list_view);
+        textViewNoFond = viewGroup.findViewById(R.id.textView_no_found);
+        editTextSearch = viewGroup.findViewById(R.id.editText_search);
+        buttonSearch = viewGroup.findViewById(R.id.button_search);
+        buttonSeeAllGroups = viewGroup.findViewById(R.id.button_all_groups);
+        allGroups();
+
+        // Inflate the layout for this fragment
+        buttonSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                search();
+            }
+        });
+        buttonSeeAllGroups.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                allGroups();
+                buttonSeeAllGroups.setVisibility(View.GONE);
+                textViewNoFond.setVisibility(View.GONE);
+            }
+        });
+        return viewGroup;
+
+
+    }
+
+    private void allGroups() {
         final ArrayList<String> arrayListGroups = new ArrayList<>();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups");
 
@@ -91,7 +125,7 @@ public class AllGroupsFragment extends Fragment {
                     arrayListGroups.add(child.getKey());
                 }
 
-            arrayAdapter.notifyDataSetChanged();
+                arrayAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -102,18 +136,62 @@ public class AllGroupsFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-               Intent intent2 = new Intent(getContext(), GroupChatActivity.class);
-                intent2.putExtra("nameGroup",arrayListGroups.get(i));
-                intent2.putExtra("flagAllGroup",true);
+                Intent intent2 = new Intent(getContext(), GroupChatActivity.class);
+                intent2.putExtra("nameGroup", arrayListGroups.get(i));
+                intent2.putExtra("flagAllGroup", true);
                 startActivity(intent2);
 //                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 //                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
 //                databaseReference.child(uid).child("hitchhikingGroups").setValue(arrayListGroups.get(i));
             }
         });
-        // Inflate the layout for this fragment
-        return viewGroup;
+    }
 
+    private void search() {
+        final String groupSearch = editTextSearch.getText().toString();
+        if (groupSearch.isEmpty()) {
+            editTextSearch.setError("אנא הכנס קבוצה");
+            editTextSearch.requestFocus();
+            return;
+        }
+        final ArrayList<String> arrayListGroups = new ArrayList<>();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups");
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_list_item_1, arrayListGroups);
+        listView.setAdapter(arrayAdapter);
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    String nameGroup = child.getKey();
+                    if (nameGroup.contains(groupSearch))
+                        arrayListGroups.add(nameGroup);
+                }
+                if (arrayListGroups.size() == 0) {
+                    textViewNoFond.setVisibility(View.VISIBLE);
+                }
+
+                arrayAdapter.notifyDataSetChanged();
+                buttonSeeAllGroups.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent2 = new Intent(getContext(), GroupChatActivity.class);
+                intent2.putExtra("nameGroup", arrayListGroups.get(i));
+                intent2.putExtra("flagAllGroup", true);
+                startActivity(intent2);
+
+            }
+        });
 
     }
 }

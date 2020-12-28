@@ -417,7 +417,7 @@ public class MainActivityManagementCardsApprov extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_management, menu);
+        menuInflater.inflate(R.menu.menu_management2, menu);
         return true;
 
     }

@@ -209,7 +209,7 @@
             app:layout_constraintTop_toTopOf="@+id/buttonMainReturn" />
 
         <EditText
-            android:id="@+id/editTextGrohpTo"
+            android:id="@+id/editTextGrohp_To"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -221,16 +221,16 @@
             app:layout_constraintTop_toBottomOf="@+id/buttonMainReturn" />
 
         <EditText
-            android:id="@+id/editTextGropeFrom"
+            android:id="@+id/editTextGrope_From"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="3dp"
             android:ems="7"
             android:hint="מ-"
             android:inputType="textPersonName"
-            app:layout_constraintBottom_toBottomOf="@+id/editTextGrohpTo"
-            app:layout_constraintEnd_toStartOf="@+id/editTextGrohpTo"
-            app:layout_constraintTop_toTopOf="@+id/editTextGrohpTo" />
+            app:layout_constraintBottom_toBottomOf="@+id/editTextGrohp_To"
+            app:layout_constraintEnd_toStartOf="@+id/editTextGrohp_To"
+            app:layout_constraintTop_toTopOf="@+id/editTextGrohp_To" />
 
         <Button
             android:id="@+id/buttonDoGrohp"
@@ -239,9 +239,9 @@
             android:layout_marginStart="23dp"
             android:layout_marginEnd="31dp"
             android:text="צור קבוצה"
-            app:layout_constraintEnd_toEndOf="@+id/editTextGrohpTo"
-            app:layout_constraintStart_toStartOf="@+id/editTextGrohpTo"
-            app:layout_constraintTop_toBottomOf="@+id/editTextGrohpTo" />
+            app:layout_constraintEnd_toEndOf="@+id/editTextGrohp_To"
+            app:layout_constraintStart_toStartOf="@+id/editTextGrohp_To"
+            app:layout_constraintTop_toBottomOf="@+id/editTextGrohp_To" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

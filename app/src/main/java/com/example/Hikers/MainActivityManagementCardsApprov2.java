@@ -60,7 +60,7 @@ public class MainActivityManagementCardsApprov2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_management_cards_approv2);
-        editTextFrom = findViewById(R.id.editTextGropeFrom);
+        editTextFrom = findViewById(R.id.editTextGrope_From);
         editTextFrom.setText("אריאל");
         Button buttonDo=findViewById(R.id.buttonDoGrohp);
         buttonDo.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +72,7 @@ public class MainActivityManagementCardsApprov2 extends AppCompatActivity {
                                                            @Override
                                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                                                               EditText editTexto = findViewById(R.id.editTextGrohpTo);
+                                                               EditText editTexto = findViewById(R.id.editTextGrohp_To);
                                                                String from=editTextFrom.getText().toString();
                                                                String to=editTexto.getText().toString();
                                                                Boolean flagExsis=false;
