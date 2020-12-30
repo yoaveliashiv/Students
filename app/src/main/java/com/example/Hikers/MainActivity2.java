@@ -61,6 +61,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.installations.FirebaseInstallations;
+import com.google.firebase.installations.InstallationTokenResult;
 
 public class MainActivity2 extends AppCompatActivity {
     private FirebaseUser firebaseUser;
@@ -83,7 +85,7 @@ public class MainActivity2 extends AppCompatActivity {
     private DatabaseReference cardRef2;
     private DatabaseReference cardRef;
     private String dateStart = "", dateEnd = "";
-
+private String deviceToken;
     private TextView textViewWarnEmail, textViewWarnPassword, textViewWarnAll, textVieeTittel;
 
     private RegisterInformation registerInformation;
@@ -604,6 +606,20 @@ private  String email ;
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+
+                            final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                            deviceToken = "";
+                            FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<InstallationTokenResult> task) {
+                                    deviceToken = task.getResult().getToken();
+                                    DatabaseReference cardRef4 = FirebaseDatabase.getInstance().getReference("RegisterInformation2")
+                                            .child(uid).child("deviceToken");
+                                    cardRef4.setValue(deviceToken);
+                                }
+                            });
+
+
                             Toast.makeText(MainActivity2.this, "הכניסה הצליחה", Toast.LENGTH_SHORT).show();
                             loginButtonMain.setText("יציאה");
                             progressDialog.dismiss();

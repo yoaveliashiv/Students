@@ -46,6 +46,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.concurrent.TimeUnit;
 
 import com.example.R;
+import com.google.firebase.installations.FirebaseInstallations;
+import com.google.firebase.installations.InstallationTokenResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -56,7 +58,7 @@ public class MainActivityRegister2 extends AppCompatActivity {
 
     private TextView textViewWarnEmail, textViewWarnPassword1, textViewWarnPassword2, textViewWarnAll;
     private FirebaseAuth mAuth;
-    private RegisterInformation2 registerInformation ;
+    private RegisterInformation2 registerInformation;
     private Button loginButtonIn;
     private Button registerButton, buttonPhone, buttonSmsCode;
     private Button returnButton;
@@ -66,7 +68,7 @@ public class MainActivityRegister2 extends AppCompatActivity {
     private String mVerificationId;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallBacks;
     private String mobile;
-
+private   String deviceToken;
     private CheckBox checkBox;
     private CheckBox checkBoxTerms;
 
@@ -78,8 +80,7 @@ public class MainActivityRegister2 extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if( FirebaseAuth.getInstance().getCurrentUser()!=null)
-        {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             Intent intent = new Intent(MainActivityRegister2.this, MainActivity3.class);
             startActivity(intent);
             finish();
@@ -148,7 +149,6 @@ public class MainActivityRegister2 extends AppCompatActivity {
         });
 
 
-
     }
 
 
@@ -160,6 +160,16 @@ public class MainActivityRegister2 extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                            deviceToken = "";
+                            FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<InstallationTokenResult> task) {
+                                    deviceToken = task.getResult().getToken();
+                                }
+                            });
+
+                            registerInformation.setDeviceToken(deviceToken);
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             fireBaseImage();
@@ -196,13 +206,13 @@ public class MainActivityRegister2 extends AppCompatActivity {
             textViewWarnPassword2.setVisibility(View.VISIBLE);
             return;
         }
-        EditText editTextName=findViewById(R.id.editTextNameRegister);
+        EditText editTextName = findViewById(R.id.editTextNameRegister);
         registerInformation = new RegisterInformation2();
-        registerInformation.setName(""+editTextName.getText().toString());
+        registerInformation.setName("" + editTextName.getText().toString());
 
         registerInformation.setEmail(email);
         registerInformation.setPassword(pass1);
-       // editTextName.setText(email+"ll"+pass1);
+        // editTextName.setText(email+"ll"+pass1);
         registerFirebase(email, pass1);            //register
 
 
@@ -254,7 +264,7 @@ public class MainActivityRegister2 extends AppCompatActivity {
                     mobile = mobile;
 
                     sendVerificationCode(mobile);
-                     editTextPassword.setVisibility(View.VISIBLE);
+                    editTextPassword.setVisibility(View.VISIBLE);
 
                 }
             }
@@ -324,6 +334,16 @@ public class MainActivityRegister2 extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+
+                            final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                             deviceToken = "";
+                            FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<InstallationTokenResult> task) {
+                                   deviceToken = task.getResult().getToken();
+                                }
+                            });
+
                             registerInformation = null;
                             mobile = mobile.substring(1);
                             DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference("RegisterInformation");
@@ -337,10 +357,14 @@ public class MainActivityRegister2 extends AppCompatActivity {
                                     if (!snapshot.exists()) {
 
                                         registerInformation = new RegisterInformation2();
+                                        registerInformation.setDeviceToken(deviceToken);
                                         registerInformation.setEmail("+972" + mobile);
                                         fireBaseImage();
 
                                     } else {
+                                        DatabaseReference cardRef4 = FirebaseDatabase.getInstance().getReference("RegisterInformation2")
+                                                .child(uid).child("deviceToken");
+                                        cardRef4.setValue(deviceToken);
                                         d.dismiss();
                                         Intent intent = new Intent(MainActivityRegister2.this, MainActivity3.class);
 
@@ -374,7 +398,7 @@ public class MainActivityRegister2 extends AppCompatActivity {
     }
 
     private void saveRegisterDataFireBase() {
-       // registerInformation.foundId();
+        // registerInformation.foundId();
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         registerInformation.setIdFirebase(uid);
@@ -465,7 +489,7 @@ public class MainActivityRegister2 extends AppCompatActivity {
     }
 
     public void fireBaseImage() {
-        if (uriImage == null){
+        if (uriImage == null) {
             saveRegisterDataFireBase();
             return;
         }

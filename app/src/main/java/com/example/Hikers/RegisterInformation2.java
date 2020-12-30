@@ -19,6 +19,8 @@ public class RegisterInformation2 {
     private String email = "";
     private String password = "";
     private String idFirebase = "";
+    private  String deviceToken = "";
+
     private int id = -1;
     private String imageUrl = "";
 
@@ -124,4 +126,11 @@ public class RegisterInformation2 {
         });
     }
 
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
 }
