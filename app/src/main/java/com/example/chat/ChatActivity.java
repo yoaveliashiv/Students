@@ -5,20 +5,29 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -27,6 +36,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
+import com.example.Hikers.MainActivityManagementCardsApprov2;
 import com.example.Hikers.RegisterInformation2;
 import com.example.R;
 import com.google.firebase.database.ChildEventListener;
@@ -53,7 +63,7 @@ public class ChatActivity extends AppCompatActivity {
     private ListView listView;
     private String uidSend;
     private String uidRecive;
-   private CircleImageView circleImageView;
+    private CircleImageView circleImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +105,12 @@ public class ChatActivity extends AppCompatActivity {
 
         arrayAdapter = new MessageAdapter(ChatActivity.this, 0, 0, arrayListMessage, uidSend);
         listView.setAdapter(arrayAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                dialodSendPrivateMassege(i);
+            }
+        });
         circleImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,6 +120,73 @@ public class ChatActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void dialodSendPrivateMassege(final int i) {
+       final Dialog d = new Dialog(this);
+        d.setContentView(R.layout.dialog_massge);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        TextView textViewSendMassge = d.findViewById(R.id.textView_send_massage);
+        TextView textViewOpenProfile = d.findViewById(R.id.textView_propile_open);
+        TextView textViewSendWhatappsMassge = d.findViewById(R.id.textView_send_whatapps);
+        TextView textViewCopyPhone = d.findViewById(R.id.textView_copy_phone);
+        TextView textViewCopyMessage = d.findViewById(R.id.textView_copy_massage);
+        TextView textViewFeed = d.findViewById(R.id.textView_feed);
+        String uidVisit=arrayListMessage.get(i).getUid();
+
+        textViewOpenProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(ChatActivity.this, ProfileActivity.class);
+                intent.putExtra("profile_user_id", uidRecive);
+                intent.putExtra("visit_user_id", uidSend);
+                startActivity(intent);
+
+            }
+        });
+        textViewSendMassge.setVisibility(View.GONE);
+        textViewSendWhatappsMassge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                String uidVisit=arrayListMessage.get(i).getUid();
+//                if (uidSend.equals(uidVisit)) {
+//                    Toast.makeText(ChatActivity.this, "לא ניתן לשלוח הודעה לעצמך", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+                Intent intentWhatsapp = new Intent(Intent.ACTION_VIEW);
+                String num = arrayListMessage.get(i).getPhone();
+                String url = "https://api.whatsapp.com/send?phone=" + num ;
+                intentWhatsapp.setData(Uri.parse(url));
+                intentWhatsapp.setPackage("com.whatsapp");
+                startActivity(intentWhatsapp);
+            }
+        });
+        textViewCopyPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("1",  arrayListMessage.get(i).getPhone());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(ChatActivity.this, "המספר הועתק", Toast.LENGTH_SHORT).show();
+                d.dismiss();
+            }
+        });
+        textViewCopyMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("1",  arrayListMessage.get(i).getMessage());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(ChatActivity.this, "ההודעה הועתקה", Toast.LENGTH_SHORT).show();
+                d.dismiss();
+            }
+        });
+        textViewFeed.setVisibility(View.GONE);
+        d.show();
+
     }
 
 
@@ -174,7 +257,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 int num = 0;
-              if(snapshot.exists())  num = (int) snapshot.getChildrenCount();
+                if (snapshot.exists()) num = (int) snapshot.getChildrenCount();
                 message.setId(num);
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Contacts")
                         .child(uidSend).child(uidRecive).push();

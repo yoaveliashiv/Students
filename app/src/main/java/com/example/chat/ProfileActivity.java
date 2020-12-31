@@ -47,9 +47,6 @@ public class ProfileActivity extends AppCompatActivity {
                 Intent intent = new Intent(ProfileActivity.this, ChatActivity.class);
                 intent.putExtra("send_message_user_id", uidVisit);
                 intent.putExtra("to_message_user_id", uidProfile);
-                intent.putExtra("image", image);
-
-                intent.putExtra("name", name);
                 startActivityForResult(intent, 0);
             }
         });

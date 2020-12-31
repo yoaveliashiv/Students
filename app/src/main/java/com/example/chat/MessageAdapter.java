@@ -74,24 +74,24 @@ String name=listMessage.get(position).getName();
 //if(listMessage.get(position).getUid().equals(uidVist))
 //    relativeLayout.setBackgroundColor(context.getResources().getColor(R.color.colorBackgroundMessageMe));
 
-        textViewName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(context, ProfileActivity.class);
-                intent.putExtra("profile_user_id", listMessage.get(position).getUid());
-                intent.putExtra("visit_user_id", uidVist);
-                ((Activity) context).startActivityForResult(intent, 0);
-            }
-        });
-        textViewPhone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(context, ProfileActivity.class);
-                intent.putExtra("profile_user_id", listMessage.get(position).getUid());
-                intent.putExtra("visit_user_id", uidVist);
-                ((Activity) context).startActivityForResult(intent, 0);
-            }
-        });
+//        textViewName.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(context, ProfileActivity.class);
+//                intent.putExtra("profile_user_id", listMessage.get(position).getUid());
+//                intent.putExtra("visit_user_id", uidVist);
+//                ((Activity) context).startActivityForResult(intent, 0);
+//            }
+//        });
+//        textViewPhone.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(context, ProfileActivity.class);
+//                intent.putExtra("profile_user_id", listMessage.get(position).getUid());
+//                intent.putExtra("visit_user_id", uidVist);
+//                ((Activity) context).startActivityForResult(intent, 0);
+//            }
+//        });
 
 
         return view;

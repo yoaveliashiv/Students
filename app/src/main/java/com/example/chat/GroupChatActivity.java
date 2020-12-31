@@ -4,9 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,6 +52,7 @@ import java.util.Calendar;
 //                        android:textSize="20sp" />
 public class GroupChatActivity extends AppCompatActivity {
     private ScrollView scrollView;
+    private Dialog d;
     private String nameGroup;
     private RegisterInformation2 registerInformation;
     private String uid;
@@ -96,6 +103,14 @@ public class GroupChatActivity extends AppCompatActivity {
 
         arrayAdapter = new MessageAdapter(GroupChatActivity.this, 0, 0, arrayListMessage, uid);
         listView.setAdapter(arrayAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                getSupportActionBar().setTitle("חיים");
+
+                dialogSendPrivateMessage(i);
+            }
+        });
         final Button button = findViewById(R.id.button_goin);
         if (!flag) button.setVisibility(View.GONE);
         button.setOnClickListener(new View.OnClickListener() {
@@ -112,6 +127,85 @@ public class GroupChatActivity extends AppCompatActivity {
 
     }
 
+    private void dialogSendPrivateMessage(final int i) {
+        d = new Dialog(this);
+        d.setContentView(R.layout.dialog_massge);
+        d.setTitle("Manage");
+
+        TextView textViewSendMassge = d.findViewById(R.id.textView_send_massage);
+        TextView textViewOpenProfile = d.findViewById(R.id.textView_propile_open);
+        TextView textViewSendWhatappsMassge = d.findViewById(R.id.textView_send_whatapps);
+        TextView textViewCopyPhone = d.findViewById(R.id.textView_copy_phone);
+        TextView textViewCopyMessage = d.findViewById(R.id.textView_copy_massage);
+        TextView textViewFeed = d.findViewById(R.id.textView_feed);
+
+        textViewOpenProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(GroupChatActivity.this, ProfileActivity.class);
+                intent.putExtra("profile_user_id", arrayListMessage.get(i).getUid());
+                intent.putExtra("visit_user_id", uid);
+                startActivity(intent);
+
+            }
+        });
+        textViewSendMassge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String uidVisit = arrayListMessage.get(i).getUid();
+                if (uid.equals(uidVisit)) {
+                    Toast.makeText(GroupChatActivity.this, "לא ניתן לשלוח הודעה לעצמך", Toast.LENGTH_SHORT).show();
+                    d.dismiss();
+                    return;
+                }
+                Intent intent = new Intent(GroupChatActivity.this, ChatActivity.class);
+                intent.putExtra("send_message_user_id", uid);
+                intent.putExtra("to_message_user_id", arrayListMessage.get(i).getUid());
+                startActivityForResult(intent, 0);
+            }
+        });
+        textViewSendWhatappsMassge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intentWhatsapp = new Intent(Intent.ACTION_VIEW);
+                String num = arrayListMessage.get(i).getPhone();
+                String url = "https://api.whatsapp.com/send?phone=" + num;
+                intentWhatsapp.setData(Uri.parse(url));
+                intentWhatsapp.setPackage("com.whatsapp");
+                startActivity(intentWhatsapp);
+            }
+        });
+        textViewCopyPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("1", arrayListMessage.get(i).getPhone());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(GroupChatActivity.this, "המספר הועתק", Toast.LENGTH_SHORT).show();
+                d.dismiss();
+            }
+        });
+        textViewCopyMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("1", arrayListMessage.get(i).getMessage());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(GroupChatActivity.this, "ההודעה הועתקה", Toast.LENGTH_SHORT).show();
+                d.dismiss();
+            }
+        });
+        textViewFeed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(GroupChatActivity.this, "העמוד בבניה", Toast.LENGTH_SHORT).show();
+                d.dismiss();
+            }
+        });
+        d.show();
+    }
+
     private void saveDatabase(String sms, final String nameGroup) {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -121,7 +215,7 @@ public class GroupChatActivity extends AppCompatActivity {
         simpleDateFormat = new SimpleDateFormat("HH:mm");
         String time = simpleDateFormat.format(calendar.getTime());
 
-       final Message message = new Message();
+        final Message message = new Message();
         message.setDate(date);
         message.setMessage(sms);
         message.setName(registerInformation.getName());
@@ -132,8 +226,8 @@ public class GroupChatActivity extends AppCompatActivity {
         databaseReference2.child(nameGroup).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int id=0;
-                if (snapshot.exists()) id = (int)snapshot.getChildrenCount();
+                int id = 0;
+                if (snapshot.exists()) id = (int) snapshot.getChildrenCount();
 
 
                 message.setId(id);
