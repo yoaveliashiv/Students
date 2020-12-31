@@ -134,7 +134,6 @@ public class ChatActivity extends AppCompatActivity {
         TextView textViewCopyPhone = d.findViewById(R.id.textView_copy_phone);
         TextView textViewCopyMessage = d.findViewById(R.id.textView_copy_massage);
         TextView textViewFeed = d.findViewById(R.id.textView_feed);
-        String uidVisit=arrayListMessage.get(i).getUid();
 
         textViewOpenProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -200,7 +199,10 @@ public class ChatActivity extends AppCompatActivity {
 
 
                 TextView textViewName = findViewById(R.id.textView_name_chat);
-                textViewName.setText(registerInformationRecive.getName());
+                String name=registerInformationRecive.getName();
+                if (name.isEmpty())
+                    name=registerInformationRecive.getEmail();
+                textViewName.setText(name);
                 if (!registerInformationRecive.getImageUrl().isEmpty()) {
                     Glide.with(ChatActivity.this)
                             .load(registerInformationRecive.getImageUrl())

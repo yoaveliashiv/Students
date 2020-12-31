@@ -1,5 +1,7 @@
 package com.example.chat;
 
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 

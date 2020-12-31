@@ -1,6 +1,11 @@
 package com.example.chat;
 
+import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.R;
 import com.google.firebase.database.DataSnapshot;
@@ -31,6 +37,8 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class LinksWhatsAppFragment extends Fragment {
+    private   View viewGroup;
+    private ArrayList<LinksToWhatsApp> arrayListLink;
     private TextView textViewNoFond;
     private EditText editTextSearch;
     private Button buttonSearch;
@@ -79,7 +87,7 @@ public class LinksWhatsAppFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View viewGroup = inflater.inflate(R.layout.fragment_links_whats_app, container, false);
+         viewGroup = inflater.inflate(R.layout.fragment_links_whats_app, container, false);
         listView = (ListView) viewGroup.findViewById(R.id.list_view);
         textViewNoFond = viewGroup.findViewById(R.id.textView_no_found);
         editTextSearch = viewGroup.findViewById(R.id.editText_search);
@@ -100,9 +108,61 @@ public class LinksWhatsAppFragment extends Fragment {
                 textViewNoFond.setVisibility(View.GONE);
             }
         });
-
+listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        dialogJoinWhatappsGrop(i);
+    }
+});
         // Inflate the layout for this fragment
         return viewGroup;
+
+    }
+
+    private void dialogJoinWhatappsGrop(final int i) {
+        final Dialog d = new Dialog(getContext());
+        d.setContentView(R.layout.dialog_links);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        TextView textViewJoinGroup = d.findViewById(R.id.textView_go_whatapps);
+        TextView textViewFeed = d.findViewById(R.id.textView_feed);
+
+        TextView textViewCopyLink = d.findViewById(R.id.textView_copy_link);
+
+        textViewJoinGroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intentWhatsapp = new Intent(Intent.ACTION_VIEW);
+                String link =arrayListLink.get(i).getLink();
+                String url = link;
+                intentWhatsapp.setData(Uri.parse(url));
+               // intentWhatsapp.setPackage("com.whatsapp");
+                startActivity(intentWhatsapp);
+
+            }
+        });
+
+
+        textViewCopyLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("1",  arrayListLink.get(i).getLink());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(getContext(), "הלינק הועתק", Toast.LENGTH_SHORT).show();
+                d.dismiss();
+            }
+        });
+        textViewFeed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getContext(), "העמוד בבניה", Toast.LENGTH_SHORT).show();
+                d.dismiss();
+            }
+        });
+        d.show();
 
     }
 
@@ -113,7 +173,7 @@ public class LinksWhatsAppFragment extends Fragment {
             editTextSearch.requestFocus();
             return;
         }
-        final ArrayList<LinksToWhatsApp> arrayListLink = new ArrayList<>();
+        arrayListLink = new ArrayList<>();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("LinksToWhatsApp");
 
         final LinksToWhatsAppAdapter linksToWhatsAppAdapter = new LinksToWhatsAppAdapter(getContext(), 0, 0, arrayListLink);
@@ -151,7 +211,7 @@ public class LinksWhatsAppFragment extends Fragment {
     }
 
     private void allLinks() {
-        final ArrayList<LinksToWhatsApp> arrayListLink = new ArrayList<>();
+         arrayListLink = new ArrayList<>();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("LinksToWhatsApp");
 
         final LinksToWhatsAppAdapter linksToWhatsAppAdapter = new LinksToWhatsAppAdapter(getContext(), 0, 0, arrayListLink);
