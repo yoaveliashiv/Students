@@ -81,13 +81,14 @@
         <ImageButton
             android:id="@+id/imageButton_send_pick"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_weight="1"
             app:srcCompat="@drawable/send_files" />
 
+
         <EditText
             android:id="@+id/editTextMssege"
-            android:layout_width="320dp"
+            android:layout_width="290dp"
             android:layout_height="wrap_content"
             android:hint="כתוב כאן הודעה..."
             android:padding="17dp" />

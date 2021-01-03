@@ -52,7 +52,7 @@ public class ChatActivity extends AppCompatActivity {
     private static final int GallaryPick = 1;
     private RegisterInformation2 registerInformationSend;
     private RegisterInformation2 registerInformationRecive;
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReferenceOn;
     private ArrayList<Message> arrayListMessage;
     private MessageAdapter arrayAdapter;
     private EditText editText;
@@ -60,6 +60,8 @@ public class ChatActivity extends AppCompatActivity {
     private String uidSend;
     private String uidRecive;
     private CircleImageView circleImageView;
+    private Boolean flagDataChange=true;
+    private int k=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +73,7 @@ public class ChatActivity extends AppCompatActivity {
         uidRecive = getIntent().getExtras().getString("to_message_user_id");
 
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("Contacts").child(uidSend).child(uidRecive);
+        databaseReferenceOn = FirebaseDatabase.getInstance().getReference("Contacts").child(uidSend).child(uidRecive);
         ImageButton imageButtonPic = findViewById(R.id.imageButton_send_pick);
         ImageButton imageButtonText = findViewById(R.id.imageButtonSendMassege);
         editText = findViewById(R.id.editTextMssege);
@@ -120,6 +122,44 @@ public class ChatActivity extends AppCompatActivity {
                 intent.putExtra("profile_user_id", uidRecive);
                 intent.putExtra("visit_user_id", uidSend);
                 startActivity(intent);
+            }
+        });
+        add();
+    }
+
+    private void add() {
+        databaseReferenceOn.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if (snapshot.exists()) {
+                    k++;
+                    editText.setText("l"+k);
+                    displayMessage(snapshot);
+                }
+            }
+
+            @Override
+
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                //                if (snapshot.exists()) {
+//                    displayMessage(snapshot);
+//                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }
@@ -315,36 +355,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        databaseReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if (snapshot.exists()) {
-                    displayMessage(snapshot);
-                }
-            }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if (snapshot.exists()) {
-                    displayMessage(snapshot);
-                }
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
     }
 
     private void displayMessage(DataSnapshot snapshot) {
@@ -511,7 +522,7 @@ public class ChatActivity extends AppCompatActivity {
                                     public void onSuccess(Uri uri) {
 
 
-                                        saveDatabase(uri.toString(), d);
+                                        saveDatabase(uri.toString(), "");
 
                                     }
                                 });
@@ -532,7 +543,7 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    private void saveDatabase(String uri, final Dialog d) {
+    private void saveDatabase(String uri,String a) {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         String date = simpleDateFormat.format(calendar.getTime());
@@ -553,25 +564,28 @@ public class ChatActivity extends AppCompatActivity {
         message.setUid(uidSend);
         message.setDeviceToken(registerInformationRecive.getDeviceToken());
         message.setTime(time);
-        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("Contacts")
+        final DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("Contacts")
                 .child(uidSend).child(uidRecive);
         databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int num = 0;
-                if (snapshot.exists()) num = (int) snapshot.getChildrenCount();
-                message.setId(num);
-                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Contacts")
-                        .child(uidSend).child(uidRecive).push();
-                DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Contacts")
-                        .child(uidRecive).child(uidSend).push();
+                    int num = 0;
+                    if (snapshot.exists()) num = (int) snapshot.getChildrenCount();
+                    message.setId(num);
+                    DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Contacts")
+                            .child(uidSend).child(uidRecive).push();
+                    DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Contacts")
+                            .child(uidRecive).child(uidSend).push();
 
-                databaseReference1.setValue(message);
-                databaseReference2.setValue(message);
-                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("Notifications")
-                        .push();
+                    databaseReference1.setValue(message);
+                    databaseReference2.setValue(message);
+                    DatabaseReference databaseReference4 = FirebaseDatabase.getInstance().getReference("Notifications")
+                            .push();
 
-                databaseReference3.setValue(message);
+                    databaseReference4.setValue(message);
+
+                    databaseReference3.removeEventListener(this);
+
             }
 
             @Override
