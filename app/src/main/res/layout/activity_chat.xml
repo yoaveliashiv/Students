@@ -78,6 +78,12 @@
         android:layout_marginTop="20dp"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/imageButton_send_pick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/send_files" />
 
         <EditText
             android:id="@+id/editTextMssege"
@@ -91,12 +97,9 @@
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:src="@drawable/send_message" />
-        <ImageView
-        android:id="@+id/image_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/profile_image"
-        android:visibility="gone"/>
+
+
+
     </LinearLayout>
 
 </RelativeLayout>

@@ -46,6 +46,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.concurrent.TimeUnit;
 
 import com.example.R;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.installations.InstallationTokenResult;
 import com.google.firebase.storage.FirebaseStorage;
@@ -68,7 +69,7 @@ public class MainActivityRegister2 extends AppCompatActivity {
     private String mVerificationId;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallBacks;
     private String mobile;
-private   String deviceToken;
+    private String deviceToken;
     private CheckBox checkBox;
     private CheckBox checkBoxTerms;
 
@@ -162,6 +163,7 @@ private   String deviceToken;
                         if (task.isSuccessful()) {
                             final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             deviceToken = "";
+                            Log.d(TAG, "createUserWithEmail:success");
                             FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<InstallationTokenResult> task) {
@@ -336,14 +338,14 @@ private   String deviceToken;
                         if (task.isSuccessful()) {
 
                             final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                             deviceToken = "";
-                            FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<InstallationTokenResult> task) {
-                                   deviceToken = task.getResult().getToken();
-                                }
-                            });
-
+                            deviceToken = "";
+//                            FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<InstallationTokenResult> task) {
+//                                    deviceToken = task.getResult().getToken();
+//                                }
+//                            });
+deviceToken=FirebaseInstanceId.getInstance().getToken();
                             registerInformation = null;
                             mobile = mobile.substring(1);
                             DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference("RegisterInformation");
@@ -494,7 +496,7 @@ private   String deviceToken;
             return;
         }
         StorageReference riversRef = FirebaseStorage.getInstance().getReference()
-                .child(registerInformation.getEmail() + "/image");
+                .child("profileImage/"+registerInformation.getEmail()+".jpg");
         riversRef.putFile(uriImage)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override

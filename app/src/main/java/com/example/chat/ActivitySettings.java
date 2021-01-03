@@ -43,25 +43,26 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class ActivitySettings extends AppCompatActivity {
-private Uri uriImage=null;
-   private ImageView imageView;
-   private RegisterInformation2 registerInformation;
-   private static final int GallaryPick=1;
+    private Uri uriImage = null;
+    private ImageView imageView;
+    private static final int GallaryPick = 1;
+    private RegisterInformation2 registerInformation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        imageView=findViewById(R.id.profile_image);
+        imageView = findViewById(R.id.profile_image);
         getSupportActionBar().setTitle("הגדרות חשבון");
-       
+
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentGallary=new Intent();
+                Intent intentGallary = new Intent();
                 intentGallary.setAction(Intent.ACTION_GET_CONTENT);
                 intentGallary.setType("image/*");
-                startActivityForResult(intentGallary,GallaryPick);
-              //  openImage();
+                startActivityForResult(intentGallary, GallaryPick);
+                //  openImage();
             }
         });
         final EditText editTextName = findViewById(R.id.edit_name);
@@ -71,14 +72,14 @@ private Uri uriImage=null;
         databaseReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                 registerInformation=new RegisterInformation2();
-                registerInformation=snapshot.getValue(RegisterInformation2.class);
-                    editTextName.setText(registerInformation.getName());
-                    if(registerInformation.getImageUrl().length()>0) {
-                        Glide.with(ActivitySettings.this)
-                                .load(registerInformation.getImageUrl())
-                                .into(imageView);
-                    }
+                registerInformation = new RegisterInformation2();
+                registerInformation = snapshot.getValue(RegisterInformation2.class);
+                editTextName.setText(registerInformation.getName());
+                if (registerInformation.getImageUrl().length() > 0) {
+                    Glide.with(ActivitySettings.this)
+                            .load(registerInformation.getImageUrl())
+                            .into(imageView);
+                }
 
             }
 
@@ -125,7 +126,7 @@ private Uri uriImage=null;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-if(requestCode== GallaryPick&&resultCode==RESULT_OK &&data!=null){
+        if (requestCode == GallaryPick && resultCode == RESULT_OK && data != null) {
 //    CropImage.activity()
 //            .setGuidelines(CropImageView.Guidelines.ON)
 //
@@ -137,9 +138,9 @@ if(requestCode== GallaryPick&&resultCode==RESULT_OK &&data!=null){
 //            imageView.setImageURI(uriImage);
 //      //  }
 //    }
-    uriImage = data.getData();
-    imageView.setImageURI(uriImage);
-}
+            uriImage = data.getData();
+            imageView.setImageURI(uriImage);
+        }
     }
     //    @Override
 //    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
@@ -157,7 +158,7 @@ if(requestCode== GallaryPick&&resultCode==RESULT_OK &&data!=null){
 //    }
 
     public void fireBaseImage(final String name) {
-        if (uriImage == null){
+        if (uriImage == null) {
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
@@ -169,7 +170,7 @@ if(requestCode== GallaryPick&&resultCode==RESULT_OK &&data!=null){
         }
 
         StorageReference riversRef = FirebaseStorage.getInstance().getReference()
-                .child(registerInformation.getEmail() + "/image");
+                .child("profileImage/"+registerInformation.getEmail()+".jpg");
         riversRef.putFile(uriImage)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override

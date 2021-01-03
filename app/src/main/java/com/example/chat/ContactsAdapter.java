@@ -76,12 +76,10 @@ public class ContactsAdapter extends ArrayAdapter<Contact> {
 
 
         String name = contact.getMessage().getName();
-        if (name.isEmpty())
-            name = contact.getMessage().getPhone();
+
         TextView textViewMessage = (TextView) view.findViewById(R.id.textView_message_list);
         textViewMessage.setText(name + ": " + contact.getMessage().getMessage());
-        if (name.isEmpty())
-            textViewMessage.setText("");
+
         TextView textViewTime = (TextView) view.findViewById(R.id.textView_time);
 
 if(contact.getNotifications()>0){

@@ -4,13 +4,17 @@ import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
 public class Message {
+
     private String message="";
+    private String imageMessage="";
     private String name="";
     private String phone="";
     private String date="";
     private String time="";
     private String uid="";
     private int id=0;
+    private String deviceToken="";
+
     public Message() {
     }
     public Message(Message message) {
@@ -77,5 +81,21 @@ public class Message {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
+
+    public String getImageMessage() {
+        return imageMessage;
+    }
+
+    public void setImageMessage(String imageMessage) {
+        this.imageMessage = imageMessage;
     }
 }

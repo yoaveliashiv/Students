@@ -21,6 +21,8 @@ public class RegisterInformation2 {
     private String idFirebase = "";
     private  String deviceToken = "";
 
+    private int idImageSend = 0;
+
     private int id = -1;
     private String imageUrl = "";
 
@@ -132,5 +134,13 @@ public class RegisterInformation2 {
 
     public void setDeviceToken(String deviceToken) {
         this.deviceToken = deviceToken;
+    }
+
+    public int getIdImageSend() {
+        return idImageSend;
+    }
+
+    public void setIdImageSend(int idImageSend) {
+        this.idImageSend = idImageSend;
     }
 }

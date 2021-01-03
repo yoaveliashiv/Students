@@ -3,22 +3,17 @@ package com.example.chat;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 
-import android.app.Activity;
+import android.Manifest;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -30,21 +25,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
-import com.example.Hikers.MainActivityManagementCardsApprov2;
 import com.example.Hikers.RegisterInformation2;
 import com.example.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,8 +45,11 @@ import java.util.Calendar;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ChatActivity extends AppCompatActivity {
 
+public class ChatActivity extends AppCompatActivity {
+    private Uri uriImage = null;
+    private ImageView imageView;
+    private static final int GallaryPick = 1;
     private RegisterInformation2 registerInformationSend;
     private RegisterInformation2 registerInformationRecive;
     private DatabaseReference databaseReference;
@@ -76,13 +72,19 @@ public class ChatActivity extends AppCompatActivity {
 
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Contacts").child(uidSend).child(uidRecive);
-
-        ImageButton imageButton = findViewById(R.id.imageButtonSendMassege);
+        ImageButton imageButtonPic = findViewById(R.id.imageButton_send_pick);
+        ImageButton imageButtonText = findViewById(R.id.imageButtonSendMassege);
         editText = findViewById(R.id.editTextMssege);
 
         getUserReciveInfo();
         getUserSendInfo();
-        imageButton.setOnClickListener(new View.OnClickListener() {
+        imageButtonPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openImage();
+            }
+        });
+        imageButtonText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String sms = editText.getText().toString();
@@ -122,8 +124,9 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+
     private void dialodSendPrivateMassege(final int i) {
-       final Dialog d = new Dialog(this);
+        final Dialog d = new Dialog(this);
         d.setContentView(R.layout.dialog_massge);
         d.setTitle("Manage");
 
@@ -157,7 +160,7 @@ public class ChatActivity extends AppCompatActivity {
 //                }
                 Intent intentWhatsapp = new Intent(Intent.ACTION_VIEW);
                 String num = arrayListMessage.get(i).getPhone();
-                String url = "https://api.whatsapp.com/send?phone=" + num ;
+                String url = "https://api.whatsapp.com/send?phone=" + num;
                 intentWhatsapp.setData(Uri.parse(url));
                 intentWhatsapp.setPackage("com.whatsapp");
                 startActivity(intentWhatsapp);
@@ -167,7 +170,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("1",  arrayListMessage.get(i).getPhone());
+                ClipData clip = ClipData.newPlainText("1", arrayListMessage.get(i).getPhone());
                 clipboard.setPrimaryClip(clip);
                 Toast.makeText(ChatActivity.this, "המספר הועתק", Toast.LENGTH_SHORT).show();
                 d.dismiss();
@@ -177,7 +180,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("1",  arrayListMessage.get(i).getMessage());
+                ClipData clip = ClipData.newPlainText("1", arrayListMessage.get(i).getMessage());
                 clipboard.setPrimaryClip(clip);
                 Toast.makeText(ChatActivity.this, "ההודעה הועתקה", Toast.LENGTH_SHORT).show();
                 d.dismiss();
@@ -199,9 +202,9 @@ public class ChatActivity extends AppCompatActivity {
 
 
                 TextView textViewName = findViewById(R.id.textView_name_chat);
-                String name=registerInformationRecive.getName();
+                String name = registerInformationRecive.getName();
                 if (name.isEmpty())
-                    name=registerInformationRecive.getEmail();
+                    name = registerInformationRecive.getEmail();
                 textViewName.setText(name);
                 if (!registerInformationRecive.getImageUrl().isEmpty()) {
                     Glide.with(ChatActivity.this)
@@ -249,9 +252,14 @@ public class ChatActivity extends AppCompatActivity {
         final Message message = new Message();
         message.setDate(date);
         message.setMessage(sms);
-        message.setName(registerInformationSend.getName());
+        if (!registerInformationSend.getName().isEmpty())
+            message.setName(registerInformationSend.getName());
+        else
+            message.setName(registerInformationSend.getEmail());
+
         message.setPhone(registerInformationSend.getEmail());
         message.setUid(uidSend);
+        message.setDeviceToken(registerInformationRecive.getDeviceToken());
         message.setTime(time);
         DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("Contacts")
                 .child(uidSend).child(uidRecive);
@@ -268,6 +276,10 @@ public class ChatActivity extends AppCompatActivity {
 
                 databaseReference1.setValue(message);
                 databaseReference2.setValue(message);
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("Notifications")
+                        .push();
+
+                databaseReference3.setValue(message);
             }
 
             @Override
@@ -279,21 +291,6 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-//    private String getPhoneUser() {
-//        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-//        String email = "";
-//        if (firebaseUser != null) {
-//            try {
-//                if (!firebaseUser.getEmail().toString().isEmpty())
-//                    email = firebaseUser.getEmail().toString();
-//                else email = firebaseUser.getPhoneNumber().toString();
-//            } catch (RuntimeException e) {
-//                email = firebaseUser.getPhoneNumber().toString();
-//            }
-//
-//        }
-//        return email;
-//    }
 
     private void getUserSendInfo() {
 
@@ -430,5 +427,159 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void openImage() {
+
+
+        try {
+            if (ActivityCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            } else {
+                Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(pickPhoto, 1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GallaryPick && resultCode == RESULT_OK && data != null) {
+//    CropImage.activity()
+//            .setGuidelines(CropImageView.Guidelines.ON)
+//
+//            .start(this);
+//    if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+//        CropImage.ActivityResult result = CropImage.getActivityResult(data);
+//       // if(resultCode==RESULT_OK) {
+//            uriImage = result.getUri();
+//            imageView.setImageURI(uriImage);
+//      //  }
+//    }
+            uriImage = data.getData();
+            dialogSendImage();
+        }
+    }
+
+    private void dialogSendImage() {
+        final Dialog d = new Dialog(ChatActivity.this);
+        d.setContentView(R.layout.dialog_send_imag);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        Button buttonSend = d.findViewById(R.id.button_send_image);
+        Button buttonExsit = d.findViewById(R.id.button_exsit);
+        ImageView imageButton = d.findViewById(R.id.imageButton_change_image);
+
+        Glide.with(ChatActivity.this)
+                .load(uriImage)
+                .into(imageButton);
+        Boolean flag=true;
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openImage();
+                d.cancel();
+                return;
+            }
+        });
+        buttonExsit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.cancel();
+            }
+        });
+        buttonSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.dismiss();
+                StorageReference riversRef = FirebaseStorage.getInstance().getReference()
+                        .child("sendMessageImage/" + registerInformationSend.getEmail() + "/" +
+                                registerInformationRecive.getEmail() + "/image" + registerInformationSend.getIdImageSend() + ".jpg");
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2").child("idImageSend");
+                databaseReference.setValue(registerInformationSend.getIdImageSend() + 1);
+                riversRef.putFile(uriImage)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+
+
+                                        saveDatabase(uri.toString(), d);
+
+                                    }
+                                });
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                Toast.makeText(ChatActivity.this, "תמונה לא נשמרה", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+            }
+        });
+
+
+        d.show();
+
+    }
+
+    private void saveDatabase(String uri, final Dialog d) {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String date = simpleDateFormat.format(calendar.getTime());
+
+        calendar = Calendar.getInstance();
+        simpleDateFormat = new SimpleDateFormat("HH:mm");
+        String time = simpleDateFormat.format(calendar.getTime());
+
+        final Message message = new Message();
+        message.setDate(date);
+        message.setImageMessage(uri);
+        if (!registerInformationSend.getName().isEmpty())
+            message.setName(registerInformationSend.getName());
+        else
+            message.setName(registerInformationSend.getEmail());
+
+        message.setPhone(registerInformationSend.getEmail());
+        message.setUid(uidSend);
+        message.setDeviceToken(registerInformationRecive.getDeviceToken());
+        message.setTime(time);
+        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("Contacts")
+                .child(uidSend).child(uidRecive);
+        databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int num = 0;
+                if (snapshot.exists()) num = (int) snapshot.getChildrenCount();
+                message.setId(num);
+                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Contacts")
+                        .child(uidSend).child(uidRecive).push();
+                DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Contacts")
+                        .child(uidRecive).child(uidSend).push();
+
+                databaseReference1.setValue(message);
+                databaseReference2.setValue(message);
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("Notifications")
+                        .push();
+
+                databaseReference3.setValue(message);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
     }
 }
