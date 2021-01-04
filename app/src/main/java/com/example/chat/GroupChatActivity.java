@@ -11,6 +11,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,6 +27,7 @@ import android.widget.Toast;
 
 import com.example.Hikers.MainActivityPageUser2;
 import com.example.Hikers.RegisterInformation2;
+import com.example.Hikers.RegisterLoginActivity;
 import com.example.R;
 import com.example.students.MainActivityRegisterTutor;
 import com.google.firebase.auth.FirebaseAuth;
@@ -363,5 +367,52 @@ onStart1();
 
             }
         });
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater menuInflater = getMenuInflater();
+
+        menuInflater.inflate(R.menu.menu_chat, menu);
+        return true;
+
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.refresh);
+        item.setTitle("לדף הראשי");
+        return super.onPrepareOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Intent intent2;
+
+
+        switch (item.getItemId()) {
+
+            case R.id.mainIconMenu:
+                intent2 = new Intent(GroupChatActivity.this, MainActivity3.class);
+                startActivity(intent2);
+                return true;
+
+            case R.id.settingsMenu:
+                intent2 = new Intent(GroupChatActivity.this, ActivitySettings.class);
+                intent2.putExtra("flag", false);
+                startActivity(intent2);
+                return true;
+            case R.id.logout:
+                FirebaseAuth.getInstance().signOut();
+                intent2 = new Intent(GroupChatActivity.this, RegisterLoginActivity.class);
+                startActivity(intent2);
+                return true;
+            case R.id.refresh:
+
+
+                intent2 = new Intent(GroupChatActivity.this, MainActivity3.class);
+                startActivity(intent2);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

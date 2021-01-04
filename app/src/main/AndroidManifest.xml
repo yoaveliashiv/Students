@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".chat.Management"></activity>
+        <activity android:name=".chat.Management" />
         <activity android:name=".chat.ChatActivity" />
         <activity android:name=".chat.ProfileActivity" />
         <activity android:name=".chat.GroupChatActivity" />
@@ -39,7 +39,8 @@
         <activity android:name=".students.MainActivityRegisterTutor" />
         <activity android:name=".students.MainActivityRegister" />
         <activity android:name=".students.MainActivity1" />
-        <activity android:name=".Hikers.MainActivityRegister2">
+        <activity android:name=".Hikers.MainActivityRegister2"/>
+        <activity android:name=".Hikers.RegisterLoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

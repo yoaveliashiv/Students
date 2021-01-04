@@ -2,6 +2,7 @@ package com.example.chat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -13,7 +14,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -23,12 +28,16 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
+import com.example.Hikers.MainActivityRegister2;
 import com.example.Hikers.RegisterInformation2;
+import com.example.Hikers.RegisterLoginActivity;
 import com.example.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -63,6 +72,7 @@ public class ChatActivity extends AppCompatActivity {
     private Boolean flagDataChange=true;
     private int k=0;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_chat);
@@ -125,7 +135,9 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
         add();
+        onCreateOptionsMenu1();
         super.onCreate(savedInstanceState);
+
     }
 
     private void add() {
@@ -512,7 +524,8 @@ public class ChatActivity extends AppCompatActivity {
                 StorageReference riversRef = FirebaseStorage.getInstance().getReference()
                         .child("sendMessageImage/" + registerInformationSend.getEmail() + "/" +
                                 registerInformationRecive.getEmail() + "/image" + registerInformationSend.getIdImageSend() + ".jpg");
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2").child("idImageSend");
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2").child(uidSend)
+                        .child("idImageSend");
                 databaseReference.setValue(registerInformationSend.getIdImageSend() + 1);
                 riversRef.putFile(uriImage)
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -597,4 +610,51 @@ public class ChatActivity extends AppCompatActivity {
 
 
     }
+
+
+    public boolean onCreateOptionsMenu1() {
+//
+        androidx.appcompat.widget.Toolbar toolbar= (androidx.appcompat.widget.Toolbar) findViewById(R.id.app_bar);
+        toolbar.getMenu().getItem(2).setTitle("לדף הראשי");
+        toolbar.setOnMenuItemClickListener(new androidx.appcompat.widget.Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent intent2;
+
+
+                switch (item.getItemId()) {
+
+                    case R.id.mainIconMenu:
+                        intent2 = new Intent(ChatActivity.this, MainActivity3.class);
+                        startActivity(intent2);
+                        return true;
+
+                    case R.id.settingsMenu:
+                        intent2 = new Intent(ChatActivity.this, ActivitySettings.class);
+                        intent2.putExtra("flag", false);
+                        startActivity(intent2);
+                        return true;
+                    case R.id.logout:
+                        FirebaseAuth.getInstance().signOut();
+                        intent2 = new Intent(ChatActivity.this, RegisterLoginActivity.class);
+                        startActivity(intent2);
+                        return true;
+                    case R.id.refresh:
+
+
+                        intent2 = new Intent(ChatActivity.this, MainActivity3.class);
+                        startActivity(intent2);
+                        return true;
+                    default:
+                        return true;
+                }
+            }
+
+        });
+
+        return true;
+
+    }
+
+
 }

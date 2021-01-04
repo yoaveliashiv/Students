@@ -70,12 +70,11 @@ private TabsAccessorAdapter tabsAccessorAdapter;
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-       // if (flagConnected) {
+
             MenuInflater menuInflater = getMenuInflater();
             menuInflater.inflate(R.menu.menu_chat, menu);
             return true;
-     //   }
-     //   return false;
+
     }
 
     @Override
@@ -90,7 +89,8 @@ private TabsAccessorAdapter tabsAccessorAdapter;
 
             case R.id.settingsMenu:
                     intent2 = new Intent(MainActivity3.this, ActivitySettings.class);
-                    startActivity(intent2);
+                intent2.putExtra("flag", false);
+                startActivity(intent2);
                 return true;
             case R.id.logout:
                 FirebaseAuth.getInstance().signOut();

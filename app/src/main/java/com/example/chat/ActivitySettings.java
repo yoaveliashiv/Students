@@ -6,12 +6,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.Dialog;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +28,7 @@ import com.bumptech.glide.Glide;
 import com.example.Hikers.MainActivity2;
 import com.example.Hikers.MainActivityRegister2;
 import com.example.Hikers.RegisterInformation2;
+import com.example.Hikers.RegisterLoginActivity;
 import com.example.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -47,11 +53,14 @@ public class ActivitySettings extends AppCompatActivity {
     private ImageView imageView;
     private static final int GallaryPick = 1;
     private RegisterInformation2 registerInformation;
+    private String uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        Boolean flag = getIntent().getExtras().getBoolean("flag");
         imageView = findViewById(R.id.profile_image);
         getSupportActionBar().setTitle("הגדרות חשבון");
 
@@ -67,7 +76,7 @@ public class ActivitySettings extends AppCompatActivity {
         });
         final EditText editTextName = findViewById(R.id.edit_name);
 
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
         databaseReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -88,8 +97,8 @@ public class ActivitySettings extends AppCompatActivity {
 
             }
         });
-        Button button = findViewById(R.id.button_set_settings);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button buttonAdd = findViewById(R.id.button_set_settings);
+        buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String name = editTextName.getText().toString();
@@ -103,6 +112,127 @@ public class ActivitySettings extends AppCompatActivity {
 
             }
         });
+        Button buttonDelete = findViewById(R.id.button_delete_usur);
+        buttonDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialodDelete();
+            }
+        });
+
+        if (flag) {
+            buttonDelete.setVisibility(View.GONE);
+            Button buttonSkip = findViewById(R.id.button_skip);
+            buttonSkip.setVisibility(View.VISIBLE);
+            buttonSkip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(ActivitySettings.this, MainActivity3.class);
+                    startActivity(intent);
+
+                }
+            });
+        }
+    }
+
+    private void dialodDelete() {
+        final Dialog d = new Dialog(ActivitySettings.this);
+        d.setContentView(R.layout.dialog_delete);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        Button buttonDeleteDialog = d.findViewById(R.id.button_delete_dialog);
+        Button buttonNodelete = d.findViewById(R.id.button_exit_delete);
+        buttonNodelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.cancel();
+                return;
+            }
+        });
+        buttonDeleteDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                        .getReference("RegisterInformation2").child(uid);
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        snapshot.getRef().removeValue();
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance()
+                        .getReference("Contacts").child(uid);
+                databaseReference1.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        snapshot.getRef().removeValue();
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+                DatabaseReference databaseReference2 = FirebaseDatabase.getInstance()
+                        .getReference("NotificationsIdSeeLast").child(uid);
+
+                databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        snapshot.getRef().removeValue();
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                        .getReference("MyGroups").child(uid);
+                databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        snapshot.getRef().removeValue();
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+                FirebaseAuth.getInstance().getCurrentUser().delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(ActivitySettings.this, "החשבון נמחק בהצלחה", Toast.LENGTH_LONG).show();
+
+                        Intent intent = new Intent(ActivitySettings.this, RegisterLoginActivity.class);
+                        startActivity(intent);
+                        d.cancel();
+                        finish();
+                    }
+                });
+
+            }
+
+        });
+
+        d.show();
 
     }
 
@@ -170,7 +300,7 @@ public class ActivitySettings extends AppCompatActivity {
         }
 
         StorageReference riversRef = FirebaseStorage.getInstance().getReference()
-                .child("profileImage/"+registerInformation.getEmail()+".jpg");
+                .child("profileImage/" + registerInformation.getEmail() + ".jpg");
         riversRef.putFile(uriImage)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -199,5 +329,55 @@ public class ActivitySettings extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater menuInflater = getMenuInflater();
+
+        menuInflater.inflate(R.menu.menu_chat, menu);
+        return true;
+
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.refresh);
+        item.setTitle("לדף הראשי");
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Intent intent2;
+
+
+        switch (item.getItemId()) {
+
+            case R.id.mainIconMenu:
+                intent2 = new Intent(ActivitySettings.this, MainActivity3.class);
+                startActivity(intent2);
+                return true;
+
+            case R.id.settingsMenu:
+                intent2 = new Intent(ActivitySettings.this, ActivitySettings.class);
+                intent2.putExtra("flag", false);
+                startActivity(intent2);
+                return true;
+            case R.id.logout:
+                FirebaseAuth.getInstance().signOut();
+                intent2 = new Intent(ActivitySettings.this, RegisterLoginActivity.class);
+                startActivity(intent2);
+                return true;
+            case R.id.refresh:
+
+
+                intent2 = new Intent(ActivitySettings.this, MainActivity3.class);
+                startActivity(intent2);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

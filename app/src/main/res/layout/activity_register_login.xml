@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".Hikers.RegisterLoginActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/login_image"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+
+                android:src="@drawable/signup_photo" />
+
+            <EditText
+                android:id="@+id/editText_login_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/login_image"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="17dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="17dp"
+                android:background="@drawable/common_google_signin_btn_text_light_normal_background"
+                android:drawableStart="@drawable/phone"
+                android:hint="פלאפון..."
+                android:inputType="number"
+                android:padding="4dp" />
+
+            <EditText
+                android:id="@+id/editText_login_pass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/editText_login_phone"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="17dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="17dp"
+                android:background="@drawable/common_google_signin_btn_text_light_normal_background"
+                android:drawableStart="@drawable/password"
+                android:hint="סיסמא..."
+                android:inputType="number"
+                android:padding="4dp"
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/button_send_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/editText_login_pass"
+                android:layout_marginLeft="19dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="19dp"
+                android:text="שלח קוד אישור"
+                android:textAllCaps="false"
+                android:textSize="24sp"
+
+                />
+
+            <Button
+                android:id="@+id/button_verifi_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/button_send_code"
+                android:layout_marginLeft="19dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="19dp"
+                android:text="אשר"
+                android:textAllCaps="false"
+                android:textSize="24sp"
+                android:visibility="gone"/>
+
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>
