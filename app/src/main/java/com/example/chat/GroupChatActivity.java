@@ -124,7 +124,7 @@ public class GroupChatActivity extends AppCompatActivity {
 
             }
         });
-
+onStart1();
     }
 
     private void dialogSendPrivateMessage(final int i) {
@@ -279,9 +279,9 @@ public class GroupChatActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStart() {//TODO:
-        super.onStart();
+
+    protected void onStart1() {//TODO:
+
 
         databaseReference.addChildEventListener(new ChildEventListener() {
             @Override

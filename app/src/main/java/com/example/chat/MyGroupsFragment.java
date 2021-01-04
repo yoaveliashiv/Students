@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -13,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.example.Hikers.RegisterInformation2;
 import com.example.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,8 +53,15 @@ public class MyGroupsFragment extends Fragment {
     private GroupsAdapter contactsAdapter;
     private Message messageContact = new Message();
     private View viewContacts;
-    private View viewGroup;
-
+    private TextView textViewNoFond;
+    private TextView textViewFrom;
+    boolean flagSerch = false;
+    private String groupSearch;
+    private EditText editTextSearch;
+    private Button buttonSearch;
+    private Button buttonSeeAllGroups;
+    private String uid;
+    private ListView listView;
 
     public MyGroupsFragment() {
         // Required empty public constructor
@@ -87,39 +99,15 @@ public class MyGroupsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         viewContacts = inflater.inflate(R.layout.fragment_my_groups, container, false);
-        final ListView listView = (ListView) viewContacts.findViewById(R.id.list_view);
+        listView = (ListView) viewContacts.findViewById(R.id.list_view);
         contactArrayList = new ArrayList<>();
         contactsAdapter = new GroupsAdapter(getContext(), 0, 0, contactArrayList);
-
+        secrchId();
         listView.setAdapter(contactsAdapter);
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("MyGroups");
 
-        final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-        databaseReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-if(!snapshot.exists())return;
-
-                ArrayList<String> arrayList = new ArrayList<>();
-                for (DataSnapshot child : snapshot.getChildren()) {
-
-                    String uidContact = child.getKey();
-                    arrayList.add(uidContact);
-
-                }
-                addContact(arrayList, uid);
-
-//  contactsAdapter.notifyDataSetChanged();
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        seeAllMyGroups();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -136,34 +124,123 @@ if(!snapshot.exists())return;
         return viewContacts;
     }
 
+    private void seeAllMyGroups() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups");
+
+        databaseReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) return;
+
+                ArrayList<String> arrayList = new ArrayList<>();
+                for (DataSnapshot child : snapshot.getChildren()) {
+
+                    String uidContact = child.getKey();
+                    if (flagSerch) {
+                        if (uidContact.contains(groupSearch))
+                            arrayList.add(uidContact);
+                    } else {
+                        arrayList.add(uidContact);
+                    }
+
+                }
+                if (flagSerch) {
+                    if (arrayList.size() == 0) {
+                        textViewNoFond.setVisibility(View.VISIBLE);
+                        contactsAdapter.notifyDataSetChanged();
+                    } else textViewNoFond.setVisibility(View.GONE);
+                }
+                if (arrayList.size() > 0) addContact(arrayList, uid);
+
+//  contactsAdapter.notifyDataSetChanged();
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void secrchId() {
+        textViewFrom = viewContacts.findViewById(R.id.textView_from);
+        textViewNoFond = viewContacts.findViewById(R.id.textView_no_found);
+        editTextSearch = viewContacts.findViewById(R.id.editText_search);
+        buttonSearch = viewContacts.findViewById(R.id.button_search);
+        buttonSeeAllGroups = viewContacts.findViewById(R.id.button_all_groups);
+        buttonSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (buttonSearch.getText().equals("חיפוש")) {
+                    editTextSearch.setVisibility(View.VISIBLE);
+                    buttonSeeAllGroups.setVisibility(View.VISIBLE);
+                    buttonSearch.setText("חפש");
+                    textViewFrom.setVisibility(View.VISIBLE);
+                } else if (buttonSearch.getText().equals("חפש"))
+
+                    search();
+
+            }
+        });
+        buttonSeeAllGroups.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                contactsAdapter.clear();
+                flagSerch = false;
+                seeAllMyGroups();
+                textViewNoFond.setVisibility(View.GONE);
+                editTextSearch.setVisibility(View.GONE);
+                buttonSeeAllGroups.setVisibility(View.GONE);
+                buttonSearch.setText("חיפוש");
+                textViewFrom.setVisibility(View.GONE);
+            }
+        });
+
+
+    }
+
+
     private void addContact(final ArrayList<String> uidContact, final String uid) {
 
         DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("NamesGroups");
         databaseReference1.child(uidContact.get(0)).limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    messageContact = new Message();
+                }
                 for (DataSnapshot child : snapshot.getChildren()) {
                     messageContact = child.getValue(Message.class);
 
                 }
+
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("NotificationsIdSeeLast");
                 databaseReference1.child(uid).child(uidContact.get(0)).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Contact contact = new Contact();
-                        int lastSee=0;
-                        if(snapshot.exists())  lastSee= snapshot.getValue(Integer.class);
-                        int numNewMessage= messageContact.getId()-lastSee;
+                        int lastSee = 0;
+                        if (snapshot.exists()) lastSee = snapshot.getValue(Integer.class);
+                        int numNewMessage = messageContact.getId() - lastSee;
                         contact.setNotifications(numNewMessage);
 
                         contact.setMessage(messageContact);
                         contact.setName(uidContact.get(0));
                         contact.setUidI(uid);
+                        //contactsAdapter.notifyDataSetChanged();
+
                         contactArrayList.add(contact);
-                        contactsAdapter.notifyDataSetChanged();
                         uidContact.remove(0);
-//                        if (snapshot.exists())
-//                            contact.setNotifications(snapshot.getValue(Integer.class));
+                        if (uidContact.size() == 0) {
+                            if (contactArrayList.size() > 1)
+                                Collections.sort(contactArrayList, new ComperatorContact());
+
+                            contactsAdapter.notifyDataSetChanged();
+
+                        }
+
                         if (uidContact.size() > 0) addContact(uidContact, uid);
                     }
 
@@ -184,5 +261,49 @@ if(!snapshot.exists())return;
 
     }
 
+    //    public void onStart1() {
+//
+//        reference.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//
+//            }
+//
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//                if (snapshot.exists()) {
+//                    list();
+//                }
+//            }
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+//    }
+    private void search() {
+        groupSearch = editTextSearch.getText().toString();
+        if (groupSearch.isEmpty()) {
+            editTextSearch.setError("אנא הכנס קבוצה");
+            editTextSearch.requestFocus();
+            return;
+        }
+        buttonSeeAllGroups.setVisibility(View.VISIBLE);
+        contactsAdapter.clear();
+        flagSerch = true;
+        seeAllMyGroups();
+
+    }
 
 }

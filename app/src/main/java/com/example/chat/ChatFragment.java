@@ -28,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -95,7 +96,7 @@ public class ChatFragment extends Fragment {
         reference = FirebaseDatabase.getInstance().getReference("Contacts").child(uid);
 
        list();
-
+onStart1();
         return viewContacts;
     }
 
@@ -213,8 +214,13 @@ listView.clearDisappearingChildren();
                 contact.setUidI(uid);
                 contact.setUidContacts(uidContact.get(0));
                 contactArrayList.add(contact);
-                contactsAdapter.notifyDataSetChanged();
                 uidContact.remove(0);
+                if(uidContact.size()==0) {
+                    Collections.sort( contactArrayList, new  ComperatorContact());
+                    contactsAdapter.notifyDataSetChanged();
+
+                }
+
                 if (uidContact.size() > 0) addContact(uidContact, uid);
             }
 
@@ -225,9 +231,12 @@ listView.clearDisappearingChildren();
         });
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
+
+
+
+
+    public void onStart1() {
+
     reference.addChildEventListener(new ChildEventListener() {
         @Override
         public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {

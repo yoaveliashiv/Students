@@ -132,8 +132,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (snapshot.exists()) {
-                    k++;
-                    editText.setText("l"+k);
+
                     displayMessage(snapshot);
                 }
             }
@@ -521,7 +520,6 @@ public class ChatActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Uri uri) {
 
-
                                         saveDatabase(uri.toString(), "");
 
                                     }
@@ -555,6 +553,7 @@ public class ChatActivity extends AppCompatActivity {
         final Message message = new Message();
         message.setDate(date);
         message.setImageMessage(uri);
+        message.setMessage("תמונה נשלחה.");
         if (!registerInformationSend.getName().isEmpty())
             message.setName(registerInformationSend.getName());
         else
