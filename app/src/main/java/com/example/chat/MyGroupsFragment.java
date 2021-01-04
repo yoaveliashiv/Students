@@ -62,7 +62,6 @@ public class MyGroupsFragment extends Fragment {
     private Button buttonSeeAllGroups;
     private String uid;
     private ListView listView;
-
     public MyGroupsFragment() {
         // Required empty public constructor
     }
@@ -85,14 +84,7 @@ public class MyGroupsFragment extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -120,7 +112,11 @@ public class MyGroupsFragment extends Fragment {
 //                databaseReference.child(uid).child("hitchhikingGroups").setValue(arrayListGroups.get(i));
             }
         });
-        // Inflate the layout for this fragment
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
         return viewContacts;
     }
 
@@ -150,7 +146,10 @@ public class MyGroupsFragment extends Fragment {
                         contactsAdapter.notifyDataSetChanged();
                     } else textViewNoFond.setVisibility(View.GONE);
                 }
-                if (arrayList.size() > 0) addContact(arrayList, uid);
+                if (arrayList.size() > 0){
+                    buttonSearch.setVisibility(View.VISIBLE);
+                    addContact(arrayList, uid);
+                }
 
 //  contactsAdapter.notifyDataSetChanged();
 

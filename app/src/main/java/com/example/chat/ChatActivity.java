@@ -65,8 +65,8 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
         circleImageView = findViewById(R.id.profile_image);
         getSupportActionBar().hide();
         uidSend = getIntent().getExtras().getString("send_message_user_id");
@@ -125,6 +125,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
         add();
+        super.onCreate(savedInstanceState);
     }
 
     private void add() {
@@ -161,6 +162,7 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
 

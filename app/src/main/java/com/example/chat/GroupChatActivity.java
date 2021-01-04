@@ -65,7 +65,6 @@ public class GroupChatActivity extends AppCompatActivity {
     // private TextView textViewDisplay;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_chat);
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         nameGroup = getIntent().getExtras().getString("nameGroup");
@@ -125,6 +124,8 @@ public class GroupChatActivity extends AppCompatActivity {
             }
         });
 onStart1();
+        super.onCreate(savedInstanceState);
+
     }
 
     private void dialogSendPrivateMessage(final int i) {
