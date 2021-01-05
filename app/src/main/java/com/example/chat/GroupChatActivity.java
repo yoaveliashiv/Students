@@ -9,6 +9,7 @@ import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -65,8 +66,9 @@ public class GroupChatActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private ArrayList<Message> arrayListMessage;
     private MessageAdapter arrayAdapter;
-    EditText editText;
-    ListView listView;
+    private EditText editText;
+    private ListView listView;
+    private Boolean flag;
 
     // private TextView textViewDisplay;
     @Override
@@ -74,7 +76,7 @@ public class GroupChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_group_chat);
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         nameGroup = getIntent().getExtras().getString("nameGroup");
-        Boolean flag = getIntent().getExtras().getBoolean("flagAllGroup");
+        flag = getIntent().getExtras().getBoolean("flagAllGroup");
 
 
         databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups").child(nameGroup);
@@ -139,7 +141,7 @@ public class GroupChatActivity extends AppCompatActivity {
         d.setContentView(R.layout.dialog_massge);
         d.setTitle("Manage");
 
-        final TextView textViewSendMassge = d.findViewById(R.id.textView_send_massage);
+        TextView textViewSendMassge = d.findViewById(R.id.textView_send_massage);
         TextView textViewOpenProfile = d.findViewById(R.id.textView_propile_open);
         TextView textViewSendWhatappsMassge = d.findViewById(R.id.textView_send_whatapps);
         TextView textViewCopyPhone = d.findViewById(R.id.textView_copy_phone);
@@ -164,7 +166,7 @@ public class GroupChatActivity extends AppCompatActivity {
                     d.dismiss();
                     return;
                 }
-                chakIfBlockAndSend(i, textViewSendMassge);
+                chakIfBlockAndSend(i);
 
 
             }
@@ -213,16 +215,15 @@ public class GroupChatActivity extends AppCompatActivity {
         d.show();
     }
 
-    private void chakIfBlockAndSend(final int i, final TextView textViewSendMassge) {
+    private void chakIfBlockAndSend(final int i) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Blocked")
                 .child(uid).child(arrayListMessage.get(i).getUid());
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    textViewSendMassge.setText("משתמש זה חסום");
-                    textViewSendMassge.setTextColor(Color.parseColor("#EF2B2B"));
-                    textViewSendMassge.setClickable(false);
+                    dialogIsBlocking();
+                    d.dismiss();
                 } else {
                     Intent intent = new Intent(GroupChatActivity.this, ChatActivity.class);
                     intent.putExtra("send_message_user_id", uid);
@@ -237,6 +238,23 @@ public class GroupChatActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void dialogIsBlocking() {
+        final Dialog dialog = new Dialog(GroupChatActivity.this);
+        dialog.setContentView(R.layout.dialog_is_blocking);
+        dialog.setTitle("Manage");
+
+        dialog.setCancelable(true);
+        Button buttonClose = dialog.findViewById(R.id.button_close_window);
+        buttonClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+
+            }
+        });
+        dialog.show();
     }
 
     private void saveDatabase(String sms, final String nameGroup) {
@@ -402,15 +420,17 @@ public class GroupChatActivity extends AppCompatActivity {
 
         MenuInflater menuInflater = getMenuInflater();
 
-        menuInflater.inflate(R.menu.menu_chat, menu);
+        menuInflater.inflate(R.menu.menu__group_chat, menu);
         return true;
 
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem item = menu.findItem(R.id.refresh);
-        item.setTitle("לדף הראשי");
+        if (flag){
+        MenuItem item = menu.findItem(R.id.delete_group_Menu);
+        item.setVisible(false);
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -431,13 +451,15 @@ public class GroupChatActivity extends AppCompatActivity {
                 intent2.putExtra("flag", false);
                 startActivity(intent2);
                 return true;
-            case R.id.logout:
-                FirebaseAuth.getInstance().signOut();
-                intent2 = new Intent(GroupChatActivity.this, RegisterLoginActivity.class);
+            case R.id.delete_group_Menu:
+                dialogDelete();
+                return true;
+            case R.id.feedbackMenu:
+                intent2 = new Intent(GroupChatActivity.this, ActivityFeedbackChat.class);
+                intent2.putExtra("flag", false);
                 startActivity(intent2);
                 return true;
-            case R.id.refresh:
-
+            case R.id.returnMainMenu:
 
                 intent2 = new Intent(GroupChatActivity.this, MainActivity3.class);
                 startActivity(intent2);
@@ -445,5 +467,38 @@ public class GroupChatActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    private void dialogDelete() {
+        final Dialog d = new Dialog(GroupChatActivity.this);
+        d.setContentView(R.layout.dialog_delete_my_group);
+        d.setTitle("Manage");
+        d.setCancelable(true);
+
+        Button buttonBlokeDialog = d.findViewById(R.id.button_delete_dialog);
+        Button buttonNoBloke = d.findViewById(R.id.button_exit_delete);
+        buttonNoBloke.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.cancel();
+                return;
+            }
+        });
+        buttonBlokeDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups")
+                        .child(uid).child(nameGroup);
+                databaseReference.removeValue();
+
+
+                Toast.makeText(GroupChatActivity.this, "יצאת מהקבוצה בהצלחה", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(GroupChatActivity.this, MainActivity3.class);
+
+                startActivityForResult(intent, 0);
+            }
+
+        });
+
+        d.show();
     }
 }

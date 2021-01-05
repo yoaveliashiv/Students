@@ -80,10 +80,9 @@ public class ProfileActivity extends AppCompatActivity {
                     Toast.makeText(ProfileActivity.this, "לא ניתן לשלוח הודעה לעצמך", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Intent intent = new Intent(ProfileActivity.this, ProfileActivity.class);
-                intent.putExtra("send_message_user_id", uidVisit);
-                intent.putExtra("to_message_user_id", uidProfile);
-                startActivityForResult(intent, 0);
+                chakIfBlockAndSend();
+
+
             }
         });
 
@@ -205,5 +204,44 @@ public class ProfileActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    private void chakIfBlockAndSend() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Blocked")
+                .child(uidVisit).child(uidProfile);
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    dialogIsBlocking();
+                } else {
+                    Intent intent = new Intent(ProfileActivity.this, ChatActivity.class);
+                    intent.putExtra("send_message_user_id", uidVisit);
+                    intent.putExtra("to_message_user_id", uidProfile);
+                    startActivityForResult(intent, 0);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+    private void dialogIsBlocking() {
+        final Dialog dialog = new Dialog(ProfileActivity.this);
+        dialog.setContentView(R.layout.dialog_is_blocking);
+        dialog.setTitle("Manage");
+
+        dialog.setCancelable(true);
+        Button buttonClose = dialog.findViewById(R.id.button_close_window);
+        buttonClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+
+            }
+        });
+        dialog.show();
     }
 }

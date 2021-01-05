@@ -1,8 +1,11 @@
 package com.example.chat;
 
+import android.app.Dialog;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.Hikers.RegisterInformation2;
@@ -100,6 +104,14 @@ public class MyGroupsFragment extends Fragment {
 
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         seeAllMyGroups();
+listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+    @Override
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+        view.setBackgroundColor(Color.parseColor("#FFACE8EF"));
+        dialogDelete(i,view);
+        return true;
+    }
+});
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -303,6 +315,46 @@ public class MyGroupsFragment extends Fragment {
         flagSerch = true;
         seeAllMyGroups();
 
+    }
+    private void dialogDelete(final int i,final View view2) {
+        final Dialog d = new Dialog(getContext());
+        d.setContentView(R.layout.dialog_delete_my_group);
+        d.setTitle("Manage");
+        d.setCancelable(true);
+        d.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                view2.setBackgroundColor(Color.parseColor("#FFFFFFFF"));
+
+            }
+        });
+        Button buttonBlokeDialog = d.findViewById(R.id.button_delete_dialog);
+        Button buttonNoBloke = d.findViewById(R.id.button_exit_delete);
+        buttonNoBloke.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view2.setBackgroundColor(Color.parseColor("#FFFFFFFF"));
+                d.cancel();
+                return;
+            }
+        });
+        buttonBlokeDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups")
+                        .child(uid).child(contactArrayList.get(i).getName());
+                databaseReference.removeValue();
+
+
+                Toast.makeText(getContext(), "יצאת מהקבוצה בהצלחה", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getContext(), MainActivity3.class);
+
+                startActivityForResult(intent, 0);
+            }
+
+        });
+
+        d.show();
     }
 
 }

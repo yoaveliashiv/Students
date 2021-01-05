@@ -630,7 +630,6 @@ public class ChatActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu1() {
 //
         androidx.appcompat.widget.Toolbar toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.app_bar);
-        toolbar.getMenu().getItem(3).setTitle("לדף הראשי");
         toolbar.setOnMenuItemClickListener(new androidx.appcompat.widget.Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -649,17 +648,15 @@ public class ChatActivity extends AppCompatActivity {
                         intent2.putExtra("flag", false);
                         startActivity(intent2);
                         return true;
-                    case R.id.logout:
-                        FirebaseAuth.getInstance().signOut();
-                        intent2 = new Intent(ChatActivity.this, RegisterLoginActivity.class);
-                        startActivity(intent2);
+                    case R.id.delete_chat_Menu:
+                       dialogDelete();
                         return true;
-                    case R.id.refresh:
-
+                    case R.id.returnMainMenu:
 
                         intent2 = new Intent(ChatActivity.this, MainActivity3.class);
                         startActivity(intent2);
                         return true;
+
                     default:
                         return true;
                 }
@@ -694,19 +691,52 @@ public class ChatActivity extends AppCompatActivity {
                 Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
                 String date = simpleDateFormat.format(calendar.getTime());
-                databaseReference.setValue(date+" "+uidSend);
+                databaseReference.setValue(date + " " + uidSend);
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Blocked")
                         .child(uidRecive).child(uidSend);
-                databaseReference1.setValue(date+" "+uidSend);
+                databaseReference1.setValue(date + " " + uidSend);
 
                 Toast.makeText(ChatActivity.this, "החשבון נחסם בהצלחה", Toast.LENGTH_LONG).show();
-
-                d.dismiss();
-                dialog.dismiss();
+                Intent intent = new Intent(ChatActivity.this, MainActivity3.class);
+                startActivity(intent);
+                finish();
             }
 
         });
 
         d.show();
+    }
+
+    private void dialogDelete() {
+        final Dialog d = new Dialog(ChatActivity.this);
+        d.setContentView(R.layout.dialog_delete_chat);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        Button buttonBlokeDialog = d.findViewById(R.id.button_delete_dialog);
+        Button buttonNoBloke = d.findViewById(R.id.button_exit_delete);
+        buttonNoBloke.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.cancel();
+                return;
+            }
+        });
+        buttonBlokeDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Contacts")
+                        .child(uidSend).child(uidRecive);
+                databaseReference.removeValue();
+
+
+                Toast.makeText(ChatActivity.this, "השיחה נמחקה בהצלחה", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(ChatActivity.this, MainActivity3.class);
+
+                startActivityForResult(intent, 0);
+            }
+
+        });
+d.show();
     }
 }

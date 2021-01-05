@@ -12,7 +12,7 @@
         android:background="@color/colorPrimary"
         android:id="@+id/app_bar"
 
-        app:menu="@menu/menu_chat">
+        app:menu="@menu/menu_chat_private">
         <TextView
             android:id="@+id/textView_name_chat"
             android:layout_width="wrap_content"

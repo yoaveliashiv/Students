@@ -2,7 +2,9 @@ package com.example.chat;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -30,7 +32,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 
 /**
@@ -135,6 +139,15 @@ listView.clearDisappearingChildren();
 
             }
         });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+             view.setBackgroundColor(Color.parseColor("#FFACE8EF"));
+                dialogDelete(i,view);
+                return true;
+            }
+        });
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view,final int i, long l) {
@@ -165,6 +178,48 @@ listView.clearDisappearingChildren();
 
             }
         });
+    }
+
+    private void dialogDelete(final int i,final View view2) {
+        final Dialog d = new Dialog(getContext());
+        d.setContentView(R.layout.dialog_delete_chat);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        d.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                view2.setBackgroundColor(Color.parseColor("#FFFFFFFF"));
+
+            }
+        });
+        Button buttonBlokeDialog = d.findViewById(R.id.button_delete_dialog);
+        Button buttonNoBloke = d.findViewById(R.id.button_exit_delete);
+        buttonNoBloke.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view2.setBackgroundColor(Color.parseColor("#FFFFFFFF"));
+                d.cancel();
+                return;
+            }
+        });
+        buttonBlokeDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Contacts")
+                        .child(uid).child(contactArrayList.get(i).getUidContacts());
+                databaseReference.removeValue();
+
+
+                Toast.makeText(getContext(), "השיחה נמחקה בהצלחה", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getContext(), MainActivity3.class);
+
+                startActivityForResult(intent, 0);
+            }
+
+        });
+
+        d.show();
     }
 
     private void dialogIsBlocking() {
