@@ -92,6 +92,11 @@ private TabsAccessorAdapter tabsAccessorAdapter;
                 intent2.putExtra("flag", false);
                 startActivity(intent2);
                 return true;
+            case R.id.feedbackMenu:
+                intent2 = new Intent(MainActivity3.this, ActivityFeedbackChat.class);
+                intent2.putExtra("flag", false);
+                startActivity(intent2);
+                return true;
             case R.id.logout:
                 FirebaseAuth.getInstance().signOut();
                 intent2 = new Intent(MainActivity3.this, MainActivityRegister2.class);

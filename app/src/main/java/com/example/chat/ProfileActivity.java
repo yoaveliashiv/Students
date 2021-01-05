@@ -3,6 +3,7 @@ package com.example.chat;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -21,6 +22,7 @@ import com.example.R;
 import com.example.students.MainActivityCardView;
 import com.example.students.MainActivityRegisterTutor;
 import com.example.students.RegisterInformation;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,20 +30,49 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
     private String name = "";
     private String image = "";
 
+    private String uidProfile;
+    private String uidVisit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        final String uidProfile = getIntent().getExtras().getString("profile_user_id");
-        final String uidVisit = getIntent().getExtras().getString("visit_user_id");
+        uidProfile = getIntent().getExtras().getString("profile_user_id");
+        uidVisit = getIntent().getExtras().getString("visit_user_id");
         Button buttonSendMessage = findViewById(R.id.button_send_message);
+        Button buttonBloke = findViewById(R.id.button_blok);
+        Button buttonReport = findViewById(R.id.button_report_profile);
+        if (uidProfile.equals(uidVisit)) {
+            buttonBloke.setVisibility(View.GONE);
+            buttonReport.setVisibility(View.GONE);
+        } else {
+            buttonReport.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(ProfileActivity.this, ActivityFeedbackChat.class);
+                    Message message = new Message();
+                    message.setUid(uidProfile);
+                    intent.putExtra("message", message);
+                    intent.putExtra("flag", true);
+                    startActivity(intent);
+                }
+            });
+            buttonBloke.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialogBloke();
+                }
+            });
+        }
         buttonSendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,9 +103,9 @@ public class ProfileActivity extends AppCompatActivity {
                 textViewPhone.setText(registerInformation.getEmail());
                 if (!registerInformation.getImageUrl().isEmpty())
                     Glide.with(ProfileActivity.this)
-                        .load(registerInformation.getImageUrl())
-                        .into(circleImageView);
-                image=registerInformation.getImageUrl();
+                            .load(registerInformation.getImageUrl())
+                            .into(circleImageView);
+                image = registerInformation.getImageUrl();
 
 
             }
@@ -87,6 +118,45 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     }
+
+    private void dialogBloke() {
+        final Dialog d = new Dialog(ProfileActivity.this);
+        d.setContentView(R.layout.dialog_bloke);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        Button buttonBlokeDialog = d.findViewById(R.id.button_delete_dialog);
+        Button buttonNoBloke = d.findViewById(R.id.button_exit_delete);
+        buttonNoBloke.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.cancel();
+                return;
+            }
+        });
+        buttonBlokeDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Blocked")
+                        .child(uidVisit).child(uidProfile);
+
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                String date = simpleDateFormat.format(calendar.getTime());
+                databaseReference.setValue(date+" "+uidVisit);
+                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Blocked")
+                        .child(uidProfile).child(uidVisit);
+                databaseReference1.setValue(date+" "+uidVisit);
+                Toast.makeText(ProfileActivity.this, "החשבון נחסם בהצלחה", Toast.LENGTH_LONG).show();
+
+                d.dismiss();
+            }
+
+        });
+
+        d.show();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -96,12 +166,14 @@ public class ProfileActivity extends AppCompatActivity {
         return true;
 
     }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.refresh);
         item.setTitle("לדף הראשי");
         return super.onPrepareOptionsMenu(menu);
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         Intent intent2;

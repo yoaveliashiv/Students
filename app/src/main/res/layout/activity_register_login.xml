@@ -40,7 +40,7 @@
                 android:padding="4dp" />
 
             <EditText
-                android:id="@+id/editText_login_pass"
+                android:id="@+id/editText_feed_chat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/editText_login_phone"
@@ -59,7 +59,7 @@
                 android:id="@+id/button_send_code"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/editText_login_pass"
+                android:layout_below="@id/editText_feed_chat"
                 android:layout_marginLeft="19dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="19dp"

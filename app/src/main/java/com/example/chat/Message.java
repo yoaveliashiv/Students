@@ -2,8 +2,10 @@ package com.example.chat;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
+
 @IgnoreExtraProperties
-public class Message {
+public class Message implements Serializable {
 
     private String message="";
     private String imageMessage="";

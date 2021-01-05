@@ -153,6 +153,16 @@ public class ActivitySettings extends AppCompatActivity {
         buttonDeleteDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                FirebaseAuth.getInstance().getCurrentUser().delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(ActivitySettings.this, "החשבון נמחק בהצלחה", Toast.LENGTH_LONG).show();
+
+                        Intent intent = new Intent(ActivitySettings.this, RegisterLoginActivity.class);
+                        startActivity(intent);
+
+                    }
+                });
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance()
                         .getReference("RegisterInformation2").child(uid);
                 databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -216,17 +226,7 @@ public class ActivitySettings extends AppCompatActivity {
 
                     }
                 });
-                FirebaseAuth.getInstance().getCurrentUser().delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(ActivitySettings.this, "החשבון נמחק בהצלחה", Toast.LENGTH_LONG).show();
 
-                        Intent intent = new Intent(ActivitySettings.this, RegisterLoginActivity.class);
-                        startActivity(intent);
-                        d.cancel();
-                        finish();
-                    }
-                });
 
             }
 

@@ -69,8 +69,8 @@ public class ChatActivity extends AppCompatActivity {
     private String uidSend;
     private String uidRecive;
     private CircleImageView circleImageView;
-    private Boolean flagDataChange=true;
-    private int k=0;
+    private Boolean flagDataChange = true;
+    private int k = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -196,7 +196,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 Intent intent = new Intent(ChatActivity.this, ProfileActivity.class);
-                intent.putExtra("profile_user_id", uidRecive);
+                intent.putExtra("profile_user_id", arrayListMessage.get(i).getUid());
                 intent.putExtra("visit_user_id", uidSend);
                 startActivity(intent);
 
@@ -229,17 +229,32 @@ public class ChatActivity extends AppCompatActivity {
                 d.dismiss();
             }
         });
-        textViewCopyMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("1", arrayListMessage.get(i).getMessage());
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(ChatActivity.this, "ההודעה הועתקה", Toast.LENGTH_SHORT).show();
-                d.dismiss();
-            }
-        });
-        textViewFeed.setVisibility(View.GONE);
+        if (!arrayListMessage.get(i).getImageMessage().isEmpty()) {
+            textViewCopyMessage.setVisibility(View.GONE);
+        } else {
+            textViewCopyMessage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("1", arrayListMessage.get(i).getMessage());
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(ChatActivity.this, "ההודעה הועתקה", Toast.LENGTH_SHORT).show();
+                    d.dismiss();
+                }
+            });
+        }
+        if (uidSend.equals(arrayListMessage.get(i).getUid())) {
+            textViewFeed.setVisibility(View.GONE);
+        } else {
+            textViewFeed.setText("חסום את " + arrayListMessage.get(i).getPhone());
+            textViewFeed.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialogBloke(d);
+                }
+            });
+        }
+
         d.show();
 
     }
@@ -502,7 +517,7 @@ public class ChatActivity extends AppCompatActivity {
         Glide.with(ChatActivity.this)
                 .load(uriImage)
                 .into(imageButton);
-        Boolean flag=true;
+        Boolean flag = true;
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -556,7 +571,7 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    private void saveDatabase(String uri,String a) {
+    private void saveDatabase(String uri, String a) {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         String date = simpleDateFormat.format(calendar.getTime());
@@ -583,22 +598,22 @@ public class ChatActivity extends AppCompatActivity {
         databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    int num = 0;
-                    if (snapshot.exists()) num = (int) snapshot.getChildrenCount();
-                    message.setId(num);
-                    DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Contacts")
-                            .child(uidSend).child(uidRecive).push();
-                    DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Contacts")
-                            .child(uidRecive).child(uidSend).push();
+                int num = 0;
+                if (snapshot.exists()) num = (int) snapshot.getChildrenCount();
+                message.setId(num);
+                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Contacts")
+                        .child(uidSend).child(uidRecive).push();
+                DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Contacts")
+                        .child(uidRecive).child(uidSend).push();
 
-                    databaseReference1.setValue(message);
-                    databaseReference2.setValue(message);
-                    DatabaseReference databaseReference4 = FirebaseDatabase.getInstance().getReference("Notifications")
-                            .push();
+                databaseReference1.setValue(message);
+                databaseReference2.setValue(message);
+                DatabaseReference databaseReference4 = FirebaseDatabase.getInstance().getReference("Notifications")
+                        .push();
 
-                    databaseReference4.setValue(message);
+                databaseReference4.setValue(message);
 
-                    databaseReference3.removeEventListener(this);
+                databaseReference3.removeEventListener(this);
 
             }
 
@@ -614,8 +629,8 @@ public class ChatActivity extends AppCompatActivity {
 
     public boolean onCreateOptionsMenu1() {
 //
-        androidx.appcompat.widget.Toolbar toolbar= (androidx.appcompat.widget.Toolbar) findViewById(R.id.app_bar);
-        toolbar.getMenu().getItem(2).setTitle("לדף הראשי");
+        androidx.appcompat.widget.Toolbar toolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.app_bar);
+        toolbar.getMenu().getItem(3).setTitle("לדף הראשי");
         toolbar.setOnMenuItemClickListener(new androidx.appcompat.widget.Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -656,5 +671,42 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
+    private void dialogBloke(final Dialog dialog) {
+        final Dialog d = new Dialog(ChatActivity.this);
+        d.setContentView(R.layout.dialog_bloke);
+        d.setTitle("Manage");
 
+        d.setCancelable(true);
+        Button buttonBlokeDialog = d.findViewById(R.id.button_delete_dialog);
+        Button buttonNoBloke = d.findViewById(R.id.button_exit_delete);
+        buttonNoBloke.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.cancel();
+                return;
+            }
+        });
+        buttonBlokeDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Blocked")
+                        .child(uidSend).child(uidRecive);
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                String date = simpleDateFormat.format(calendar.getTime());
+                databaseReference.setValue(date+" "+uidSend);
+                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Blocked")
+                        .child(uidRecive).child(uidSend);
+                databaseReference1.setValue(date+" "+uidSend);
+
+                Toast.makeText(ChatActivity.this, "החשבון נחסם בהצלחה", Toast.LENGTH_LONG).show();
+
+                d.dismiss();
+                dialog.dismiss();
+            }
+
+        });
+
+        d.show();
+    }
 }

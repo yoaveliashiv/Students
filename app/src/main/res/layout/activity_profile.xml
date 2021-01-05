@@ -59,7 +59,35 @@
         android:textSize="20sp"
         android:textStyle="bold"
 
+        />
 
+    <Button
+        android:id="@+id/button_blok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/button_send_message"
+        android:layout_marginLeft="65dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="65dp"
+        android:text="חסימת משתמש"
+        android:textAllCaps="false"
+        android:textColor="@color/cardview_light_background"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        />
+    <Button
+        android:id="@+id/button_report_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/button_blok"
+        android:layout_marginLeft="65dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="65dp"
+        android:text="דווח על משתמש זה"
+        android:textAllCaps="false"
+        android:textColor="@color/cardview_light_background"
+        android:textSize="20sp"
+        android:textStyle="bold"
         />
 
 </RelativeLayout>

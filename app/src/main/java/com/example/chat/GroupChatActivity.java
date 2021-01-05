@@ -4,11 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -127,7 +129,7 @@ public class GroupChatActivity extends AppCompatActivity {
 
             }
         });
-onStart1();
+        onStart1();
         super.onCreate(savedInstanceState);
 
     }
@@ -137,7 +139,7 @@ onStart1();
         d.setContentView(R.layout.dialog_massge);
         d.setTitle("Manage");
 
-        TextView textViewSendMassge = d.findViewById(R.id.textView_send_massage);
+        final TextView textViewSendMassge = d.findViewById(R.id.textView_send_massage);
         TextView textViewOpenProfile = d.findViewById(R.id.textView_propile_open);
         TextView textViewSendWhatappsMassge = d.findViewById(R.id.textView_send_whatapps);
         TextView textViewCopyPhone = d.findViewById(R.id.textView_copy_phone);
@@ -157,16 +159,14 @@ onStart1();
         textViewSendMassge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String uidVisit = arrayListMessage.get(i).getUid();
-                if (uid.equals(uidVisit)) {
+                if (uid.equals(arrayListMessage.get(i).getUid())) {
                     Toast.makeText(GroupChatActivity.this, "לא ניתן לשלוח הודעה לעצמך", Toast.LENGTH_SHORT).show();
                     d.dismiss();
                     return;
                 }
-                Intent intent = new Intent(GroupChatActivity.this, ChatActivity.class);
-                intent.putExtra("send_message_user_id", uid);
-                intent.putExtra("to_message_user_id", arrayListMessage.get(i).getUid());
-                startActivityForResult(intent, 0);
+                chakIfBlockAndSend(i, textViewSendMassge);
+
+
             }
         });
         textViewSendWhatappsMassge.setOnClickListener(new View.OnClickListener() {
@@ -204,11 +204,39 @@ onStart1();
         textViewFeed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(GroupChatActivity.this, "העמוד בבניה", Toast.LENGTH_SHORT).show();
-                d.dismiss();
+                Intent intent = new Intent(GroupChatActivity.this, ActivityFeedbackChat.class);
+                intent.putExtra("message", arrayListMessage.get(i));
+                intent.putExtra("flag", true);
+                startActivity(intent);
             }
         });
         d.show();
+    }
+
+    private void chakIfBlockAndSend(final int i, final TextView textViewSendMassge) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Blocked")
+                .child(uid).child(arrayListMessage.get(i).getUid());
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    textViewSendMassge.setText("משתמש זה חסום");
+                    textViewSendMassge.setTextColor(Color.parseColor("#EF2B2B"));
+                    textViewSendMassge.setClickable(false);
+                } else {
+                    Intent intent = new Intent(GroupChatActivity.this, ChatActivity.class);
+                    intent.putExtra("send_message_user_id", uid);
+                    intent.putExtra("to_message_user_id", arrayListMessage.get(i).getUid());
+                    startActivityForResult(intent, 0);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void saveDatabase(String sms, final String nameGroup) {
@@ -368,6 +396,7 @@ onStart1();
             }
         });
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -377,12 +406,14 @@ onStart1();
         return true;
 
     }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.refresh);
         item.setTitle("לדף הראשי");
         return super.onPrepareOptionsMenu(menu);
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         Intent intent2;

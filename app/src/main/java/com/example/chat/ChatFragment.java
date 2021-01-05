@@ -1,5 +1,7 @@
 package com.example.chat;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -12,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -134,15 +137,50 @@ listView.clearDisappearingChildren();
         });
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getContext(), ChatActivity.class);
-                intent.putExtra("send_message_user_id", uid);
-                intent.putExtra("to_message_user_id", contactArrayList.get(i).getUidContacts());
-                Toast.makeText(getContext(), uid, Toast.LENGTH_LONG).show();
+            public void onItemClick(AdapterView<?> adapterView, View view,final int i, long l) {
 
-                startActivityForResult(intent, 0);
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Blocked")
+                        .child(uid).child( contactArrayList.get(i).getUidContacts());
+                reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            dialogIsBlocking();
+
+                        } else {
+                            Intent intent = new Intent(getContext(), ChatActivity.class);
+                            intent.putExtra("send_message_user_id", uid);
+                            intent.putExtra("to_message_user_id", contactArrayList.get(i).getUidContacts());
+                            // Toast.makeText(getContext(), uid, Toast.LENGTH_LONG).show();
+
+                            startActivityForResult(intent, 0);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
             }
         });
+    }
+
+    private void dialogIsBlocking() {
+        final Dialog d = new Dialog(getContext());
+        d.setContentView(R.layout.dialog_is_blocking);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        Button buttonClose = d.findViewById(R.id.button_close_window);
+        buttonClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.dismiss();
+            }
+        });
+        d.show();
     }
 
     private void addContact(final ArrayList<String> uidContact, final String uid) {

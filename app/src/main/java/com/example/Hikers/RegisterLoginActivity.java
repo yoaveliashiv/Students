@@ -2,12 +2,8 @@ package com.example.Hikers;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,10 +16,7 @@ import android.widget.Toast;
 import com.example.R;
 import com.example.chat.ActivitySettings;
 import com.example.chat.MainActivity3;
-import com.example.students.MainActivity1;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
@@ -37,9 +30,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.concurrent.TimeUnit;
 
@@ -65,7 +55,7 @@ public class RegisterLoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register_login);
         buttonSendPass = findViewById(R.id.button_send_code);
         buttonVerifi = findViewById(R.id.button_verifi_code);
-        editTextPass = findViewById(R.id.editText_login_pass);
+        editTextPass = findViewById(R.id.editText_feed_chat);
         editTextPhone = findViewById(R.id.editText_login_phone);
         setmCallBacks();
 
