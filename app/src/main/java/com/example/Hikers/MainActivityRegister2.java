@@ -164,6 +164,7 @@ public class MainActivityRegister2 extends AppCompatActivity {
                             final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             deviceToken = "";
                             Log.d(TAG, "createUserWithEmail:success");
+
                             FirebaseInstallations.getInstance().getToken(false).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<InstallationTokenResult> task) {

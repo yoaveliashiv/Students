@@ -57,30 +57,26 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             view = layoutInflater.inflate(R.layout.message, parent, false);
         else
             view = layoutInflater.inflate(R.layout.message_i_am, parent, false);
-        RelativeLayout relativeLayout = (RelativeLayout) view.findViewById(R.id.relativeLayout);
         TextView textViewName = (TextView) view.findViewById(R.id.textView_name);
         TextView textViewMessage = (TextView) view.findViewById(R.id.textView_message);
-        TextView textViewTime = (TextView) view.findViewById(R.id.textView_time);
-        TextView textViewPhone = (TextView) view.findViewById(R.id.textView_phone);
-        if (!listMessage.get(position).getImageMessage().isEmpty()){
+
+        if (!listMessage.get(position).getImageMessage().isEmpty()) {
             ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
             Glide.with(view)
                     .load(listMessage.get(position).getImageMessage())
                     .into(imageView);
             textViewMessage.setVisibility(View.GONE);
             imageView.setVisibility(View.VISIBLE);
-
-    }
+        }
 
         String name = listMessage.get(position).getName();
         String message = listMessage.get(position).getMessage();
-        String phone = listMessage.get(position).getPhone();
+        // String phone = listMessage.get(position).getPhone();
+        String time = listMessage.get(position).getTime();
+        String date = listMessage.get(position).getDate().substring(0, 5);
+        textViewName.setText(name + "   " + time + " " + date+" ");
 
-        textViewTime.setText(listMessage.get(position).getTime());
-        textViewName.setText(name);
-
-        textViewMessage.setText(listMessage.get(position).getMessage());
-        textViewPhone.setText(phone);
+        textViewMessage.setText(message+" ");
 
 //if(listMessage.get(position).getUid().equals(uidVist))
 //    relativeLayout.setBackgroundColor(context.getResources().getColor(R.color.colorBackgroundMessageMe));

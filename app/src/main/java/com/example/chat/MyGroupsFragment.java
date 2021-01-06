@@ -345,6 +345,9 @@ listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                         .child(uid).child(contactArrayList.get(i).getName());
                 databaseReference.removeValue();
 
+                DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Groups details")
+                        .child(contactArrayList.get(i).getName()).child(uid);
+                databaseReference2.removeValue();
 
                 Toast.makeText(getContext(), "יצאת מהקבוצה בהצלחה", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getContext(), MainActivity3.class);
