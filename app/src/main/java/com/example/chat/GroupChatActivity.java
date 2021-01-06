@@ -45,18 +45,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-//<TextView
-//                android:id="@+id/text_group_display"
-//                        android:layout_width="match_parent"
-//                        android:layout_height="wrap_content"
-//                        android:layout_marginStart="2dp"
-//                        android:layout_marginEnd="2dp"
-//                        android:layout_marginBottom="50dp"
-//                        android:hint=""
-//                        android:padding="10dp"
-//                        android:textAllCaps="false"
-//                        android:textColor="@color/cardview_dark_background"
-//                        android:textSize="20sp" />
+import static java.lang.Thread.sleep;
+
 public class GroupChatActivity extends AppCompatActivity {
     private ScrollView scrollView;
     private Dialog d;
@@ -69,6 +59,7 @@ public class GroupChatActivity extends AppCompatActivity {
     private EditText editText;
     private ListView listView;
     private Boolean flag;
+    private TextView textViewGroupDetails;
 
     // private TextView textViewDisplay;
     @Override
@@ -126,14 +117,44 @@ public class GroupChatActivity extends AppCompatActivity {
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("MyGroups")
                         .child(uid).child(nameGroup);
                 databaseReference1.setValue("");
+                DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Groups details")
+                        .child(nameGroup).child(uid);
+                databaseReference2.setValue("");
                 button.setVisibility(View.GONE);
+
+                setGroupDetails();
                 Toast.makeText(GroupChatActivity.this, "הצטרפת לקבוצה בהצלחה", Toast.LENGTH_SHORT).show();
 
             }
         });
+        textViewGroupDetails = findViewById(R.id.textView_group_details);
+       setGroupDetails();
         onStart1();
         super.onCreate(savedInstanceState);
 
+    }
+
+    private void setGroupDetails() {
+        DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Groups details")
+                .child(nameGroup);
+        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int num=0;
+                if(snapshot.exists()){
+                     num=(int)snapshot.getChildrenCount();
+                    textViewGroupDetails.setText(" מספר המשתתפים "+num+" ");
+                }else{
+                    textViewGroupDetails.setText(" מספר המשתתפים 0 ");
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void dialogSendPrivateMessage(final int i) {
@@ -269,7 +290,11 @@ public class GroupChatActivity extends AppCompatActivity {
         final Message message = new Message();
         message.setDate(date);
         message.setMessage(sms);
-        message.setName(registerInformation.getName());
+        if (!registerInformation.getName().isEmpty())
+            message.setName(registerInformation.getName());
+        else
+            message.setName(registerInformation.getEmail());
+
         message.setPhone(registerInformation.getEmail());
         message.setUid(uid);
         message.setTime(time);
@@ -427,9 +452,9 @@ public class GroupChatActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (flag){
-        MenuItem item = menu.findItem(R.id.delete_group_Menu);
-        item.setVisible(false);
+        if (flag) {
+            MenuItem item = menu.findItem(R.id.delete_group_Menu);
+            item.setVisible(false);
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -468,6 +493,7 @@ public class GroupChatActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
     private void dialogDelete() {
         final Dialog d = new Dialog(GroupChatActivity.this);
         d.setContentView(R.layout.dialog_delete_my_group);
@@ -489,7 +515,9 @@ public class GroupChatActivity extends AppCompatActivity {
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups")
                         .child(uid).child(nameGroup);
                 databaseReference.removeValue();
-
+                DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Groups details")
+                        .child(nameGroup).child(uid);
+                databaseReference2.removeValue();
 
                 Toast.makeText(GroupChatActivity.this, "יצאת מהקבוצה בהצלחה", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(GroupChatActivity.this, MainActivity3.class);

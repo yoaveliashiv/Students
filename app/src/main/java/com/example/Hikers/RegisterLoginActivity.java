@@ -187,6 +187,7 @@ public class RegisterLoginActivity extends AppCompatActivity {
                                         registerInformation = new RegisterInformation2();
                                         registerInformation.setDeviceToken(deviceToken);
                                         registerInformation.setEmail(mobile);
+                                        registerInformation.setName(mobile);
                                         saveRegisterDataFireBase();
 
                                     } else {

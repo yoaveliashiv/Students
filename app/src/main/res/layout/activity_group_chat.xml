@@ -5,28 +5,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".chat.GroupChatActivity">
+
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/con"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/con">
+        android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/button_goin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
             android:text="לחץ להצטרפות לקבוצה"
             android:textColor="#201F22"
             android:textStyle="italic"
             android:visibility="visible"
-            app:backgroundTint="#E1DFC8"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="80dp" />
+            app:backgroundTint="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView_group_details" />
+
+        <TextView
+            android:id="@+id/textView_group_details"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:background="#E1DFC8"
+
+            android:text="מספר המשתתפים 800"
+            android:textColor="#201F22"
+            android:textSize="18sp"
+            android:textStyle="italic"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:layout_above="@id/linearLayout"
 android:layout_below="@id/con"
         android:nestedScrollingEnabled="true"
