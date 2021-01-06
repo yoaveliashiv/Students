@@ -42,6 +42,7 @@ public class RegisterLoginActivity extends AppCompatActivity {
     private String deviceToken;
     private RegisterInformation2 registerInformation;
     private FirebaseAuth mAuth;
+    int a;
 
 
     @Override
