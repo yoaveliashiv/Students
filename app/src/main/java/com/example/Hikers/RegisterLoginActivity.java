@@ -174,7 +174,7 @@ public class RegisterLoginActivity extends AppCompatActivity {
                                 mobile = mobile.substring(1);
                                 mobile = "+972"+mobile;
                             }
-                            DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference("RegisterInformation");
+                            DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
                             ref3.orderByChild("email").equalTo(mobile).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -187,7 +187,6 @@ public class RegisterLoginActivity extends AppCompatActivity {
                                         registerInformation = new RegisterInformation2();
                                         registerInformation.setDeviceToken(deviceToken);
                                         registerInformation.setEmail(mobile);
-                                        registerInformation.setName(mobile);
                                         saveRegisterDataFireBase();
 
                                     } else {

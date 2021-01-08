@@ -19,6 +19,7 @@ private ArrayList<Fragment> arrayList;
         super(fm);
 
     }
+
 public Fragment createFragment(int i){
         return arrayList.get(i);
 }
@@ -26,21 +27,41 @@ public Fragment createFragment(int i){
     @NonNull
     @Override
     public Fragment getItem(int position) {
+
         switch (position)
         {
             case 0:
-                ChatFragment chatFragment=new ChatFragment();
-                return  chatFragment;
+                try {
+                    ChatFragment chatFragment = new ChatFragment();
+                    return chatFragment;
+                }catch (RuntimeException e){
+                    return null;
+                }
             case 1:
-                MyGroupsFragment myGroupsFragment =new MyGroupsFragment();
-                return myGroupsFragment;
+                try {
+                    MyGroupsFragment myGroupsFragment =new MyGroupsFragment();
+
+                    return myGroupsFragment;
+                }catch (RuntimeException e){
+                    return null;
+                }
 
             case 2:
-                AllGroupsFragment allGroupsFragment=new AllGroupsFragment();
-                return  allGroupsFragment;
+                try {
+                    AllGroupsFragment allGroupsFragment=new AllGroupsFragment();
+                    return  allGroupsFragment;
+                }catch (RuntimeException e){
+                    return null;
+                }
             case 3:
-                LinksWhatsAppFragment linksWhatsAppFragment=new LinksWhatsAppFragment();
-                return  linksWhatsAppFragment;
+                try {
+                    LinksWhatsAppFragment linksWhatsAppFragment=new LinksWhatsAppFragment();
+                    return  linksWhatsAppFragment;
+                }catch (RuntimeException e){
+                    return null;
+
+                }
+
             default:
                 return null;
         }

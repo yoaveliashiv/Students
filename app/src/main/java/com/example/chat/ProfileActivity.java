@@ -80,7 +80,9 @@ public class ProfileActivity extends AppCompatActivity {
                     Toast.makeText(ProfileActivity.this, "לא ניתן לשלוח הודעה לעצמך", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                chakIfBlockAndSend();
+                chakIfExistAndBlokeAndSend();
+
+
 
 
             }
@@ -117,6 +119,8 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     }
+
+
 
     private void dialogBloke() {
         final Dialog d = new Dialog(ProfileActivity.this);
@@ -243,5 +247,25 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
         dialog.show();
+    }
+    private void chakIfExistAndBlokeAndSend() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("RegisterInformation2")
+                .child(uidProfile);
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                   chakIfBlockAndSend();
+                } else {
+                  dialogIsBlocking();
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }

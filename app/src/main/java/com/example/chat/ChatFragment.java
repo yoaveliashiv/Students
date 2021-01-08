@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,13 +50,13 @@ public class ChatFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private ArrayList<Contact> contactArrayList;
-    private String nameContact;
-    private String imageContact;
+    private String nameContact="";
+    private String imageContact="";
     private ContactsAdapter contactsAdapter;
     private DatabaseReference reference;
     private ListView listView;
     private String uid;
-
+    private int i = 0;
     private Message messageContact = new Message();
     private View viewContacts;
     // TODO: Rename and change types of parameters
@@ -86,28 +87,33 @@ public class ChatFragment extends Fragment {
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        viewContacts = inflater.inflate(R.layout.fragment_chat, container, false);
-        listView = (ListView) viewContacts.findViewById(R.id.list_view);
-        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        reference = FirebaseDatabase.getInstance().getReference("Contacts").child(uid);
+        try {
+            viewContacts = inflater.inflate(R.layout.fragment_chat, container, false);
+            viewContacts.setClickable(false);
+            listView = (ListView) viewContacts.findViewById(R.id.list_view);
+            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            reference = FirebaseDatabase.getInstance().getReference("Contacts").child(uid);
 
-       list();
-onStart1();
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            list();
+            onStart1();
+            super.onCreate(savedInstanceState);
+            if (getArguments() != null) {
+                mParam1 = getArguments().getString(ARG_PARAM1);
+                mParam2 = getArguments().getString(ARG_PARAM2);
+            }
+            return viewContacts;
+        }catch (RuntimeException e){
+            return viewContacts;
+
         }
-        return viewContacts;
     }
 
     private void list() {
         contactArrayList = new ArrayList<>();
-listView.clearDisappearingChildren();
+        listView.clearDisappearingChildren();
         contactsAdapter = new ContactsAdapter(getContext(), 0, 0, contactArrayList);
 
         listView.setAdapter(contactsAdapter);
@@ -124,8 +130,9 @@ listView.clearDisappearingChildren();
                 ArrayList<String> arrayList = new ArrayList<>();
                 for (DataSnapshot child : snapshot.getChildren()) {
 
-                    String uidContact = child.getKey();
-                    arrayList.add(uidContact);
+                        String uidContact = child.getKey();
+                        arrayList.add(uidContact);
+
                 }
                 addContact(arrayList, uid);
 
@@ -142,45 +149,23 @@ listView.clearDisappearingChildren();
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-             view.setBackgroundColor(Color.parseColor("#FFACE8EF"));
-                dialogDelete(i,view);
+                view.setBackgroundColor(Color.parseColor("#FFACE8EF"));
+                dialogDelete(i, view);
                 return true;
             }
         });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view,final int i, long l) {
+            public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
 
-                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Blocked")
-                        .child(uid).child( contactArrayList.get(i).getUidContacts());
-                reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            dialogIsBlocking();
-
-                        } else {
-                            Intent intent = new Intent(getContext(), ChatActivity.class);
-                            intent.putExtra("send_message_user_id", uid);
-                            intent.putExtra("to_message_user_id", contactArrayList.get(i).getUidContacts());
-                            // Toast.makeText(getContext(), uid, Toast.LENGTH_LONG).show();
-
-                            startActivityForResult(intent, 0);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+                chakIfExistAndBlokeAndSend(i);
 
             }
         });
     }
 
-    private void dialogDelete(final int i,final View view2) {
+    private void dialogDelete(final int i, final View view2) {
         final Dialog d = new Dialog(getContext());
         d.setContentView(R.layout.dialog_delete_chat);
         d.setTitle("Manage");
@@ -245,19 +230,22 @@ listView.clearDisappearingChildren();
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
 
-                RegisterInformation2 registerInformationRecive = new RegisterInformation2();
-                registerInformationRecive = snapshot.getValue(RegisterInformation2.class);
-                nameContact = registerInformationRecive.getName();
-                if (nameContact.isEmpty())
-                    nameContact = registerInformationRecive.getEmail();
+if (snapshot.exists()) {
+    RegisterInformation2 registerInformationRecive = new RegisterInformation2();
+    registerInformationRecive = snapshot.getValue(RegisterInformation2.class);
+    nameContact = registerInformationRecive.getName();
+    if (nameContact.isEmpty())
+        nameContact = registerInformationRecive.getEmail();
 
-                imageContact = registerInformationRecive.getImageUrl();
+    imageContact = registerInformationRecive.getImageUrl();
+}
 
                 //dataChange(uid, uidContact.get(0));
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Contacts");
                 databaseReference1.child(uid).child(uidContact.get(0)).limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+
                         for (DataSnapshot child : snapshot.getChildren()) {
                             messageContact = child.getValue(Message.class);
 
@@ -306,13 +294,14 @@ listView.clearDisappearingChildren();
                 contact.setUidContacts(uidContact.get(0));
                 contactArrayList.add(contact);
                 uidContact.remove(0);
-                if(uidContact.size()==0) {
-                    Collections.sort( contactArrayList, new  ComperatorContact());
+                if (uidContact.size() == 0) {
+                    Collections.sort(contactArrayList, new ComperatorContact());
                     contactsAdapter.notifyDataSetChanged();
+                    viewContacts.setClickable(true);
 
                 }
 
-                if (uidContact.size() > 0) addContact(uidContact, uid);
+               if (uidContact.size() > 0) addContact(uidContact, uid);
             }
 
             @Override
@@ -323,40 +312,93 @@ listView.clearDisappearingChildren();
     }
 
 
-
-
-
     public void onStart1() {
 
-    reference.addChildEventListener(new ChildEventListener() {
-        @Override
-        public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+        reference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if (snapshot.exists()) {
+//                    i++;
+//                    if (i>1)
+//                    Toast.makeText(getContext(), "החשבון נמחק בהצלחה"+i, Toast.LENGTH_LONG).show();
 
-        }
 
-        @Override
-        public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-            if (snapshot.exists()) {
-                list();
+                }
             }
-        }
 
-        @Override
-        public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if (snapshot.exists()) {
+                    list();
+                }
+            }
 
-        }
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
-        @Override
-        public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+            }
 
-        }
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-        @Override
-        public void onCancelled(@NonNull DatabaseError error) {
+            }
 
-        }
-    });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
     }
+
+    private void chakIfExistAndBlokeAndSend(final int i) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("RegisterInformation2")
+                .child(contactArrayList.get(i).getUidContacts());
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    chakIfBlockAndSend(i);
+                } else {
+                    dialogIsBlocking();
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void chakIfBlockAndSend(final int i) {
+
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Blocked")
+                .child(uid).child(contactArrayList.get(i).getUidContacts());
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    dialogIsBlocking();
+
+                } else {
+                    Intent intent = new Intent(getContext(), ChatActivity.class);
+                    intent.putExtra("send_message_user_id", uid);
+                    intent.putExtra("to_message_user_id", contactArrayList.get(i).getUidContacts());
+                    // Toast.makeText(getContext(), uid, Toast.LENGTH_LONG).show();
+
+                    startActivityForResult(intent, 0);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
 
 }

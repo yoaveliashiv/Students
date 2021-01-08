@@ -71,7 +71,7 @@
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -79,29 +79,40 @@
         android:layout_marginTop="20dp"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
+
         <ImageButton
             android:id="@+id/imageButton_send_pick"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/send_files" />
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/editTextMssege"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@mipmap/ic_image"
+            />
 
 
         <EditText
             android:id="@+id/editTextMssege"
             android:layout_width="290dp"
             android:layout_height="wrap_content"
+
+
             android:hint="כתוב כאן הודעה..."
-            android:padding="17dp" />
+            android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageButtonSendMassege"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/imageButtonSendMassege"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/send_message" />
+            android:src="@drawable/send_message"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </RelativeLayout>

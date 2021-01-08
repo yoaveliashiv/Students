@@ -30,8 +30,10 @@ import com.example.Hikers.MainActivityRegister2;
 import com.example.Hikers.RegisterInformation2;
 import com.example.Hikers.RegisterLoginActivity;
 import com.example.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -47,6 +49,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class ActivitySettings extends AppCompatActivity {
     private Uri uriImage = null;
@@ -153,79 +156,53 @@ public class ActivitySettings extends AppCompatActivity {
         buttonDeleteDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseAuth.getInstance().getCurrentUser().delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+
+                FirebaseAuth.getInstance().getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(ActivitySettings.this, "החשבון נמחק בהצלחה", Toast.LENGTH_LONG).show();
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()) {
+                            Toast.makeText(ActivitySettings.this, "החשבון נמחק בהצלחה", Toast.LENGTH_LONG).show();
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                                    .getReference("RegisterInformation2").child(uid);
+                            databaseReference.removeValue();
 
-                        Intent intent = new Intent(ActivitySettings.this, RegisterLoginActivity.class);
-                        startActivity(intent);
+                            DatabaseReference databaseReference1 = FirebaseDatabase.getInstance()
+                                    .getReference("Contacts").child(uid);
+                            databaseReference1.removeValue();
 
+                            DatabaseReference databaseReference2 = FirebaseDatabase.getInstance()
+                                    .getReference("NotificationsIdSeeLast").child(uid);
+
+                            databaseReference2.removeValue();
+                            DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                                    .getReference("MyGroups").child(uid);
+                            databaseReference3.removeValue();
+                            DatabaseReference databaseReference4 = FirebaseDatabase.getInstance()
+                                    .getReference("Groups details");
+                            databaseReference4.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    for (DataSnapshot child : snapshot.getChildren()) {
+                                        for (DataSnapshot child2 : child.getChildren()) {
+                                            if(child2.getKey().equals(uid))
+                                                child2.getRef().removeValue();
+                                            // textViewGroupDetails.setText(child2.getKey());
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+                            Intent intent = new Intent(ActivitySettings.this, RegisterLoginActivity.class);
+                            startActivity(intent);
+                        }
                     }
                 });
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-                        .getReference("RegisterInformation2").child(uid);
-                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        snapshot.getRef().removeValue();
 
 
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance()
-                        .getReference("Contacts").child(uid);
-                databaseReference1.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                        snapshot.getRef().removeValue();
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-                DatabaseReference databaseReference2 = FirebaseDatabase.getInstance()
-                        .getReference("NotificationsIdSeeLast").child(uid);
-
-                databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                        snapshot.getRef().removeValue();
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
-                        .getReference("MyGroups").child(uid);
-                databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                        snapshot.getRef().removeValue();
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
 
 
             }
@@ -293,7 +270,7 @@ public class ActivitySettings extends AppCompatActivity {
 
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
             databaseReference.child(uid).child("name").setValue(name);
-            Intent intent = new Intent(ActivitySettings.this, MainActivity2.class);
+            Intent intent = new Intent(ActivitySettings.this, MainActivity3.class);
             startActivity(intent);
             finish();
             return;
@@ -314,7 +291,7 @@ public class ActivitySettings extends AppCompatActivity {
                                 databaseReference.child(uid).child("name").setValue(name);
                                 databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
                                 databaseReference.child(uid).child("imageUrl").setValue(uri.toString());
-                                Intent intent = new Intent(ActivitySettings.this, MainActivity2.class);
+                                Intent intent = new Intent(ActivitySettings.this, MainActivity3.class);
                                 startActivity(intent);
                                 finish();
 

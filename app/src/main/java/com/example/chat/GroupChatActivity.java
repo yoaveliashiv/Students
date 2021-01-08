@@ -60,10 +60,13 @@ public class GroupChatActivity extends AppCompatActivity {
     private ListView listView;
     private Boolean flag;
     private TextView textViewGroupDetails;
+    private int numMembers;
 
     // private TextView textViewDisplay;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         setContentView(R.layout.activity_group_chat);
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         nameGroup = getIntent().getExtras().getString("nameGroup");
@@ -104,7 +107,6 @@ public class GroupChatActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                getSupportActionBar().setTitle("חיים");
 
                 dialogSendPrivateMessage(i);
             }
@@ -128,7 +130,8 @@ public class GroupChatActivity extends AppCompatActivity {
             }
         });
         textViewGroupDetails = findViewById(R.id.textView_group_details);
-       setGroupDetails();
+        setGroupDetails();
+
         onStart1();
         super.onCreate(savedInstanceState);
 
@@ -140,186 +143,214 @@ public class GroupChatActivity extends AppCompatActivity {
         databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int num=0;
-                if(snapshot.exists()){
-                     num=(int)snapshot.getChildrenCount();
-                    textViewGroupDetails.setText(" מספר המשתתפים "+num+" ");
-                }else{
-                    textViewGroupDetails.setText(" מספר המשתתפים 0 ");
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-    private void dialogSendPrivateMessage(final int i) {
-        d = new Dialog(this);
-        d.setContentView(R.layout.dialog_massge);
-        d.setTitle("Manage");
-
-        TextView textViewSendMassge = d.findViewById(R.id.textView_send_massage);
-        TextView textViewOpenProfile = d.findViewById(R.id.textView_propile_open);
-        TextView textViewSendWhatappsMassge = d.findViewById(R.id.textView_send_whatapps);
-        TextView textViewCopyPhone = d.findViewById(R.id.textView_copy_phone);
-        TextView textViewCopyMessage = d.findViewById(R.id.textView_copy_massage);
-        TextView textViewFeed = d.findViewById(R.id.textView_feed);
-
-        textViewOpenProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(GroupChatActivity.this, ProfileActivity.class);
-                intent.putExtra("profile_user_id", arrayListMessage.get(i).getUid());
-                intent.putExtra("visit_user_id", uid);
-                startActivity(intent);
-
-            }
-        });
-        textViewSendMassge.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (uid.equals(arrayListMessage.get(i).getUid())) {
-                    Toast.makeText(GroupChatActivity.this, "לא ניתן לשלוח הודעה לעצמך", Toast.LENGTH_SHORT).show();
-                    d.dismiss();
-                    return;
-                }
-                chakIfBlockAndSend(i);
-
-
-            }
-        });
-        textViewSendWhatappsMassge.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent intentWhatsapp = new Intent(Intent.ACTION_VIEW);
-                String num = arrayListMessage.get(i).getPhone();
-                String url = "https://api.whatsapp.com/send?phone=" + num;
-                intentWhatsapp.setData(Uri.parse(url));
-                intentWhatsapp.setPackage("com.whatsapp");
-                startActivity(intentWhatsapp);
-            }
-        });
-        textViewCopyPhone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("1", arrayListMessage.get(i).getPhone());
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(GroupChatActivity.this, "המספר הועתק", Toast.LENGTH_SHORT).show();
-                d.dismiss();
-            }
-        });
-        textViewCopyMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("1", arrayListMessage.get(i).getMessage());
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(GroupChatActivity.this, "ההודעה הועתקה", Toast.LENGTH_SHORT).show();
-                d.dismiss();
-            }
-        });
-        textViewFeed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(GroupChatActivity.this, ActivityFeedbackChat.class);
-                intent.putExtra("message", arrayListMessage.get(i));
-                intent.putExtra("flag", true);
-                startActivity(intent);
-            }
-        });
-        d.show();
-    }
-
-    private void chakIfBlockAndSend(final int i) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Blocked")
-                .child(uid).child(arrayListMessage.get(i).getUid());
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                numMembers = 0;
                 if (snapshot.exists()) {
-                    dialogIsBlocking();
-                    d.dismiss();
-                } else {
-                    Intent intent = new Intent(GroupChatActivity.this, ChatActivity.class);
-                    intent.putExtra("send_message_user_id", uid);
-                    intent.putExtra("to_message_user_id", arrayListMessage.get(i).getUid());
-                    startActivityForResult(intent, 0);
+                    numMembers = (int) snapshot.getChildrenCount();
+
+                    DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("GroupsPrice")
+                            .child(nameGroup);
+                    databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                String price = snapshot.getValue(String.class);
+                                textViewGroupDetails.setText(" מספר המשתתפים " + numMembers + ". " + "מחיר נסיעה " +
+                                        price + " ");
+
+                            } else {
+                              if(!flag) {
+                                  TextView textViewPrice = findViewById(R.id.button_price);
+                                  textViewPrice.setVisibility(View.VISIBLE);
+                                  textViewPrice.setOnClickListener(new View.OnClickListener() {
+                                      @Override
+                                      public void onClick(View view) {
+                                          dialogPriceGroup();
+                                      }
+                                  });
+                              }
+                                textViewGroupDetails.setText(" מספר המשתתפים " + numMembers + ". " + "מחיר נסיעה ? ");
+                            }
+                        }
+
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+                }
+                    @Override
+                    public void onCancelled (@NonNull DatabaseError error){
+
+                    }
+                });
+        }
+
+
+        private void dialogSendPrivateMessage ( final int i){
+            d = new Dialog(this);
+            d.setContentView(R.layout.dialog_massge);
+            d.setTitle("Manage");
+
+            TextView textViewSendMassge = d.findViewById(R.id.textView_send_massage);
+            TextView textViewOpenProfile = d.findViewById(R.id.textView_propile_open);
+            TextView textViewSendWhatappsMassge = d.findViewById(R.id.textView_send_whatapps);
+            TextView textViewCopyPhone = d.findViewById(R.id.textView_copy_phone);
+            TextView textViewCopyMessage = d.findViewById(R.id.textView_copy_massage);
+            TextView textViewFeed = d.findViewById(R.id.textView_feed);
+
+            textViewOpenProfile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(GroupChatActivity.this, ProfileActivity.class);
+                    intent.putExtra("profile_user_id", arrayListMessage.get(i).getUid());
+                    intent.putExtra("visit_user_id", uid);
+                    startActivity(intent);
 
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-    private void dialogIsBlocking() {
-        final Dialog dialog = new Dialog(GroupChatActivity.this);
-        dialog.setContentView(R.layout.dialog_is_blocking);
-        dialog.setTitle("Manage");
-
-        dialog.setCancelable(true);
-        Button buttonClose = dialog.findViewById(R.id.button_close_window);
-        buttonClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-
-            }
-        });
-        dialog.show();
-    }
-
-    private void saveDatabase(String sms, final String nameGroup) {
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        String date = simpleDateFormat.format(calendar.getTime());
-
-        calendar = Calendar.getInstance();
-        simpleDateFormat = new SimpleDateFormat("HH:mm");
-        String time = simpleDateFormat.format(calendar.getTime());
-
-        final Message message = new Message();
-        message.setDate(date);
-        message.setMessage(sms);
-        if (!registerInformation.getName().isEmpty())
-            message.setName(registerInformation.getName());
-        else
-            message.setName(registerInformation.getEmail());
-
-        message.setPhone(registerInformation.getEmail());
-        message.setUid(uid);
-        message.setTime(time);
-        DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("NamesGroups");
-        databaseReference2.child(nameGroup).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int id = 0;
-                if (snapshot.exists()) id = (int) snapshot.getChildrenCount();
+            });
+            textViewSendMassge.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (uid.equals(arrayListMessage.get(i).getUid())) {
+                        Toast.makeText(GroupChatActivity.this, "לא ניתן לשלוח הודעה לעצמך", Toast.LENGTH_SHORT).show();
+                        d.dismiss();
+                        return;
+                    }
+                    chakIfExistAndBlokeAndSend(i);
 
 
-                message.setId(id);
-                databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups").child(nameGroup).push();
+                }
+            });
+            textViewSendWhatappsMassge.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-                databaseReference.setValue(message);
-            }
+                    Intent intentWhatsapp = new Intent(Intent.ACTION_VIEW);
+                    String num = arrayListMessage.get(i).getPhone();
+                    String url = "https://api.whatsapp.com/send?phone=" + num;
+                    intentWhatsapp.setData(Uri.parse(url));
+                    intentWhatsapp.setPackage("com.whatsapp");
+                    startActivity(intentWhatsapp);
+                }
+            });
+            textViewCopyPhone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("1", arrayListMessage.get(i).getPhone());
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(GroupChatActivity.this, "המספר הועתק", Toast.LENGTH_SHORT).show();
+                    d.dismiss();
+                }
+            });
+            textViewCopyMessage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("1", arrayListMessage.get(i).getMessage());
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(GroupChatActivity.this, "ההודעה הועתקה", Toast.LENGTH_SHORT).show();
+                    d.dismiss();
+                }
+            });
+            textViewFeed.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(GroupChatActivity.this, ActivityFeedbackChat.class);
+                    intent.putExtra("message", arrayListMessage.get(i));
+                    intent.putExtra("flag", true);
+                    startActivity(intent);
+                }
+            });
+            d.show();
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+        private void chakIfBlockAndSend ( final int i){
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Blocked")
+                    .child(uid).child(arrayListMessage.get(i).getUid());
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        dialogIsBlocking();
+                        d.dismiss();
+                    } else {
+                        Intent intent = new Intent(GroupChatActivity.this, ChatActivity.class);
+                        intent.putExtra("send_message_user_id", uid);
+                        intent.putExtra("to_message_user_id", arrayListMessage.get(i).getUid());
+                        startActivityForResult(intent, 0);
 
-            }
-        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+
+        private void dialogIsBlocking () {
+            final Dialog dialog = new Dialog(GroupChatActivity.this);
+            dialog.setContentView(R.layout.dialog_is_blocking);
+            dialog.setTitle("Manage");
+
+            dialog.setCancelable(true);
+            Button buttonClose = dialog.findViewById(R.id.button_close_window);
+            buttonClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+
+                }
+            });
+            dialog.show();
+        }
+
+        private void saveDatabase (String sms,final String nameGroup){
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String date = simpleDateFormat.format(calendar.getTime());
+
+            calendar = Calendar.getInstance();
+            simpleDateFormat = new SimpleDateFormat("HH:mm");
+            String time = simpleDateFormat.format(calendar.getTime());
+
+            final Message message = new Message();
+            message.setDate(date);
+            message.setMessage(sms);
+            if (!registerInformation.getName().isEmpty())
+                message.setName(registerInformation.getName());
+            else
+                message.setName(registerInformation.getEmail());
+
+            message.setPhone(registerInformation.getEmail());
+            message.setUid(uid);
+            message.setTime(time);
+            DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("NamesGroups");
+            databaseReference2.child(nameGroup).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    int id = 0;
+                    if (snapshot.exists()) id = (int) snapshot.getChildrenCount();
 
 
-    }
+                    message.setId(id);
+                    databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups").child(nameGroup).push();
+
+                    databaseReference.setValue(message);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+
+        }
 
 //    private String getPhoneUser() {
 //        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -337,196 +368,256 @@ public class GroupChatActivity extends AppCompatActivity {
 //        return email;
 //    }
 
-    private void getUserInfo() {
+        private void getUserInfo () {
 
-        DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
-        databaseReference1.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                registerInformation = new RegisterInformation2();
-                registerInformation = snapshot.getValue(RegisterInformation2.class);
+            DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
+            databaseReference1.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    registerInformation = new RegisterInformation2();
+                    registerInformation = snapshot.getValue(RegisterInformation2.class);
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-
-    protected void onStart1() {//TODO:
-
-
-        databaseReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if (snapshot.exists()) {
-                    displayMessage(snapshot);
                 }
-            }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if (snapshot.exists()) {
-                    displayMessage(snapshot);
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
                 }
-            }
+            });
+        }
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
-            }
+        protected void onStart1 () {//TODO:
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-            }
+            databaseReference.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    if (snapshot.exists()) {
+                        displayMessage(snapshot);
+                    }
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    if (snapshot.exists()) {
+                        displayMessage(snapshot);
+                    }
+                }
 
-            }
-        });
-    }
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
-    private void displayMessage(DataSnapshot snapshot) {
+                }
 
-        Message message;
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-        message = snapshot.getValue(Message.class);
-        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
-                .getReference("NotificationsIdSeeLast").child(uid).child(nameGroup);//set Notifications
-        databaseReference3.setValue(message.getId());
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+
+        private void displayMessage (DataSnapshot snapshot){
+
+            Message message;
+
+            message = snapshot.getValue(Message.class);
+            DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                    .getReference("NotificationsIdSeeLast").child(uid).child(nameGroup);//set Notifications
+            databaseReference3.setValue(message.getId());
 //        String sms;
 //        if (!message.getName().isEmpty())
 //            sms = message.getName() + " :\n" + message.getMessage() + "\n" + message.getTime() + "\n";
 //        else
 //            sms = message.getPhone() + " :\n" + message.getMessage() + "\n" + message.getTime() + "\n";
-        //   textViewDisplay.setHint(message.getUid());
-        //  textViewDisplay.append(sms);
-        arrayListMessage.add(message);
+            //   textViewDisplay.setHint(message.getUid());
+            //  textViewDisplay.append(sms);
+            arrayListMessage.add(message);
 
-        arrayAdapter.notifyDataSetChanged();
+            arrayAdapter.notifyDataSetChanged();
 // Force scroll to the top of the scroll view.
 // Because, when the list view gets loaded it focuses the list view
 // automatically at the bottom of this page.
-        listView.setSelection(listView.getAdapter().getCount() - 1);
+            listView.setSelection(listView.getAdapter().getCount() - 1);
 
 
-    }
+        }
 
-    private void saveNotifications() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups");
-        databaseReference.child(uid).child(nameGroup).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    int num = snapshot.getValue(Integer.class);
-                    num++;
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NotificationsGroups");
-                    databaseReference.child(uid).child(nameGroup).setValue(num);
-                } else {
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NotificationsGroups");
-                    databaseReference.child(uid).child(nameGroup).setValue(1);
+        private void saveNotifications () {
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups");
+            databaseReference.child(uid).child(nameGroup).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        int num = snapshot.getValue(Integer.class);
+                        num++;
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NotificationsGroups");
+                        databaseReference.child(uid).child(nameGroup).setValue(num);
+                    } else {
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NotificationsGroups");
+                        databaseReference.child(uid).child(nameGroup).setValue(1);
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        MenuInflater menuInflater = getMenuInflater();
-
-        menuInflater.inflate(R.menu.menu__group_chat, menu);
-        return true;
-
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (flag) {
-            MenuItem item = menu.findItem(R.id.delete_group_Menu);
-            item.setVisible(false);
+                }
+            });
         }
-        return super.onPrepareOptionsMenu(menu);
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Intent intent2;
+        @Override
+        public boolean onCreateOptionsMenu (Menu menu){
+
+            MenuInflater menuInflater = getMenuInflater();
+
+            menuInflater.inflate(R.menu.menu__group_chat, menu);
+            return true;
+
+        }
+
+        @Override
+        public boolean onPrepareOptionsMenu (Menu menu){
+            if (flag) {
+                MenuItem item = menu.findItem(R.id.delete_group_Menu);
+                item.setVisible(false);
+            }
+            return super.onPrepareOptionsMenu(menu);
+        }
+
+        @Override
+        public boolean onOptionsItemSelected (@NonNull MenuItem item){
+            Intent intent2;
 
 
-        switch (item.getItemId()) {
+            switch (item.getItemId()) {
 
-            case R.id.mainIconMenu:
-                intent2 = new Intent(GroupChatActivity.this, MainActivity3.class);
-                startActivity(intent2);
-                return true;
+                case R.id.mainIconMenu:
+                    intent2 = new Intent(GroupChatActivity.this, MainActivity3.class);
+                    startActivity(intent2);
+                    return true;
 
-            case R.id.settingsMenu:
-                intent2 = new Intent(GroupChatActivity.this, ActivitySettings.class);
-                intent2.putExtra("flag", false);
-                startActivity(intent2);
-                return true;
-            case R.id.delete_group_Menu:
-                dialogDelete();
-                return true;
-            case R.id.feedbackMenu:
-                intent2 = new Intent(GroupChatActivity.this, ActivityFeedbackChat.class);
-                intent2.putExtra("flag", false);
-                startActivity(intent2);
-                return true;
-            case R.id.returnMainMenu:
+                case R.id.settingsMenu:
+                    intent2 = new Intent(GroupChatActivity.this, ActivitySettings.class);
+                    intent2.putExtra("flag", false);
+                    startActivity(intent2);
+                    return true;
+                case R.id.delete_group_Menu:
+                    dialogDelete();
+                    return true;
+                case R.id.feedbackMenu:
+                    intent2 = new Intent(GroupChatActivity.this, ActivityFeedbackChat.class);
+                    intent2.putExtra("flag", false);
+                    startActivity(intent2);
+                    return true;
+                case R.id.returnMainMenu:
 
-                intent2 = new Intent(GroupChatActivity.this, MainActivity3.class);
-                startActivity(intent2);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+                    intent2 = new Intent(GroupChatActivity.this, MainActivity3.class);
+                    startActivity(intent2);
+                    return true;
+                default:
+                    return super.onOptionsItemSelected(item);
+            }
+        }
+
+        private void dialogDelete () {
+            final Dialog d = new Dialog(GroupChatActivity.this);
+            d.setContentView(R.layout.dialog_delete_my_group);
+            d.setTitle("Manage");
+            d.setCancelable(true);
+
+            Button buttonBlokeDialog = d.findViewById(R.id.button_delete_dialog);
+            Button buttonNoBloke = d.findViewById(R.id.button_exit_delete);
+            buttonNoBloke.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    d.cancel();
+                    return;
+                }
+            });
+            buttonBlokeDialog.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups")
+                            .child(uid).child(nameGroup);
+                    databaseReference.removeValue();
+                    DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Groups details")
+                            .child(nameGroup).child(uid);
+                    databaseReference2.removeValue();
+
+                    Toast.makeText(GroupChatActivity.this, "יצאת מהקבוצה בהצלחה", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(GroupChatActivity.this, MainActivity3.class);
+
+                    startActivityForResult(intent, 0);
+                }
+
+            });
+
+            d.show();
+        }
+        private void chakIfExistAndBlokeAndSend ( final int i){
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("RegisterInformation2")
+                    .child(arrayListMessage.get(i).getUid());
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        chakIfBlockAndSend(i);
+                    } else {
+                        dialogIsBlocking();
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+        private void dialogPriceGroup () {
+            final Dialog d = new Dialog(GroupChatActivity.this);
+            d.setContentView(R.layout.dialog_new_price_drive);
+            d.setTitle("Manage");
+
+            d.setCancelable(true);
+            final EditText editTextNameGroup = d.findViewById(R.id.editText_name_link);
+
+            Button buttonSend = d.findViewById(R.id.button_send_new_link_dialog);
+
+            Button buttonClose = d.findViewById(R.id.button_close_window_new);
+            buttonClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    d.dismiss();
+                }
+            });
+            buttonSend.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    String price = editTextNameGroup.getText().toString();
+
+                    if (price.isEmpty() || price.length() > 4) {
+                        editTextNameGroup.setError("הכנס מספר תקין בלי רווחים");
+                        editTextNameGroup.requestFocus();
+                        return;
+                    }
+
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("GroupsPriceOffer")
+                            .child(nameGroup).child(uid);
+                    databaseReference.setValue(price);
+                    Toast.makeText(GroupChatActivity.this, "המחיר נשלח בהצלחה ומחכה לאישור המערכת", Toast.LENGTH_LONG).show();
+                    d.dismiss();
+
+                }
+            });
+            d.show();
+
         }
     }
-
-    private void dialogDelete() {
-        final Dialog d = new Dialog(GroupChatActivity.this);
-        d.setContentView(R.layout.dialog_delete_my_group);
-        d.setTitle("Manage");
-        d.setCancelable(true);
-
-        Button buttonBlokeDialog = d.findViewById(R.id.button_delete_dialog);
-        Button buttonNoBloke = d.findViewById(R.id.button_exit_delete);
-        buttonNoBloke.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                d.cancel();
-                return;
-            }
-        });
-        buttonBlokeDialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups")
-                        .child(uid).child(nameGroup);
-                databaseReference.removeValue();
-                DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Groups details")
-                        .child(nameGroup).child(uid);
-                databaseReference2.removeValue();
-
-                Toast.makeText(GroupChatActivity.this, "יצאת מהקבוצה בהצלחה", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(GroupChatActivity.this, MainActivity3.class);
-
-                startActivityForResult(intent, 0);
-            }
-
-        });
-
-        d.show();
-    }
-}

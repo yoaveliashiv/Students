@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            app:layout_constraintTop_toBottomOf="@+id/textView_no_found">
+            app:layout_constraintTop_toBottomOf="@+id/button_new_link">
 
 
         </ListView>
@@ -48,15 +48,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/button_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="חפש"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_search" />
+        <Button
+            android:id="@+id/button_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="חפש"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editText_search" />
 
     <TextView
         android:id="@+id/textView_no_found"
@@ -80,5 +80,17 @@
         app:layout_constraintBottom_toTopOf="@+id/textView_no_found"
         app:layout_constraintStart_toEndOf="@+id/button_search"
         app:layout_constraintTop_toTopOf="@+id/button_search" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/button_new_link"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:background="#959191"
+            android:text="  הוסף קישור חדש  "
+            android:textColor="@color/colorBackg"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/button_search"
+            app:layout_constraintStart_toStartOf="@+id/button_search"
+            app:layout_constraintTop_toBottomOf="@+id/textView_no_found" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -23,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,7 +37,7 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class LinksWhatsAppFragment extends Fragment {
-    private   View viewGroup;
+    private View viewGroup;
     private ArrayList<LinksToWhatsApp> arrayListLink;
     private TextView textViewNoFond;
     private EditText editTextSearch;
@@ -78,6 +78,8 @@ public class LinksWhatsAppFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -87,36 +89,124 @@ public class LinksWhatsAppFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-         viewGroup = inflater.inflate(R.layout.fragment_links_whats_app, container, false);
-        listView = (ListView) viewGroup.findViewById(R.id.list_view);
-        textViewNoFond = viewGroup.findViewById(R.id.textView_no_found);
-        editTextSearch = viewGroup.findViewById(R.id.editText_search);
-        buttonSearch = viewGroup.findViewById(R.id.button_search);
-        buttonSeeAllGroups = viewGroup.findViewById(R.id.button_all_groups);
-       allLinks();
-        buttonSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                search();
-            }
-        });
-        buttonSeeAllGroups.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                allLinks();
-                buttonSeeAllGroups.setVisibility(View.GONE);
-                textViewNoFond.setVisibility(View.GONE);
-            }
-        });
-listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        dialogJoinWhatappsGrop(i);
-    }
-});
-        // Inflate the layout for this fragment
-        return viewGroup;
+try {
 
+
+    viewGroup = inflater.inflate(R.layout.fragment_links_whats_app, container, false);
+    listView = (ListView) viewGroup.findViewById(R.id.list_view);
+    textViewNoFond = viewGroup.findViewById(R.id.textView_no_found);
+    editTextSearch = viewGroup.findViewById(R.id.editText_search);
+    buttonSearch = viewGroup.findViewById(R.id.button_search);
+    buttonSeeAllGroups = viewGroup.findViewById(R.id.button_all_groups);
+    allLinks();
+    buttonSearch.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            search();
+        }
+    });
+    buttonSeeAllGroups.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            allLinks();
+            buttonSeeAllGroups.setVisibility(View.GONE);
+            textViewNoFond.setVisibility(View.GONE);
+        }
+    });
+    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            dialogJoinWhatappsGrop(i);
+        }
+    });
+
+    TextView buttonNewLink = viewGroup.findViewById(R.id.button_new_link);
+    buttonNewLink.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            dialogNewLink();
+        }
+    });
+    return viewGroup;
+} catch (RuntimeException e){
+    return viewGroup;
+
+}
+
+    }
+
+    private void dialogNewLink() {
+        final Dialog d = new Dialog(getContext());
+        d.setContentView(R.layout.dialog_new_link);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        final EditText editTextNameGroup = d.findViewById(R.id.editText_name_link);
+        final EditText editTextLink = d.findViewById(R.id.editText_new_link);
+
+        Button buttonSend = d.findViewById(R.id.button_send_new_link_dialog);
+
+        Button buttonClose = d.findViewById(R.id.button_close_window_new);
+        buttonClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.dismiss();
+            }
+        });
+        buttonSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String link_ = editTextLink.getText().toString();
+                if (link_.length() < 4) {
+                    editTextLink.setError("הכנס קישור תקין");
+                    editTextLink.requestFocus();
+                    return;
+                }
+                String nameLink_ = editTextNameGroup.getText().toString();
+
+                if (nameLink_.length() < 4) {
+                    editTextNameGroup.setError("הכנס שם קבוצה תקין");
+                    editTextNameGroup.requestFocus();
+                    return;
+                }
+                chakIfExsitAndSend(link_, nameLink_, editTextLink, editTextNameGroup, d);
+
+
+            }
+        });
+        d.show();
+
+    }
+
+    private void chakIfExsitAndSend(final String link_, final String nameLink_, final EditText editTextLink, final EditText editTextNameGroup, final Dialog d) {
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("LinksToWhatsApp");
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    if (link_.equals(child.getValue().toString())) {
+                        editTextLink.setError("הקבוצה כבר קיימת בשם: " + child.getKey());
+                        editTextLink.requestFocus();
+                        return;
+                    }
+                }
+                LinksToWhatsApp link = new LinksToWhatsApp();
+                link.setNameGroup(nameLink_);
+                link.setLink(link_);
+                String uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NewLinks")
+                        .child(uid).push();
+                databaseReference.setValue(link);
+                Toast.makeText(getContext(), "הלינק נשלח בהצלחה ומחכה לאישור המערכת", Toast.LENGTH_LONG).show();
+                d.dismiss();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void dialogJoinWhatappsGrop(final int i) {
@@ -135,10 +225,10 @@ listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onClick(View view) {
 
                 Intent intentWhatsapp = new Intent(Intent.ACTION_VIEW);
-                String link =arrayListLink.get(i).getLink();
+                String link = arrayListLink.get(i).getLink();
                 String url = link;
                 intentWhatsapp.setData(Uri.parse(url));
-               // intentWhatsapp.setPackage("com.whatsapp");
+                // intentWhatsapp.setPackage("com.whatsapp");
                 startActivity(intentWhatsapp);
 
             }
@@ -149,7 +239,7 @@ listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onClick(View view) {
                 ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("1",  arrayListLink.get(i).getLink());
+                ClipData clip = ClipData.newPlainText("1", arrayListLink.get(i).getLink());
                 clipboard.setPrimaryClip(clip);
                 Toast.makeText(getContext(), "הלינק הועתק", Toast.LENGTH_SHORT).show();
                 d.dismiss();
@@ -188,8 +278,8 @@ listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 for (DataSnapshot child : snapshot.getChildren()) {
 
                     LinksToWhatsApp linksToWhatsApp = new LinksToWhatsApp();
-                    String nameGroup=child.getKey();
-                    if(nameGroup.contains(groupSearch)) {
+                    String nameGroup = child.getKey();
+                    if (nameGroup.contains(groupSearch)) {
                         linksToWhatsApp.setNameGroup(nameGroup);
                         linksToWhatsApp.setLink(child.getValue(String.class));
                         arrayListLink.add(linksToWhatsApp);
@@ -211,7 +301,7 @@ listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
     }
 
     private void allLinks() {
-         arrayListLink = new ArrayList<>();
+        arrayListLink = new ArrayList<>();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("LinksToWhatsApp");
 
         final LinksToWhatsAppAdapter linksToWhatsAppAdapter = new LinksToWhatsAppAdapter(getContext(), 0, 0, arrayListLink);
@@ -240,4 +330,5 @@ listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             }
         });
     }
+
 }

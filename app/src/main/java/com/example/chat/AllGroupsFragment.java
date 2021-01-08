@@ -1,5 +1,6 @@
 package com.example.chat;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.Hikers.MainActivity2;
 import com.example.R;
@@ -38,7 +40,7 @@ public class AllGroupsFragment extends Fragment {
     private Button buttonSearch;
     private Button buttonSeeAllGroups;
     private ListView listView;
-
+  private   View viewGroup;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -82,31 +84,42 @@ public class AllGroupsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View viewGroup = inflater.inflate(R.layout.fragment_all_groups, container, false);
-        listView = (ListView) viewGroup.findViewById(R.id.list_view);
-        textViewNoFond = viewGroup.findViewById(R.id.textView_no_found);
-        editTextSearch = viewGroup.findViewById(R.id.editText_search);
-        buttonSearch = viewGroup.findViewById(R.id.button_search);
-        buttonSeeAllGroups = viewGroup.findViewById(R.id.button_all_groups);
-        allGroups();
+        try {
+            viewGroup = inflater.inflate(R.layout.fragment_all_groups, container, false);
+            listView = (ListView) viewGroup.findViewById(R.id.list_view);
+            textViewNoFond = viewGroup.findViewById(R.id.textView_no_found);
+            editTextSearch = viewGroup.findViewById(R.id.editText_search);
+            buttonSearch = viewGroup.findViewById(R.id.button_search);
+            buttonSeeAllGroups = viewGroup.findViewById(R.id.button_all_groups);
+            allGroups();
 
-        // Inflate the layout for this fragment
-        buttonSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                search();
-            }
-        });
-        buttonSeeAllGroups.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                allGroups();
-                buttonSeeAllGroups.setVisibility(View.GONE);
-                textViewNoFond.setVisibility(View.GONE);
-            }
-        });
-        return viewGroup;
-
+            // Inflate the layout for this fragment
+            buttonSearch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    search();
+                }
+            });
+            buttonSeeAllGroups.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    allGroups();
+                    buttonSeeAllGroups.setVisibility(View.GONE);
+                    textViewNoFond.setVisibility(View.GONE);
+                }
+            });
+            TextView buttonNewLink = viewGroup.findViewById(R.id.button_new_link);
+            buttonNewLink.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialogNewGroup();
+                }
+            });
+            return viewGroup;
+        }
+        catch ( RuntimeException e){
+            return viewGroup;
+        }
 
     }
 
@@ -192,6 +205,51 @@ public class AllGroupsFragment extends Fragment {
 
             }
         });
+
+    }
+    private void dialogNewGroup() {
+        final Dialog d = new Dialog(getContext());
+        d.setContentView(R.layout.dialog_new_group);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        final EditText editTextNameGroup = d.findViewById(R.id.editText_name_link);
+
+        Button buttonSend = d.findViewById(R.id.button_send_new_link_dialog);
+
+        Button buttonClose = d.findViewById(R.id.button_close_window_new);
+        buttonClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.dismiss();
+            }
+        });
+        buttonSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String nameLink_ = editTextNameGroup.getText().toString();
+
+                if (nameLink_.length() < 4) {
+                    editTextNameGroup.setError("הכנס שם קבוצה תקין");
+                    editTextNameGroup.requestFocus();
+                    return;
+                }
+                if (!nameLink_.contains("אריאל")&&!nameLink_.toLowerCase().contains("ariel")) {
+                    editTextNameGroup.setError("הכנס שם קבוצה תקין,לדוגמא אריאל-אשקלון");
+                    editTextNameGroup.requestFocus();
+                    return;
+                }
+               String uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NewGroups")
+                        .child(uid).push();
+                databaseReference.setValue(nameLink_);
+                Toast.makeText(getContext(), "ההצעה נשלחה בהצלחה ומחכה לאישור המערכת", Toast.LENGTH_LONG).show();
+                d.dismiss();
+
+            }
+        });
+        d.show();
 
     }
 }

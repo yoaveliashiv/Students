@@ -1,5 +1,6 @@
 package com.example.chat;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -10,14 +11,22 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.bumptech.glide.Glide;
 import com.example.R;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class GroupsAdapter extends ArrayAdapter<Contact> {
+public class MyGroupsAdapter extends ArrayAdapter<Contact> {
 
     private ImageView ivProduct;
     private Context context;
@@ -29,7 +38,7 @@ public class GroupsAdapter extends ArrayAdapter<Contact> {
     private Contact contact;
 
 
-    public GroupsAdapter(Context context, int resource, int textViewResourceId, List<Contact> listContact
+    public MyGroupsAdapter(Context context, int resource, int textViewResourceId, List<Contact> listContact
             , String uidVist) {
         super(context, resource, textViewResourceId, listContact);
         this.flagSee = false;
@@ -39,19 +48,21 @@ public class GroupsAdapter extends ArrayAdapter<Contact> {
 
     }
 
-    public GroupsAdapter(Context context, int resource, int textViewResourceId, List<Contact> objects) {
+    public MyGroupsAdapter(Context context, int resource, int textViewResourceId, List<Contact> objects) {
         super(context, resource, textViewResourceId, objects);
         this.context = context;
         this.listContact = objects;
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
 
         LayoutInflater layoutInflater = ((Activity) context).getLayoutInflater();
-        view = layoutInflater.inflate(R.layout.list_and_group, parent, false);
+        view = layoutInflater.inflate(R.layout.list_contacts_and, parent, false);
         contact = listContact.get(position);
+
 
         TextView textViewName = (TextView) view.findViewById(R.id.textView_name_list);
 
@@ -66,13 +77,10 @@ public class GroupsAdapter extends ArrayAdapter<Contact> {
 
 
         String name = contact.getMessage().getName();
-        if(name.isEmpty())
-            name=contact.getMessage().getPhone();
-        TextView textViewMessage = (TextView) view.findViewById(R.id.textView_message_list);
 
+        TextView textViewMessage = (TextView) view.findViewById(R.id.textView_message_list);
         textViewMessage.setText(name + ": " + contact.getMessage().getMessage());
-        if (name.isEmpty())
-            textViewMessage.setText("");
+
         TextView textViewTime = (TextView) view.findViewById(R.id.textView_time);
 
         if (contact.getNotifications() > 0) {
@@ -82,6 +90,37 @@ public class GroupsAdapter extends ArrayAdapter<Contact> {
             return view;
 
         }
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups")
+                .child(contact.getName());
+        databaseReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if (snapshot.exists()) {
+
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         textViewTime.setText(contact.getMessage().getTime());
         return view;
     }

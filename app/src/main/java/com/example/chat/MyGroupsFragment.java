@@ -1,30 +1,24 @@
 package com.example.chat;
 
 import android.app.Dialog;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.example.Hikers.RegisterInformation2;
 import com.example.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -33,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,8 +61,10 @@ public class MyGroupsFragment extends Fragment {
     private Button buttonSeeAllGroups;
     private String uid;
     private ListView listView;
+    private ArrayList<String> arrayList;
+
     public MyGroupsFragment() {
-        // Required empty public constructor
+
     }
 
     /**
@@ -89,29 +86,27 @@ public class MyGroupsFragment extends Fragment {
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         viewContacts = inflater.inflate(R.layout.fragment_my_groups, container, false);
+
+
         listView = (ListView) viewContacts.findViewById(R.id.list_view);
-        contactArrayList = new ArrayList<>();
-        contactsAdapter = new GroupsAdapter(getContext(), 0, 0, contactArrayList);
+
         secrchId();
-        listView.setAdapter(contactsAdapter);
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("MyGroups");
 
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         seeAllMyGroups();
-listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-    @Override
-    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-        view.setBackgroundColor(Color.parseColor("#FFACE8EF"));
-        dialogDelete(i,view);
-        return true;
-    }
-});
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                view.setBackgroundColor(Color.parseColor("#FFACE8EF"));
+                dialogDelete(i, view);
+                return true;
+            }
+        });
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -133,6 +128,10 @@ listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
     }
 
     private void seeAllMyGroups() {
+        contactArrayList = new ArrayList<>();
+        contactsAdapter = new GroupsAdapter(getContext(), 0, 0, contactArrayList);
+       listView.clearDisappearingChildren();
+        listView.setAdapter(contactsAdapter);
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups");
 
         databaseReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -140,7 +139,7 @@ listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) return;
 
-                ArrayList<String> arrayList = new ArrayList<>();
+                arrayList = new ArrayList<>();
                 for (DataSnapshot child : snapshot.getChildren()) {
 
                     String uidContact = child.getKey();
@@ -158,9 +157,9 @@ listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                         contactsAdapter.notifyDataSetChanged();
                     } else textViewNoFond.setVisibility(View.GONE);
                 }
-                if (arrayList.size() > 0){
+                if (arrayList.size() > 0) {
                     buttonSearch.setVisibility(View.VISIBLE);
-                    addContact(arrayList, uid);
+                    addContact(uid);
                 }
 
 //  contactsAdapter.notifyDataSetChanged();
@@ -213,10 +212,10 @@ listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
     }
 
 
-    private void addContact(final ArrayList<String> uidContact, final String uid) {
+    private void addContact(final String uid) {
 
         DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("NamesGroups");
-        databaseReference1.child(uidContact.get(0)).limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference1.child(arrayList.get(0)).limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
@@ -228,7 +227,7 @@ listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 }
 
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("NotificationsIdSeeLast");
-                databaseReference1.child(uid).child(uidContact.get(0)).addListenerForSingleValueEvent(new ValueEventListener() {
+                databaseReference1.child(uid).child(arrayList.get(0)).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Contact contact = new Contact();
@@ -238,21 +237,26 @@ listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                         contact.setNotifications(numNewMessage);
 
                         contact.setMessage(messageContact);
-                        contact.setName(uidContact.get(0));
+                        contact.setName(arrayList.get(0));
                         contact.setUidI(uid);
                         //contactsAdapter.notifyDataSetChanged();
 
                         contactArrayList.add(contact);
-                        uidContact.remove(0);
-                        if (uidContact.size() == 0) {
+                        arrayList.remove(0);
+                        if (arrayList.size() == 0) {
+//                            for (int i = 0; i < contactArrayList.size(); i++) {
+//                                onStart1(contactArrayList.get(i));
+//
+//                            }
                             if (contactArrayList.size() > 1)
                                 Collections.sort(contactArrayList, new ComperatorContact());
 
                             contactsAdapter.notifyDataSetChanged();
+                            getView().setClickable(true);
 
                         }
 
-                        if (uidContact.size() > 0) addContact(uidContact, uid);
+                        if (arrayList.size() > 0) addContact(uid);
                     }
 
                     @Override
@@ -272,37 +276,44 @@ listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
     }
 
-    //    public void onStart1() {
-//
-//        reference.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+    public void onStart1(Contact child) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("NamesGroups")
+                .child(child.getName());
+        reference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if (snapshot.exists()) {
+
+                        seeAllMyGroups();
+
+
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 //                if (snapshot.exists()) {
-//                    list();
+//                    seeAllMyGroups();
 //                }
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//    }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     private void search() {
         groupSearch = editTextSearch.getText().toString();
         if (groupSearch.isEmpty()) {
@@ -316,7 +327,8 @@ listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
         seeAllMyGroups();
 
     }
-    private void dialogDelete(final int i,final View view2) {
+
+    private void dialogDelete(final int i, final View view2) {
         final Dialog d = new Dialog(getContext());
         d.setContentView(R.layout.dialog_delete_my_group);
         d.setTitle("Manage");
@@ -360,4 +372,42 @@ listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
         d.show();
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser) {
+            listView = (ListView) viewContacts.findViewById(R.id.list_view);
+            contactArrayList = new ArrayList<>();
+            contactsAdapter = new GroupsAdapter(getContext(), 0, 0, contactArrayList);
+            secrchId();
+            listView.setAdapter(contactsAdapter);
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("MyGroups");
+
+            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            seeAllMyGroups();
+            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    view.setBackgroundColor(Color.parseColor("#FFACE8EF"));
+                    dialogDelete(i, view);
+                    return true;
+                }
+            });
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent intent2 = new Intent(getContext(), GroupChatActivity.class);
+                    intent2.putExtra("nameGroup", contactArrayList.get(i).getName());
+                    intent2.putExtra("flagAllGroup", false);
+                    startActivity(intent2);
+//                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
+//                databaseReference.child(uid).child("hitchhikingGroups").setValue(arrayListGroups.get(i));
+                }
+            });
+
+
+        }
+    }
 }

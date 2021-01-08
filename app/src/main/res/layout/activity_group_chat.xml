@@ -11,6 +11,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <TextView
+            android:id="@+id/button_price"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_marginTop="5dp"
+            android:background="#E1DFC8"
+android:visibility="gone"
+            android:text="  עדכן מחיר נסיעה  "
+            android:textColor="#201F22"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/textView_group_details"
+            app:layout_constraintStart_toStartOf="@+id/textView_group_details"
+            app:layout_constraintTop_toBottomOf="@+id/textView_group_details" />
+
         <Button
             android:id="@+id/button_goin"
             android:layout_width="match_parent"
@@ -25,22 +39,21 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView_group_details" />
+            app:layout_constraintTop_toBottomOf="@+id/button_price" />
 
         <TextView
             android:id="@+id/textView_group_details"
             android:layout_width="wrap_content"
             android:layout_height="28dp"
-            android:background="#E1DFC8"
+            android:layout_marginLeft="10dp"
 
-            android:text="מספר המשתתפים 800"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="10dp"
+            android:background="#E1DFC8"
+            android:text=" מספר המשתתפים 800. מחיר נסיעה ? "
             android:textColor="#201F22"
             android:textSize="18sp"
             android:textStyle="italic"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
