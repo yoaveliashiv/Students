@@ -208,7 +208,9 @@ public class AllGroupsFragment extends Fragment {
         arrayAdapter.addAll(arrayListSerch);
         arrayAdapter.notifyDataSetChanged();
         buttonSeeAllGroups.setVisibility(View.VISIBLE);
-
+if(arrayListSerch.size()==0){
+    textViewNoFond.setVisibility(View.VISIBLE);
+}
 //        final ArrayList<String> arrayListGroups = new ArrayList<>();
 //        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups");
 //

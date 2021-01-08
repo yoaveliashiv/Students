@@ -365,6 +365,7 @@ public class MyGroupsFragment extends Fragment {
 
                 Toast.makeText(getContext(), "יצאת מהקבוצה בהצלחה", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getContext(), MainActivity3.class);
+                intent.putExtra("flagPage",1);
 
                 startActivityForResult(intent, 0);
             }
@@ -374,42 +375,5 @@ public class MyGroupsFragment extends Fragment {
         d.show();
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-
-        if (isVisibleToUser) {
-            listView = (ListView) viewContacts.findViewById(R.id.list_view);
-            contactArrayList = new ArrayList<>();
-            contactsAdapter = new GroupsAdapter(getContext(), 0, 0, contactArrayList);
-            secrchId();
-            listView.setAdapter(contactsAdapter);
-            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("MyGroups");
-
-            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            seeAllMyGroups();
-            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    view.setBackgroundColor(Color.parseColor("#FFACE8EF"));
-                    dialogDelete(i, view);
-                    return true;
-                }
-            });
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    Intent intent2 = new Intent(getContext(), GroupChatActivity.class);
-                    intent2.putExtra("nameGroup", contactArrayList.get(i).getName());
-                    intent2.putExtra("flagAllGroup", false);
-                    startActivity(intent2);
-//                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-//                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
-//                databaseReference.child(uid).child("hitchhikingGroups").setValue(arrayListGroups.get(i));
-                }
-            });
-
-
-        }
-    }
+//  6
 }

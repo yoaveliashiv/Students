@@ -115,10 +115,11 @@ public class GroupChatActivity extends AppCompatActivity {
                 DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Groups details")
                         .child(nameGroup).child(uid);
                 databaseReference2.setValue("");
-                button.setVisibility(View.GONE);
-
-                setGroupDetails();
-                Toast.makeText(GroupChatActivity.this, "הצטרפת לקבוצה בהצלחה", Toast.LENGTH_SHORT).show();
+               Intent intent = new Intent(GroupChatActivity.this, MainActivity3.class);
+               intent.putExtra("flagPage",1);
+                startActivity(intent);
+               // setGroupDetails();
+               // Toast.makeText(GroupChatActivity.this, "הצטרפת לקבוצה בהצלחה", Toast.LENGTH_SHORT).show();
 
             }
         });

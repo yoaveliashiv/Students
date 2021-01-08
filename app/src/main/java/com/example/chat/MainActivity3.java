@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -53,8 +55,12 @@ public class MainActivity3 extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.viewPagerMain);
         tabsAccessorAdapter = new TabsAccessorAdapter(getSupportFragmentManager());
         viewPager.setAdapter(tabsAccessorAdapter);
+        viewPager.setOffscreenPageLimit(3);
         tabLayout = (TabLayout) findViewById(R.id.tabLayoutMain);
         tabLayout.setupWithViewPager(viewPager);
+        // viewPager.setCurrentItem(1);
+        if (getIntent().hasExtra("flagPage"))
+            viewPager.setCurrentItem(getIntent().getExtras().getInt("flagPage"));
     }
 
     @Override
@@ -108,5 +114,11 @@ public class MainActivity3 extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+
+        super.onDestroy();
     }
 }
