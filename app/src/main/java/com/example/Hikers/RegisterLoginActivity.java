@@ -9,8 +9,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.R;
@@ -31,6 +34,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class RegisterLoginActivity extends AppCompatActivity {
@@ -42,6 +47,10 @@ public class RegisterLoginActivity extends AppCompatActivity {
     private String deviceToken;
     private RegisterInformation2 registerInformation;
     private FirebaseAuth mAuth;
+    private  String nameCollegeEnglish="";
+    private  String nameCollegeHebrow="";
+
+
 
 
     @Override
@@ -57,6 +66,8 @@ public class RegisterLoginActivity extends AppCompatActivity {
         buttonVerifi = findViewById(R.id.button_verifi_code);
         editTextPass = findViewById(R.id.editText_feed_chat);
         editTextPhone = findViewById(R.id.editText_login_phone);
+        setSpinner();
+
         setmCallBacks();
 
         buttonSendPass.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +79,11 @@ public class RegisterLoginActivity extends AppCompatActivity {
                     editTextPhone.requestFocus();
                     return;
                 }
-
+                if (nameCollegeEnglish.isEmpty() || nameCollegeEnglish.equals("בחר מוסד אקדמי")) {
+                    editTextPhone.setError("בחר מוסד אקדמי למטה");
+                    editTextPhone.requestFocus();
+                    return;
+                }
                 sendVerificationCode(mobile);
                 buttonSendPass.setVisibility(View.GONE);
                 buttonVerifi.setVisibility(View.VISIBLE);
@@ -80,6 +95,11 @@ public class RegisterLoginActivity extends AppCompatActivity {
         buttonVerifi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (nameCollegeEnglish.isEmpty() || nameCollegeEnglish.equals("בחר מוסד אקדמי")) {
+                    editTextPhone.setError("בחר מוסד אקדמי למטה");
+                    editTextPhone.requestFocus();
+                    return;
+                }
                 String pass = editTextPass.getText().toString();
                 if (pass.isEmpty() || pass.length() < 3) {
                     editTextPhone.setError("הכנס קוד תקין");
@@ -91,6 +111,49 @@ public class RegisterLoginActivity extends AppCompatActivity {
         });
         super.onCreate(savedInstanceState);
 
+
+    }
+
+    private void setSpinner() {
+        Spinner spinner=findViewById(R.id.spinner_name_coleg);
+        final ArrayList<String> arrayListNameSpinnerHebrow = new ArrayList<>();
+        final ArrayList<String> arrayListNameSpinnerEnglish = new ArrayList<>();
+        arrayListNameSpinnerEnglish.add("בחר מוסד אקדמי");
+        arrayListNameSpinnerHebrow.add("בחר מוסד אקדמי");
+
+        final ArrayAdapter<String> nameClogeAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_dropdown_item, arrayListNameSpinnerHebrow);
+        spinner.setAdapter(nameClogeAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                nameCollegeEnglish = arrayListNameSpinnerEnglish.get(i);
+                nameCollegeHebrow=arrayListNameSpinnerHebrow.get(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("NamesColleges");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    arrayListNameSpinnerEnglish.add(child.getKey());
+                    arrayListNameSpinnerHebrow.add(child.getValue(String.class));
+
+                }
+                nameClogeAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
     }
 
@@ -121,6 +184,8 @@ public class RegisterLoginActivity extends AppCompatActivity {
             public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
                 super.onCodeSent(s, forceResendingToken);
                 mVerificationId = s;
+                Toast.makeText(RegisterLoginActivity.this, "קוד נשלח ל-"+mobile+" אנא המתן לקבלת הקוד", Toast.LENGTH_LONG).show();
+
 
 
                 //  mResendToken = forceResendingToken;
@@ -185,14 +250,21 @@ public class RegisterLoginActivity extends AppCompatActivity {
                                     if (!snapshot.exists()) {
 
                                         registerInformation = new RegisterInformation2();
+                                        registerInformation.setNameCollegeEnglish(nameCollegeEnglish);
+                                        registerInformation.setNameCollegeHebrew(nameCollegeHebrow);
+
                                         registerInformation.setDeviceToken(deviceToken);
                                         registerInformation.setEmail(mobile);
                                         saveRegisterDataFireBase();
 
                                     } else {
                                         DatabaseReference cardRef4 = FirebaseDatabase.getInstance().getReference("RegisterInformation2")
-                                                .child(uid).child("deviceToken");
-                                        cardRef4.setValue(deviceToken);
+                                                .child(uid);
+                                        registerInformation.setNameCollegeEnglish(nameCollegeEnglish);
+                                        registerInformation.setNameCollegeHebrew(nameCollegeHebrow);
+
+                                        registerInformation.setDeviceToken(deviceToken);
+                                        cardRef4.setValue(registerInformation);
                                         Intent intent = new Intent(RegisterLoginActivity.this, ActivitySettings.class);
                                         intent.putExtra("flag", true);
                                         startActivity(intent);
@@ -224,11 +296,12 @@ public class RegisterLoginActivity extends AppCompatActivity {
                 });
     }
 
+
+
     private void saveRegisterDataFireBase() {
         // registerInformation.foundId();
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        registerInformation.setIdFirebase(uid);
         DatabaseReference cardRef4 = FirebaseDatabase.getInstance().getReference("RegisterInformation2").child(uid);
         cardRef4.setValue(registerInformation);
 

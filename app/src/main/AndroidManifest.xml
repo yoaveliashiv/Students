@@ -27,9 +27,6 @@
         <activity android:name=".chat.ActivitySettings" />
         <activity android:name=".chat.MainActivity3" />
         <activity android:name=".Hikers.MainActivityChat" />
-        <activity android:name=".Hikers.MainActivity2" />
-        <activity android:name=".Hikers.MainActivityManagementCardsApprov2" />
-        <activity android:name=".Hikers.MainActivityPageUser2" />
         <activity android:name=".students.MainActivityAddExpertise" />
         <activity android:name=".students.MainActivityListFeedbackPage" />
         <activity android:name=".students.MainActivity_Feedback" />
@@ -39,7 +36,6 @@
         <activity android:name=".students.MainActivityRegisterTutor" />
         <activity android:name=".students.MainActivityRegister" />
         <activity android:name=".students.MainActivity1" />
-        <activity android:name=".Hikers.MainActivityRegister2" />
         <activity android:name=".Hikers.RegisterLoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

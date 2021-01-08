@@ -82,13 +82,13 @@ public class ContactsAdapter extends ArrayAdapter<Contact> {
 
         TextView textViewTime = (TextView) view.findViewById(R.id.textView_time);
 
-if(contact.getNotifications()>0){
-    textViewTime.setText(contact.getMessage().getTime()+"\n"+contact.getNotifications()+" הודעות חדשות");
-    textViewTime.setTextSize(15);
-    textViewTime.setTextColor(Color.BLUE);
-    return view;
+        if (contact.getNotifications() > 0) {
+            textViewTime.setText(contact.getMessage().getTime() + "\n" + contact.getNotifications() + " הודעות חדשות");
+            textViewTime.setTextSize(15);
+            textViewTime.setTextColor(Color.BLUE);
+            return view;
 
-}
+        }
         textViewTime.setText(contact.getMessage().getTime());
         return view;
     }

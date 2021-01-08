@@ -100,7 +100,6 @@ if(email.length()==0){
                             registerInformation = child.getValue(RegisterInformation2.class);
                             key = child.getKey();
                         }
-                        registerInformation.addGroup(objects.get(position));
                         DatabaseReference cardRef = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
                         cardRef.child(key).setValue(registerInformation);
                     }

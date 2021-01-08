@@ -15,69 +15,28 @@ import java.util.List;
 
 @IgnoreExtraProperties
 public class RegisterInformation2 {
+   // private static  RegisterInformation2 registerInformation2=null;
     private String name = "";
     private String email = "";
-    private String password = "";
-    private String idFirebase = "";
     private  String deviceToken = "";
+    private String nameCollegeEnglish="";
+    private String nameCollegeHebrew="";
 
     private int idImageSend = 0;
-
-    private int id = -1;
     private String imageUrl = "";
-
-    private List<String> hitchhikingGroups = new ArrayList<>();
 
     public RegisterInformation2() {
         ;
     }
 
 
-    public RegisterInformation2(String email, String password, int id) {
-        this.email = email;
-        this.password = password;
-        this.id = id;
-    }
-
-    public void removeGroup(int i) {
-        hitchhikingGroups.remove(i);
-
-    }
-
-
-    public void addGroup(String group) {
-        this.hitchhikingGroups.add(group);
-    }
-
-
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-
-    public List<String> getHitchhikingGroups() {
-        return hitchhikingGroups;
-    }
-
-    public void setHitchhikingGroups(List<String> hitchhikingGroups) {
-        this.hitchhikingGroups = hitchhikingGroups;
-    }
-
-    public int getId() {
-        return id;
-    }
 
     public String getImageUrl() {
         return imageUrl;
@@ -87,9 +46,6 @@ public class RegisterInformation2 {
         this.imageUrl = imageUrl;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -99,34 +55,8 @@ public class RegisterInformation2 {
         this.name = name;
     }
 
-    public String getIdFirebase() {
-        return idFirebase;
-    }
 
-    public void setIdFirebase(String idFirebase) {
-        this.idFirebase = idFirebase;
-    }
 
-    public void foundId() {
-        DatabaseReference cardRef = FirebaseDatabase.getInstance().getReference("id");
-
-        cardRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                id = snapshot.getValue(Integer.class);
-                id++;
-                DatabaseReference cardRef2 = FirebaseDatabase.getInstance().getReference("id");
-                cardRef2.setValue(id);
-                setId(id);
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
 
     public String getDeviceToken() {
         return deviceToken;
@@ -142,5 +72,21 @@ public class RegisterInformation2 {
 
     public void setIdImageSend(int idImageSend) {
         this.idImageSend = idImageSend;
+    }
+
+    public String getNameCollegeEnglish() {
+        return nameCollegeEnglish;
+    }
+
+    public void setNameCollegeEnglish(String nameCollegeEnglish) {
+        this.nameCollegeEnglish = nameCollegeEnglish;
+    }
+
+    public String getNameCollegeHebrew() {
+        return nameCollegeHebrew;
+    }
+
+    public void setNameCollegeHebrew(String nameCollegeHebrew) {
+        this.nameCollegeHebrew = nameCollegeHebrew;
     }
 }

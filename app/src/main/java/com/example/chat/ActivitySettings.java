@@ -7,11 +7,8 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -20,20 +17,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.Hikers.MainActivity2;
-import com.example.Hikers.MainActivityRegister2;
 import com.example.Hikers.RegisterInformation2;
 import com.example.Hikers.RegisterLoginActivity;
 import com.example.R;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,13 +35,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 
 public class ActivitySettings extends AppCompatActivity {
     private Uri uriImage = null;
@@ -156,11 +141,11 @@ public class ActivitySettings extends AppCompatActivity {
         buttonDeleteDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                FirebaseAuth.getInstance().getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()) {
+                FirebaseAuth.getInstance().getCurrentUser().delete();
+//                FirebaseAuth.getInstance().getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<Void> task) {
+//                        if(task.isSuccessful()) {
                             Toast.makeText(ActivitySettings.this, "החשבון נמחק בהצלחה", Toast.LENGTH_LONG).show();
                             DatabaseReference databaseReference = FirebaseDatabase.getInstance()
                                     .getReference("RegisterInformation2").child(uid);
@@ -198,9 +183,9 @@ public class ActivitySettings extends AppCompatActivity {
                             });
                             Intent intent = new Intent(ActivitySettings.this, RegisterLoginActivity.class);
                             startActivity(intent);
-                        }
-                    }
-                });
+//                        }
+//                    }
+//                });
 
 
 

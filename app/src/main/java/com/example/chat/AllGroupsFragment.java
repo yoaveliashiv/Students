@@ -18,7 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.Hikers.MainActivity2;
+import com.example.Hikers.RegisterInformation2;
 import com.example.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -40,7 +40,13 @@ public class AllGroupsFragment extends Fragment {
     private Button buttonSearch;
     private Button buttonSeeAllGroups;
     private ListView listView;
-  private   View viewGroup;
+    private View viewGroup;
+    private String uid;
+    private ArrayList<String> arrayListGroups;
+    private ArrayList<String> arrayListGroups2;
+    private TextView textViewNameColeg;
+
+    private ArrayAdapter<String> arrayAdapter;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -84,11 +90,14 @@ public class AllGroupsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        try {
+
+
             viewGroup = inflater.inflate(R.layout.fragment_all_groups, container, false);
+            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             listView = (ListView) viewGroup.findViewById(R.id.list_view);
             textViewNoFond = viewGroup.findViewById(R.id.textView_no_found);
             editTextSearch = viewGroup.findViewById(R.id.editText_search);
+            textViewNameColeg=viewGroup.findViewById(R.id.textView_name_cologe1);
             buttonSearch = viewGroup.findViewById(R.id.button_search);
             buttonSeeAllGroups = viewGroup.findViewById(R.id.button_all_groups);
             allGroups();
@@ -103,7 +112,10 @@ public class AllGroupsFragment extends Fragment {
             buttonSeeAllGroups.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    allGroups();
+                    arrayAdapter.clear();
+                    ArrayList <String> arrayList =new ArrayList<>(arrayListGroups2);
+                    arrayAdapter.addAll(arrayList);
+                    arrayAdapter.notifyDataSetChanged();
                     buttonSeeAllGroups.setVisibility(View.GONE);
                     textViewNoFond.setVisibility(View.GONE);
                 }
@@ -116,29 +128,57 @@ public class AllGroupsFragment extends Fragment {
                 }
             });
             return viewGroup;
-        }
-        catch ( RuntimeException e){
-            return viewGroup;
-        }
+
 
     }
 
     private void allGroups() {
-        final ArrayList<String> arrayListGroups = new ArrayList<>();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups");
-
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_list_item_1, arrayListGroups);
-        listView.setAdapter(arrayAdapter);
-
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference databaseReference2 = FirebaseDatabase.getInstance()
+                .getReference("RegisterInformation2")
+                .child(uid);
+        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    arrayListGroups.add(child.getKey());
-                }
+                RegisterInformation2 registerInformation = snapshot.getValue(RegisterInformation2.class);
+                textViewNameColeg.setText("מ-"+registerInformation.getNameCollegeHebrew()+" ל- ");
+                arrayListGroups = new ArrayList<>();
+                arrayListGroups2 = new ArrayList<>();
 
-                arrayAdapter.notifyDataSetChanged();
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                        .getReference("NamesGroups").child(registerInformation.getNameCollegeEnglish());
+
+                arrayAdapter = new ArrayAdapter<String>(getContext(),
+                        android.R.layout.simple_list_item_1, arrayListGroups);
+                listView.setAdapter(arrayAdapter);
+
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            arrayListGroups.add(child.getKey());
+                            arrayListGroups2.add(child.getKey());
+                        }
+
+                        arrayAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        Intent intent2 = new Intent(getContext(), GroupChatActivity.class);
+                        intent2.putExtra("nameGroup", arrayListGroups.get(i));
+                        intent2.putExtra("flagAllGroup", true);
+                        startActivity(intent2);
+//                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
+//                databaseReference.child(uid).child("hitchhikingGroups").setValue(arrayListGroups.get(i));
+                    }
+                });
             }
 
             @Override
@@ -146,18 +186,8 @@ public class AllGroupsFragment extends Fragment {
 
             }
         });
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent2 = new Intent(getContext(), GroupChatActivity.class);
-                intent2.putExtra("nameGroup", arrayListGroups.get(i));
-                intent2.putExtra("flagAllGroup", true);
-                startActivity(intent2);
-//                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-//                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
-//                databaseReference.child(uid).child("hitchhikingGroups").setValue(arrayListGroups.get(i));
-            }
-        });
+
+
     }
 
     private void search() {
@@ -167,46 +197,59 @@ public class AllGroupsFragment extends Fragment {
             editTextSearch.requestFocus();
             return;
         }
-        final ArrayList<String> arrayListGroups = new ArrayList<>();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups");
+        ArrayList<String> arrayListSerch = new ArrayList<>();
 
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_list_item_1, arrayListGroups);
-        listView.setAdapter(arrayAdapter);
+        for (String name : arrayListGroups2) {
+            if (name.contains(groupSearch))
+                arrayListSerch.add(name);
 
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    String nameGroup = child.getKey();
-                    if (nameGroup.contains(groupSearch))
-                        arrayListGroups.add(nameGroup);
-                }
-                if (arrayListGroups.size() == 0) {
-                    textViewNoFond.setVisibility(View.VISIBLE);
-                }
+        }
+        arrayAdapter.clear();
+        arrayAdapter.addAll(arrayListSerch);
+        arrayAdapter.notifyDataSetChanged();
+        buttonSeeAllGroups.setVisibility(View.VISIBLE);
 
-                arrayAdapter.notifyDataSetChanged();
-                buttonSeeAllGroups.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent2 = new Intent(getContext(), GroupChatActivity.class);
-                intent2.putExtra("nameGroup", arrayListGroups.get(i));
-                intent2.putExtra("flagAllGroup", true);
-                startActivity(intent2);
-
-            }
-        });
+//        final ArrayList<String> arrayListGroups = new ArrayList<>();
+//        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups");
+//
+//        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(),
+//                android.R.layout.simple_list_item_1, arrayListGroups);
+//        listView.setAdapter(arrayAdapter);
+//
+//        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                for (DataSnapshot child : snapshot.getChildren()) {
+//                    String nameGroup = child.getKey();
+//                    if (nameGroup.contains(groupSearch))
+//                        arrayListGroups.add(nameGroup);
+//                }
+//                if (arrayListGroups.size() == 0) {
+//                    textViewNoFond.setVisibility(View.VISIBLE);
+//                }
+//
+//                arrayAdapter.notifyDataSetChanged();
+//                buttonSeeAllGroups.setVisibility(View.VISIBLE);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Intent intent2 = new Intent(getContext(), GroupChatActivity.class);
+//                intent2.putExtra("nameGroup", arrayListGroups.get(i));
+//                intent2.putExtra("flagAllGroup", true);
+//                startActivity(intent2);
+//
+//            }
+//        });
 
     }
+
     private void dialogNewGroup() {
         final Dialog d = new Dialog(getContext());
         d.setContentView(R.layout.dialog_new_group);
@@ -235,12 +278,12 @@ public class AllGroupsFragment extends Fragment {
                     editTextNameGroup.requestFocus();
                     return;
                 }
-                if (!nameLink_.contains("אריאל")&&!nameLink_.toLowerCase().contains("ariel")) {
+                if (!nameLink_.contains("אריאל") && !nameLink_.toLowerCase().contains("ariel")) {
                     editTextNameGroup.setError("הכנס שם קבוצה תקין,לדוגמא אריאל-אשקלון");
                     editTextNameGroup.requestFocus();
                     return;
                 }
-               String uid= FirebaseAuth.getInstance().getCurrentUser().getUid();
+                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NewGroups")
                         .child(uid).push();
                 databaseReference.setValue(nameLink_);

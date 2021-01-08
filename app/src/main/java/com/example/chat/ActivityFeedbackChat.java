@@ -93,7 +93,6 @@ public class ActivityFeedbackChat extends AppCompatActivity {
         feedbackChat.setType(type);
         feedbackChat.setFeedback(feedback);
         feedbackChat.setUidReportingSend(FirebaseAuth.getInstance().getCurrentUser().getUid());
-
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("FeedbackChat")
                 .child(type).push();
         databaseReference.setValue(feedbackChat);

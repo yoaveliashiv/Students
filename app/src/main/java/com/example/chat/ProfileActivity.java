@@ -15,14 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.Hikers.MainActivity2;
 import com.example.Hikers.RegisterInformation2;
 import com.example.Hikers.RegisterLoginActivity;
 import com.example.R;
-import com.example.students.MainActivityCardView;
-import com.example.students.MainActivityRegisterTutor;
-import com.example.students.RegisterInformation;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

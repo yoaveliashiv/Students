@@ -14,8 +14,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.R;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,12 +26,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Management extends AppCompatActivity {
     EditText editTextFrom;
     Button buttonDo;
     EditText editTexto;
     ListView listView;
+    Spinner spinnerNameColeg;
+    String nameCollege = "";
+    String nameCollegeHebrow = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,20 +46,50 @@ public class Management extends AppCompatActivity {
         listView = findViewById(R.id.list_management);
         editTextFrom = findViewById(R.id.editTextGrope_From);
         buttonDo = findViewById(R.id.buttonDo_Grohp);
+        spinnerNameColeg = findViewById(R.id.spinner_name_cologe);
+        spinnerNameColeg.setVisibility(View.GONE);
         editTexto.setVisibility(View.GONE);
         editTextFrom.setVisibility(View.GONE);
         buttonDo.setVisibility(View.GONE);
+        setSpinnerNaemeColge();
+
     }
 
     private void makeGroup() {
+        if(nameCollege.isEmpty()) {
+            spinnerNameColeg.setVisibility(View.VISIBLE);
+            buttonDo.setText("אישור");
+            buttonDo.setVisibility(View.VISIBLE);
+
+            buttonDo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (nameCollege.isEmpty() || nameCollege.equals("בחר אוניברסיטה")) {
+
+                        return;
+                    }
+                    continueMakeGroup();
+                }
+            });
+        }
+        else
+            continueMakeGroup();
+
+    }
+
+    private void continueMakeGroup() {
+
         editTexto.setVisibility(View.VISIBLE);
         editTextFrom.setVisibility(View.VISIBLE);
         buttonDo.setVisibility(View.VISIBLE);
+        editTexto.setText("");
+
         editTextFrom.setText("אריאל");
         editTexto.setHint("ל-");
         buttonDo.setText("הוסף קבוצה");
         final ArrayList<String> arrayListGroups = new ArrayList<>();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups");
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("NamesGroups").child(nameCollege);
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(Management.this,
                 android.R.layout.simple_list_item_1, arrayListGroups);
@@ -79,11 +117,12 @@ public class Management extends AppCompatActivity {
 
             }
         });
-        editTextFrom.setText("אריאל");
+        editTextFrom.setText(nameCollegeHebrow);
         buttonDo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatabaseReference cardRef = FirebaseDatabase.getInstance().getReference("NamesGroups");
+                DatabaseReference cardRef = FirebaseDatabase.getInstance()
+                        .getReference("NamesGroups").child(nameCollege);
 
                 cardRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -94,15 +133,18 @@ public class Management extends AppCompatActivity {
                         Boolean flagExsis = false;
                         for (DataSnapshot child : snapshot.getChildren()) {
                             String grohp = child.getKey();
-                            if (("" + from + "-" + to).equals(grohp) || to.length() < 3)
+                            if (("" + from + "-" + to).equals(grohp) || to.length() < 3) {
                                 flagExsis = true;
-                            editTexto.setError("הקבוצה קיימת או קצרה");
-                            editTexto.requestFocus();
+                                editTexto.setError("הקבוצה קיימת או קצרה");
+                                editTexto.requestFocus();
+                            }
                         }
                         if (!flagExsis) {
-                            DatabaseReference cardRef2 = FirebaseDatabase.getInstance().getReference("NamesGroups");
+                            DatabaseReference cardRef2 = FirebaseDatabase.getInstance()
+                                    .getReference("NamesGroups").child(nameCollege);
                             cardRef2.child("" + from + "-" + to).setValue("");
-                            makeGroup();
+                            Toast.makeText(Management.this, "קבוצה נוספה בהצלחה", Toast.LENGTH_SHORT).show();
+                            continueMakeGroup();
                         }
 
                     }
@@ -117,7 +159,75 @@ public class Management extends AppCompatActivity {
         });
     }
 
+    private void setSpinnerNaemeColge() {
+
+        final ArrayList<String> arrayListNameSpinnerHebrow = new ArrayList<>();
+        final ArrayList<String> arrayListNameSpinnerEnglish = new ArrayList<>();
+        arrayListNameSpinnerEnglish.add("בחר אוניברסיטה");
+        arrayListNameSpinnerHebrow.add("בחר אוניברסיטה");
+
+        final ArrayAdapter<String> nameClogeAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_dropdown_item, arrayListNameSpinnerHebrow);
+        spinnerNameColeg.setAdapter(nameClogeAdapter);
+        spinnerNameColeg.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                nameCollege = arrayListNameSpinnerEnglish.get(i);
+                nameCollegeHebrow = arrayListNameSpinnerHebrow.get(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("NamesColleges");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    arrayListNameSpinnerEnglish.add(child.getKey());
+                    arrayListNameSpinnerHebrow.add(child.getValue(String.class));
+
+                }
+                nameClogeAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+    }
+
     private void makeLinks() {
+        if(nameCollege.isEmpty()) {
+
+            spinnerNameColeg.setVisibility(View.VISIBLE);
+            buttonDo.setText("אישור");
+            buttonDo.setVisibility(View.VISIBLE);
+
+            buttonDo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (nameCollege.isEmpty() || nameCollege.equals("בחר אוניברסיטה")) {
+
+                        return;
+                    }
+                    continueMakeLinks();
+                }
+            });
+        }
+        else
+            continueMakeLinks();
+
+    }
+
+    private void continueMakeLinks() {
+
         editTexto.setVisibility(View.VISIBLE);
         editTextFrom.setVisibility(View.VISIBLE);
         buttonDo.setVisibility(View.VISIBLE);
@@ -127,7 +237,9 @@ public class Management extends AppCompatActivity {
         editTexto.setHint("לינק");
         buttonDo.setText("הוסף לינק");
         final ArrayList<LinksToWhatsApp> arrayListLink = new ArrayList<>();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("LinksToWhatsApp");
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("LinksToWhatsApp").child(nameCollege);
 
         final LinksToWhatsAppAdapter linksToWhatsAppAdapter = new LinksToWhatsAppAdapter(Management.this, 0, 0, arrayListLink);
 
@@ -175,9 +287,12 @@ public class Management extends AppCompatActivity {
                     return;
                 }
 
-                DatabaseReference cardRef2 = FirebaseDatabase.getInstance().getReference("LinksToWhatsApp");
+                DatabaseReference cardRef2 = FirebaseDatabase.getInstance()
+                        .getReference("LinksToWhatsApp").child(nameCollege);
                 cardRef2.child(from).setValue(to);
-                makeLinks();
+                Toast.makeText(Management.this, "לינק נוסף בהצלחה", Toast.LENGTH_SHORT).show();
+
+                continueMakeLinks();
 
 
             }
@@ -203,7 +318,9 @@ public class Management extends AppCompatActivity {
                 intent2 = new Intent(Management.this, MainActivity3.class);
                 startActivity(intent2);
                 return true;
-
+            case R.id.new_cologe:
+                newCologe();
+                return true;
             case R.id.groups:
                 makeGroup();
                 return true;
@@ -214,6 +331,76 @@ public class Management extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void newCologe() {
+        editTexto.setVisibility(View.VISIBLE);
+        editTextFrom.setVisibility(View.VISIBLE);
+        buttonDo.setVisibility(View.VISIBLE);
+        editTextFrom.setText("");
+        editTexto.setText("");
+        editTexto.setHint("אוניברסיטה באנגלית");
+        editTextFrom.setHint("אוניברסיטה בעברית");
+        buttonDo.setText("הוסף אוניברסיטה");
+        final ArrayList<String> arrayListColge = new ArrayList<>();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NamesColleges");
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(Management.this,
+                android.R.layout.simple_list_item_1, arrayListColge);
+        listView.setAdapter(arrayAdapter);
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    arrayListColge.add(child.getKey() + " - " + child.getValue(String.class));
+                }
+
+                arrayAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+
+            }
+        });
+        buttonDo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String nameHebrow = editTextFrom.getText().toString();
+                String nameEnglish = editTexto.getText().toString();
+                if (nameEnglish.length() < 3) {
+                    editTexto.setError("שם קצר מדי");
+                    editTexto.requestFocus();
+                    return;
+                }
+                if (nameHebrow.length() < 3) {
+                    editTextFrom.setError("שם קצר מדי");
+                    editTextFrom.requestFocus();
+                    return;
+                }
+
+                DatabaseReference cardRef2 = FirebaseDatabase.getInstance()
+                        .getReference("NamesColleges").child(nameEnglish);
+                cardRef2.setValue(nameHebrow).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(Management.this, "אוניברסיטה נוספה בהצלחה", Toast.LENGTH_SHORT).show();
+
+                        newCologe();
+                    }
+                });
+            }
+
+
+        });
     }
 
 }

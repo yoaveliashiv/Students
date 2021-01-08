@@ -47,14 +47,14 @@ public class MyGroupsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private ArrayList<Contact> contactArrayList;
+    private ArrayList<Contact> contactArrayList2;
+
     private String nameContact;
     private String imageContact;
     private GroupsAdapter contactsAdapter;
     private Message messageContact = new Message();
     private View viewContacts;
     private TextView textViewNoFond;
-    private TextView textViewFrom;
-    boolean flagSerch = false;
     private String groupSearch;
     private EditText editTextSearch;
     private Button buttonSearch;
@@ -129,34 +129,32 @@ public class MyGroupsFragment extends Fragment {
 
     private void seeAllMyGroups() {
         contactArrayList = new ArrayList<>();
+        contactArrayList2 = new ArrayList<>();
+
         contactsAdapter = new GroupsAdapter(getContext(), 0, 0, contactArrayList);
-       listView.clearDisappearingChildren();
+        listView.clearDisappearingChildren();
         listView.setAdapter(contactsAdapter);
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("MyGroups");
 
         databaseReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.exists()) return;
+                if (!snapshot.exists()) {
+                    TextView textView = viewContacts.findViewById(R.id.textView_empty);
+                    textView.setVisibility(View.VISIBLE);
+                    return;
+                }
 
                 arrayList = new ArrayList<>();
                 for (DataSnapshot child : snapshot.getChildren()) {
 
                     String uidContact = child.getKey();
-                    if (flagSerch) {
-                        if (uidContact.contains(groupSearch))
-                            arrayList.add(uidContact);
-                    } else {
-                        arrayList.add(uidContact);
-                    }
+
+                    arrayList.add(uidContact);
+
 
                 }
-                if (flagSerch) {
-                    if (arrayList.size() == 0) {
-                        textViewNoFond.setVisibility(View.VISIBLE);
-                        contactsAdapter.notifyDataSetChanged();
-                    } else textViewNoFond.setVisibility(View.GONE);
-                }
+
                 if (arrayList.size() > 0) {
                     buttonSearch.setVisibility(View.VISIBLE);
                     addContact(uid);
@@ -175,7 +173,6 @@ public class MyGroupsFragment extends Fragment {
     }
 
     private void secrchId() {
-        textViewFrom = viewContacts.findViewById(R.id.textView_from);
         textViewNoFond = viewContacts.findViewById(R.id.textView_no_found);
         editTextSearch = viewContacts.findViewById(R.id.editText_search);
         buttonSearch = viewContacts.findViewById(R.id.button_search);
@@ -185,9 +182,7 @@ public class MyGroupsFragment extends Fragment {
             public void onClick(View view) {
                 if (buttonSearch.getText().equals("חיפוש")) {
                     editTextSearch.setVisibility(View.VISIBLE);
-                    buttonSeeAllGroups.setVisibility(View.VISIBLE);
                     buttonSearch.setText("חפש");
-                    textViewFrom.setVisibility(View.VISIBLE);
                 } else if (buttonSearch.getText().equals("חפש"))
 
                     search();
@@ -198,13 +193,13 @@ public class MyGroupsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 contactsAdapter.clear();
-                flagSerch = false;
-                seeAllMyGroups();
+                ArrayList<Contact> arrayList = new ArrayList<>(contactArrayList2);
+                contactsAdapter.addAll(arrayList);
+                contactsAdapter.notifyDataSetChanged();
                 textViewNoFond.setVisibility(View.GONE);
                 editTextSearch.setVisibility(View.GONE);
                 buttonSeeAllGroups.setVisibility(View.GONE);
                 buttonSearch.setText("חיפוש");
-                textViewFrom.setVisibility(View.GONE);
             }
         });
 
@@ -244,10 +239,7 @@ public class MyGroupsFragment extends Fragment {
                         contactArrayList.add(contact);
                         arrayList.remove(0);
                         if (arrayList.size() == 0) {
-//                            for (int i = 0; i < contactArrayList.size(); i++) {
-//                                onStart1(contactArrayList.get(i));
-//
-//                            }
+                            contactArrayList2 = new ArrayList<>(contactArrayList);
                             if (contactArrayList.size() > 1)
                                 Collections.sort(contactArrayList, new ComperatorContact());
 
@@ -284,7 +276,7 @@ public class MyGroupsFragment extends Fragment {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (snapshot.exists()) {
 
-                        seeAllMyGroups();
+                    seeAllMyGroups();
 
 
                 }
@@ -321,10 +313,20 @@ public class MyGroupsFragment extends Fragment {
             editTextSearch.requestFocus();
             return;
         }
-        buttonSeeAllGroups.setVisibility(View.VISIBLE);
+        ArrayList<Contact> arrayList = new ArrayList<>();
+        for (Contact contact : contactArrayList2) {
+            if (contact.getName().contains(groupSearch)) {
+                arrayList.add(contact);
+            }
+        }
         contactsAdapter.clear();
-        flagSerch = true;
-        seeAllMyGroups();
+        contactsAdapter.addAll(arrayList);
+        contactsAdapter.notifyDataSetChanged();
+
+        buttonSeeAllGroups.setVisibility(View.VISIBLE);
+        if (arrayList.size() == 0) {
+            textViewNoFond.setVisibility(View.VISIBLE);
+        } else textViewNoFond.setVisibility(View.GONE);
 
     }
 

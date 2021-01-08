@@ -125,6 +125,8 @@ public class ChatFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 if (!snapshot.exists()) {
+                    TextView textView=viewContacts.findViewById(R.id.textView_empty);
+                    textView.setVisibility(View.VISIBLE);
                     return;
                 }
                 ArrayList<String> arrayList = new ArrayList<>();
@@ -295,9 +297,10 @@ if (snapshot.exists()) {
                 contactArrayList.add(contact);
                 uidContact.remove(0);
                 if (uidContact.size() == 0) {
-                    Collections.sort(contactArrayList, new ComperatorContact());
+                    if(contactArrayList.size()>1){
+                        Collections.sort(contactArrayList, new ComperatorContact());
+                    }
                     contactsAdapter.notifyDataSetChanged();
-                    viewContacts.setClickable(true);
 
                 }
 
