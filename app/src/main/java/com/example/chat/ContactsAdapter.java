@@ -2,6 +2,7 @@ package com.example.chat;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -56,7 +57,6 @@ public class ContactsAdapter extends ArrayAdapter<Contact> {
     @SuppressLint("ResourceAsColor")
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-
 
         LayoutInflater layoutInflater = ((Activity) context).getLayoutInflater();
         view = layoutInflater.inflate(R.layout.list_contacts_and, parent, false);

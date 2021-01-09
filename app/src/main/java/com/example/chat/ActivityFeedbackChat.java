@@ -1,10 +1,14 @@
 package com.example.chat;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +17,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.Hikers.RegisterLoginActivity;
 import com.example.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -102,4 +107,50 @@ public class ActivityFeedbackChat extends AppCompatActivity {
        Intent intent = new Intent(ActivityFeedbackChat.this, MainActivity3.class);
         startActivity(intent);
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_chat, menu);
+        return true;
+
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.refresh);
+        item.setVisible(false);
+        item = menu.findItem(R.id.logout);
+        item.setTitle("לדף הראשי");
+        return super.onPrepareOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Intent intent2;
+        switch (item.getItemId()) {
+
+            case R.id.mainIconMenu:
+                intent2 = new Intent(ActivityFeedbackChat.this, MainActivity3.class);
+                startActivity(intent2);
+                return true;
+
+            case R.id.settingsMenu:
+                intent2 = new Intent(ActivityFeedbackChat.this, ActivitySettings.class);
+                intent2.putExtra("flag", false);
+                startActivity(intent2);
+                return true;
+            case R.id.feedbackMenu:
+                intent2 = new Intent(ActivityFeedbackChat.this, ActivityFeedbackChat.class);
+                intent2.putExtra("flag", false);
+                startActivity(intent2);
+                return true;
+            case R.id.logout:
+                intent2 = new Intent(ActivityFeedbackChat.this, MainActivity3.class);
+                startActivity(intent2);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }

@@ -31,36 +31,27 @@ public Fragment createFragment(int i){
         switch (position)
         {
             case 0:
-                try {
+
                     ChatFragment chatFragment = new ChatFragment();
                     return chatFragment;
-                }catch (RuntimeException e){
-                    return null;
-                }
+
             case 1:
-                try {
+
                     MyGroupsFragment myGroupsFragment =new MyGroupsFragment();
 
                     return myGroupsFragment;
-                }catch (RuntimeException e){
-                    return null;
-                }
+
 
             case 2:
-                try {
+
                     AllGroupsFragment allGroupsFragment=new AllGroupsFragment();
                     return  allGroupsFragment;
-                }catch (RuntimeException e){
-                    return null;
-                }
+
             case 3:
-                try {
+
                     LinksWhatsAppFragment linksWhatsAppFragment=new LinksWhatsAppFragment();
                     return  linksWhatsAppFragment;
-                }catch (RuntimeException e){
-                    return null;
 
-                }
 
             default:
                 return null;

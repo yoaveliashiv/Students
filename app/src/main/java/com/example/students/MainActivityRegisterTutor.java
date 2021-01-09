@@ -162,7 +162,6 @@ public class MainActivityRegisterTutor extends AppCompatActivity {
             editTextPhone.setText(email);
         }
 
-        progressDialog = new ProgressDialog(this);
 
 
         setListSpinerArea();

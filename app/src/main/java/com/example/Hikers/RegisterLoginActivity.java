@@ -3,6 +3,7 @@ package com.example.Hikers;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -24,6 +25,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -33,6 +35,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,65 +51,90 @@ public class RegisterLoginActivity extends AppCompatActivity {
     private String deviceToken;
     private RegisterInformation2 registerInformation;
     private FirebaseAuth mAuth;
-    private  String nameCollegeEnglish="";
-    private  String nameCollegeHebrow="";
-
-
+    private String nameCollegeEnglish = "";
+    private String nameCollegeHebrow = "";
+    private ProgressDialog progressDialog;
+    private Boolean flagDelete = false;
+    private Spinner spinner;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        progressDialog = new ProgressDialog(this);
+
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
             Intent intent = new Intent(RegisterLoginActivity.this, MainActivity3.class);
             startActivity(intent);
             finish();
         }
+
         setContentView(R.layout.activity_register_login);
         buttonSendPass = findViewById(R.id.button_send_code);
         buttonVerifi = findViewById(R.id.button_verifi_code);
         editTextPass = findViewById(R.id.editText_feed_chat);
         editTextPhone = findViewById(R.id.editText_login_phone);
-        setSpinner();
+        spinner = findViewById(R.id.spinner_name_coleg);
+
+        if (getIntent().hasExtra("flagDeleteEnglish")) {
+            flagDelete = true;
+            spinner.setVisibility(View.GONE);
+            buttonVerifi.setText("אשר מחיקה");
+            nameCollegeEnglish =  getIntent().getExtras().getString("flagDeleteEnglish");
+            nameCollegeHebrow =  getIntent().getExtras().getString("flagDeleteHebrew");
+        }else {
+            setSpinner();
+        }
 
         setmCallBacks();
 
         buttonSendPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressDialog.setMessage("שולח קוד  אישור אנא חכה להשלמת התהליך...");
+                progressDialog.show();
                 mobile = editTextPhone.getText().toString().trim();
                 if (mobile.isEmpty() || (mobile.length() < 10 || mobile.length() > 13)) {
                     editTextPhone.setError("הכנס מספר תקין");
                     editTextPhone.requestFocus();
+                    progressDialog.dismiss();
                     return;
                 }
                 if (nameCollegeEnglish.isEmpty() || nameCollegeEnglish.equals("בחר מוסד אקדמי")) {
                     editTextPhone.setError("בחר מוסד אקדמי למטה");
                     editTextPhone.requestFocus();
+                    progressDialog.dismiss();
                     return;
                 }
+
                 sendVerificationCode(mobile);
                 buttonSendPass.setVisibility(View.GONE);
                 buttonVerifi.setVisibility(View.VISIBLE);
                 editTextPhone.setVisibility(View.GONE);
                 editTextPass.setVisibility(View.VISIBLE);
+
             }
         });
 
         buttonVerifi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressDialog.setMessage("אנא המתן להשלמת התהליך..");
+                progressDialog.show();
                 if (nameCollegeEnglish.isEmpty() || nameCollegeEnglish.equals("בחר מוסד אקדמי")) {
-                    editTextPhone.setError("בחר מוסד אקדמי למטה");
-                    editTextPhone.requestFocus();
+                    editTextPass.setError("בחר מוסד אקדמי למטה");
+                    editTextPass.requestFocus();
+                    progressDialog.dismiss();
                     return;
                 }
                 String pass = editTextPass.getText().toString();
                 if (pass.isEmpty() || pass.length() < 3) {
-                    editTextPhone.setError("הכנס קוד תקין");
-                    editTextPhone.requestFocus();
+                    editTextPass.setError("הכנס קוד תקין");
+                    editTextPass.requestFocus();
+                    progressDialog.dismiss();
                     return;
                 }
+
                 verifyVerificationCode(pass);
             }
         });
@@ -115,7 +144,6 @@ public class RegisterLoginActivity extends AppCompatActivity {
     }
 
     private void setSpinner() {
-        Spinner spinner=findViewById(R.id.spinner_name_coleg);
         final ArrayList<String> arrayListNameSpinnerHebrow = new ArrayList<>();
         final ArrayList<String> arrayListNameSpinnerEnglish = new ArrayList<>();
         arrayListNameSpinnerEnglish.add("בחר מוסד אקדמי");
@@ -128,7 +156,7 @@ public class RegisterLoginActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 nameCollegeEnglish = arrayListNameSpinnerEnglish.get(i);
-                nameCollegeHebrow=arrayListNameSpinnerHebrow.get(i);
+                nameCollegeHebrow = arrayListNameSpinnerHebrow.get(i);
             }
 
             @Override
@@ -162,7 +190,7 @@ public class RegisterLoginActivity extends AppCompatActivity {
         mCallBacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-                //Getting the code sent by SMS
+                progressDialog.dismiss();
                 String code = phoneAuthCredential.getSmsCode();
 
                 //sometime the code is not detected automatically
@@ -184,8 +212,7 @@ public class RegisterLoginActivity extends AppCompatActivity {
             public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
                 super.onCodeSent(s, forceResendingToken);
                 mVerificationId = s;
-                Toast.makeText(RegisterLoginActivity.this, "קוד נשלח ל-"+mobile+" אנא המתן לקבלת הקוד", Toast.LENGTH_LONG).show();
-
+                Toast.makeText(RegisterLoginActivity.this, "קוד נשלח ל-" + mobile + " אנא המתן לקבלת הקוד", Toast.LENGTH_LONG).show();
 
 
                 //  mResendToken = forceResendingToken;
@@ -237,7 +264,7 @@ public class RegisterLoginActivity extends AppCompatActivity {
                             registerInformation = null;
                             if (!mobile.startsWith("+972")) {
                                 mobile = mobile.substring(1);
-                                mobile = "+972"+mobile;
+                                mobile = "+972" + mobile;
                             }
                             DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
                             ref3.orderByChild("email").equalTo(mobile).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -265,9 +292,14 @@ public class RegisterLoginActivity extends AppCompatActivity {
 
                                         registerInformation.setDeviceToken(deviceToken);
                                         cardRef4.setValue(registerInformation);
-                                        Intent intent = new Intent(RegisterLoginActivity.this, ActivitySettings.class);
-                                        intent.putExtra("flag", true);
-                                        startActivity(intent);
+                                        if (flagDelete) {
+                                            deleteUser();
+                                        } else {
+                                            progressDialog.dismiss();
+                                            Intent intent = new Intent(RegisterLoginActivity.this, ActivitySettings.class);
+                                            intent.putExtra("flag", true);
+                                            startActivity(intent);
+                                        }
 
 
                                     }
@@ -297,7 +329,6 @@ public class RegisterLoginActivity extends AppCompatActivity {
     }
 
 
-
     private void saveRegisterDataFireBase() {
         // registerInformation.foundId();
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -305,10 +336,73 @@ public class RegisterLoginActivity extends AppCompatActivity {
         DatabaseReference cardRef4 = FirebaseDatabase.getInstance().getReference("RegisterInformation2").child(uid);
         cardRef4.setValue(registerInformation);
 
+        if (flagDelete) {
+            deleteUser();
+        } else {
+            progressDialog.dismiss();
 
-        Intent intent = new Intent(RegisterLoginActivity.this, ActivitySettings.class);
-        intent.putExtra("flag", true);
-        startActivity(intent);
+            Intent intent = new Intent(RegisterLoginActivity.this, ActivitySettings.class);
+            intent.putExtra("flag", true);
+            startActivity(intent);
+        }
+    }
+
+    private void deleteUser() {
+
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                final String uid = user.getUid();
+
+                user.delete()
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                                            .getReference("RegisterInformation2").child(uid);
+                                    databaseReference.removeValue();
+
+                                    DatabaseReference databaseReference1 = FirebaseDatabase.getInstance()
+                                            .getReference("Contacts").child(uid);
+                                    databaseReference1.removeValue();
+
+                                    DatabaseReference databaseReference2 = FirebaseDatabase.getInstance()
+                                            .getReference("NotificationsIdSeeLast").child(uid);
+                                    databaseReference2.removeValue();
+                                    if (!registerInformation.getImageUrl().isEmpty()) {
+                                        StorageReference riversRef = FirebaseStorage.getInstance().getReference()
+                                                .child("profileImage/" + uid + ".jpg");
+                                        riversRef.delete();
+                                    }
+                                    DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                                            .getReference("MyGroups").child(uid);
+                                    databaseReference3.removeValue();
+                                    DatabaseReference databaseReference4 = FirebaseDatabase.getInstance()
+                                            .getReference("Groups details");
+                                    databaseReference4.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            for (DataSnapshot child : snapshot.getChildren()) {
+                                                for (DataSnapshot child2 : child.getChildren()) {
+                                                    if (child2.getKey().equals(uid))
+                                                        child2.getRef().removeValue();
+                                                    // textViewGroupDetails.setText(child2.getKey());
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                    Toast.makeText(RegisterLoginActivity.this, "החשבון נמחק בהצלחה", Toast.LENGTH_LONG).show();
+                                    progressDialog.dismiss();
+                                    Intent intent = new Intent(RegisterLoginActivity.this, RegisterLoginActivity.class);
+                                    startActivity(intent);
+                                }
+                            }
+                        });
+
     }
 
     private void sendVerificationCode(String mobile) {

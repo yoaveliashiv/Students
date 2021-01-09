@@ -2,6 +2,7 @@ package com.example.chat;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -50,8 +51,8 @@ public class ChatFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private ArrayList<Contact> contactArrayList;
-    private String nameContact="";
-    private String imageContact="";
+    private String nameContact = "";
+    private String imageContact = "";
     private ContactsAdapter contactsAdapter;
     private DatabaseReference reference;
     private ListView listView;
@@ -62,6 +63,7 @@ public class ChatFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private ProgressDialog progressDialog;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -90,25 +92,25 @@ public class ChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        try {
-            viewContacts = inflater.inflate(R.layout.fragment_chat, container, false);
-            viewContacts.setClickable(false);
-            listView = (ListView) viewContacts.findViewById(R.id.list_view);
-            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            reference = FirebaseDatabase.getInstance().getReference("Contacts").child(uid);
 
-            list();
-            onStart1();
-            super.onCreate(savedInstanceState);
-            if (getArguments() != null) {
-                mParam1 = getArguments().getString(ARG_PARAM1);
-                mParam2 = getArguments().getString(ARG_PARAM2);
-            }
-            return viewContacts;
-        }catch (RuntimeException e){
-            return viewContacts;
 
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("העמוד נטען..");
+        viewContacts = inflater.inflate(R.layout.fragment_chat, container, false);
+        viewContacts.setClickable(false);
+        listView = (ListView) viewContacts.findViewById(R.id.list_view);
+        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        reference = FirebaseDatabase.getInstance().getReference("Contacts").child(uid);
+
+        list();
+        onStart1();
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        return viewContacts;
+
     }
 
     private void list() {
@@ -125,15 +127,17 @@ public class ChatFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 if (!snapshot.exists()) {
-                    TextView textView=viewContacts.findViewById(R.id.textView_empty);
+                    TextView textView = viewContacts.findViewById(R.id.textView_empty);
                     textView.setVisibility(View.VISIBLE);
                     return;
                 }
+                progressDialog.show();
+
                 ArrayList<String> arrayList = new ArrayList<>();
                 for (DataSnapshot child : snapshot.getChildren()) {
 
-                        String uidContact = child.getKey();
-                        arrayList.add(uidContact);
+                    String uidContact = child.getKey();
+                    arrayList.add(uidContact);
 
                 }
                 addContact(arrayList, uid);
@@ -232,15 +236,15 @@ public class ChatFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
 
-if (snapshot.exists()) {
-    RegisterInformation2 registerInformationRecive = new RegisterInformation2();
-    registerInformationRecive = snapshot.getValue(RegisterInformation2.class);
-    nameContact = registerInformationRecive.getName();
-    if (nameContact.isEmpty())
-        nameContact = registerInformationRecive.getEmail();
+                if (snapshot.exists()) {
+                    RegisterInformation2 registerInformationRecive = new RegisterInformation2();
+                    registerInformationRecive = snapshot.getValue(RegisterInformation2.class);
+                    nameContact = registerInformationRecive.getName();
+                    if (nameContact.isEmpty())
+                        nameContact = registerInformationRecive.getEmail();
 
-    imageContact = registerInformationRecive.getImageUrl();
-}
+                    imageContact = registerInformationRecive.getImageUrl();
+                }
 
                 //dataChange(uid, uidContact.get(0));
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Contacts");
@@ -297,14 +301,14 @@ if (snapshot.exists()) {
                 contactArrayList.add(contact);
                 uidContact.remove(0);
                 if (uidContact.size() == 0) {
-                    if(contactArrayList.size()>1){
+                    if (contactArrayList.size() > 1) {
                         Collections.sort(contactArrayList, new ComperatorContact());
                     }
                     contactsAdapter.notifyDataSetChanged();
-
+                    progressDialog.dismiss();
                 }
 
-               if (uidContact.size() > 0) addContact(uidContact, uid);
+                if (uidContact.size() > 0) addContact(uidContact, uid);
             }
 
             @Override
@@ -391,7 +395,7 @@ if (snapshot.exists()) {
                     intent.putExtra("send_message_user_id", uid);
                     intent.putExtra("to_message_user_id", contactArrayList.get(i).getUidContacts());
                     // Toast.makeText(getContext(), uid, Toast.LENGTH_LONG).show();
-
+                    intent.putExtra("num_notifications", contactArrayList.get(i).getNotifications());
                     startActivityForResult(intent, 0);
                 }
             }

@@ -22,6 +22,7 @@ public class MainActivity3 extends AppCompatActivity {
     private ViewPager viewPager;
     protected TabLayout tabLayout;
     private TabsAccessorAdapter tabsAccessorAdapter;
+    protected static String search="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,10 @@ public class MainActivity3 extends AppCompatActivity {
         // viewPager.setCurrentItem(1);
         if (getIntent().hasExtra("flagPage"))
             viewPager.setCurrentItem(getIntent().getExtras().getInt("flagPage"));
+        if (getIntent().hasExtra("flag_serch")) {
+            search=getIntent().getExtras().getString("flag_serch");
+            viewPager.setCurrentItem(2);
+        }
     }
 
     @Override
@@ -116,9 +121,4 @@ public class MainActivity3 extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onDestroy() {
-
-        super.onDestroy();
-    }
 }

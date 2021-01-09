@@ -1,6 +1,7 @@
 package com.example.chat;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -62,6 +63,7 @@ public class MyGroupsFragment extends Fragment {
     private String uid;
     private ListView listView;
     private ArrayList<String> arrayList;
+    private ProgressDialog progressDialog;
 
     public MyGroupsFragment() {
 
@@ -89,6 +91,8 @@ public class MyGroupsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("העמוד נטען..");
 
         viewContacts = inflater.inflate(R.layout.fragment_my_groups, container, false);
 
@@ -110,10 +114,12 @@ public class MyGroupsFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent2 = new Intent(getContext(), GroupChatActivity.class);
-                intent2.putExtra("nameGroup", contactArrayList.get(i).getName());
-                intent2.putExtra("flagAllGroup", false);
-                startActivity(intent2);
+                Intent intent= new Intent(getContext(), GroupChatActivity.class);
+                intent.putExtra("nameGroup", contactArrayList.get(i).getName());
+                intent.putExtra("flagAllGroup", false);
+                intent.putExtra("num_notifications", contactArrayList.get(i).getNotifications());
+
+                startActivity(intent);
 //                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 //                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
 //                databaseReference.child(uid).child("hitchhikingGroups").setValue(arrayListGroups.get(i));
@@ -144,7 +150,7 @@ public class MyGroupsFragment extends Fragment {
                     textView.setVisibility(View.VISIBLE);
                     return;
                 }
-
+                progressDialog.show();
                 arrayList = new ArrayList<>();
                 for (DataSnapshot child : snapshot.getChildren()) {
 
@@ -245,6 +251,7 @@ public class MyGroupsFragment extends Fragment {
 
                             contactsAdapter.notifyDataSetChanged();
                             getView().setClickable(true);
+                            progressDialog.dismiss();
 
                         }
 
@@ -365,7 +372,7 @@ public class MyGroupsFragment extends Fragment {
 
                 Toast.makeText(getContext(), "יצאת מהקבוצה בהצלחה", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getContext(), MainActivity3.class);
-                intent.putExtra("flagPage",1);
+                intent.putExtra("flagPage", 1);
 
                 startActivityForResult(intent, 0);
             }

@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -65,17 +66,21 @@ public class ChatActivity extends AppCompatActivity {
     private CircleImageView circleImageView;
     private Boolean flagDataChange = true;
     private int k = 0;
+    private ProgressDialog progressDialog;
+    private int numNotifications = -1;
+    private Boolean flagNewMessage=false;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_chat);
-
+        progressDialog = new ProgressDialog(this);
         circleImageView = findViewById(R.id.profile_image);
         getSupportActionBar().hide();
         uidSend = getIntent().getExtras().getString("send_message_user_id");
         uidRecive = getIntent().getExtras().getString("to_message_user_id");
-
+        if (getIntent().hasExtra("num_notifications"))
+            numNotifications = getIntent().getExtras().getInt("num_notifications");
 
         databaseReferenceOn = FirebaseDatabase.getInstance().getReference("Contacts").child(uidSend).child(uidRecive);
         ImageButton imageButtonPic = findViewById(R.id.imageButton_send_pick);
@@ -129,16 +134,55 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
         add();
+        showMessage();
+
         onCreateOptionsMenu1();
         super.onCreate(savedInstanceState);
 
+    }
+
+    private void showMessage() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Contacts").child(uidSend).child(uidRecive);
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists())
+                    return;
+                Message message;
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    message = child.getValue(Message.class);
+                    arrayListMessage.add(message);
+
+
+                }
+                if (numNotifications>0){
+                    Message message1=new Message();
+                    message1.setId(numNotifications);
+                    arrayListMessage.add(arrayListMessage.size()-numNotifications,message1);
+                }
+
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                        .getReference("NotificationsIdSeeLast").child(uidSend).child(uidRecive);//set Notifications
+                databaseReference3.setValue(arrayListMessage.get(arrayListMessage.size() - 1).getId());
+
+                arrayAdapter.notifyDataSetChanged();
+
+                listView.setSelection(listView.getAdapter().getCount() - 1);
+                flagNewMessage=true;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void add() {
         databaseReferenceOn.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if (snapshot.exists()) {
+                if (snapshot.exists()&&flagNewMessage) {
 
                     displayMessage(snapshot);
                 }
@@ -148,7 +192,7 @@ public class ChatActivity extends AppCompatActivity {
 
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                //                if (snapshot.exists()) {
+//                if (snapshot.exists()) {
 //                    displayMessage(snapshot);
 //                }
             }
@@ -530,6 +574,8 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 d.dismiss();
+                progressDialog.setMessage("אנא חכה להשלמת התהליך..");
+                progressDialog.show();
                 StorageReference riversRef = FirebaseStorage.getInstance().getReference()
                         .child("sendMessageImage/" + registerInformationSend.getEmail() + "/" +
                                 registerInformationRecive.getEmail() + "/image" + registerInformationSend.getIdImageSend() + ".jpg");
@@ -545,7 +591,7 @@ public class ChatActivity extends AppCompatActivity {
                                     public void onSuccess(Uri uri) {
 
                                         saveDatabase(uri.toString(), "");
-
+                                        progressDialog.dismiss();
                                     }
                                 });
                             }
@@ -643,11 +689,18 @@ public class ChatActivity extends AppCompatActivity {
                         startActivity(intent2);
                         return true;
                     case R.id.delete_chat_Menu:
-                       dialogDelete();
+                        dialogDelete();
                         return true;
                     case R.id.returnMainMenu:
 
                         intent2 = new Intent(ChatActivity.this, MainActivity3.class);
+                        startActivity(intent2);
+                        return true;
+
+
+                    case R.id.feedbackMenu:
+
+                        intent2 = new Intent(ChatActivity.this, ActivityFeedbackChat.class);
                         startActivity(intent2);
                         return true;
 
@@ -731,6 +784,6 @@ public class ChatActivity extends AppCompatActivity {
             }
 
         });
-d.show();
+        d.show();
     }
 }

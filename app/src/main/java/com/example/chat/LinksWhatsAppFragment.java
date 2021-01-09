@@ -94,7 +94,7 @@ public class LinksWhatsAppFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        try {
+
 
 
             viewGroup = inflater.inflate(R.layout.fragment_links_whats_app, container, false);
@@ -138,10 +138,7 @@ public class LinksWhatsAppFragment extends Fragment {
                 }
             });
             return viewGroup;
-        } catch (RuntimeException e) {
-            return viewGroup;
 
-        }
 
     }
 
@@ -229,6 +226,21 @@ public class LinksWhatsAppFragment extends Fragment {
         TextView textViewFeed = d.findViewById(R.id.textView_feed);
 
         TextView textViewCopyLink = d.findViewById(R.id.textView_copy_link);
+        TextView textViewMyGroup = d.findViewById(R.id.textView_go_my_group);
+
+        textViewMyGroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+              Intent  intent = new Intent(getContext(), MainActivity3.class);
+
+              String nameGroup1=arrayListLink.get(i).getNameGroup();
+              int size=nameGroup1.indexOf(" ");
+              if(size==-1)size=nameGroup1.length();
+                String nameGroup2=nameGroup1.substring(0,size);
+                intent.putExtra("flag_serch",nameGroup2 );
+                startActivity(intent);
+            }
+        });
 
         textViewJoinGroup.setOnClickListener(new View.OnClickListener() {
             @Override

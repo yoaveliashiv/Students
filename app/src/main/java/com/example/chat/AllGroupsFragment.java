@@ -45,7 +45,7 @@ public class AllGroupsFragment extends Fragment {
     private ArrayList<String> arrayListGroups;
     private ArrayList<String> arrayListGroups2;
     private TextView textViewNameColeg;
-
+    private String flagSearch;
     private ArrayAdapter<String> arrayAdapter;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -91,43 +91,43 @@ public class AllGroupsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        flagSearch = MainActivity3.search;
+        viewGroup = inflater.inflate(R.layout.fragment_all_groups, container, false);
+        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        listView = (ListView) viewGroup.findViewById(R.id.list_view);
+        textViewNoFond = viewGroup.findViewById(R.id.textView_no_found);
+        editTextSearch = viewGroup.findViewById(R.id.editText_search);
+        textViewNameColeg = viewGroup.findViewById(R.id.textView_name_cologe1);
+        buttonSearch = viewGroup.findViewById(R.id.button_search);
+        buttonSeeAllGroups = viewGroup.findViewById(R.id.button_all_groups);
+        allGroups();
 
-            viewGroup = inflater.inflate(R.layout.fragment_all_groups, container, false);
-            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            listView = (ListView) viewGroup.findViewById(R.id.list_view);
-            textViewNoFond = viewGroup.findViewById(R.id.textView_no_found);
-            editTextSearch = viewGroup.findViewById(R.id.editText_search);
-            textViewNameColeg=viewGroup.findViewById(R.id.textView_name_cologe1);
-            buttonSearch = viewGroup.findViewById(R.id.button_search);
-            buttonSeeAllGroups = viewGroup.findViewById(R.id.button_all_groups);
-            allGroups();
-
-            // Inflate the layout for this fragment
-            buttonSearch.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    search();
-                }
-            });
-            buttonSeeAllGroups.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    arrayAdapter.clear();
-                    ArrayList <String> arrayList =new ArrayList<>(arrayListGroups2);
-                    arrayAdapter.addAll(arrayList);
-                    arrayAdapter.notifyDataSetChanged();
-                    buttonSeeAllGroups.setVisibility(View.GONE);
-                    textViewNoFond.setVisibility(View.GONE);
-                }
-            });
-            TextView buttonNewLink = viewGroup.findViewById(R.id.button_new_link);
-            buttonNewLink.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialogNewGroup();
-                }
-            });
-            return viewGroup;
+        // Inflate the layout for this fragment
+        buttonSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                search();
+            }
+        });
+        buttonSeeAllGroups.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                arrayAdapter.clear();
+                ArrayList<String> arrayList = new ArrayList<>(arrayListGroups2);
+                arrayAdapter.addAll(arrayList);
+                arrayAdapter.notifyDataSetChanged();
+                buttonSeeAllGroups.setVisibility(View.GONE);
+                textViewNoFond.setVisibility(View.GONE);
+            }
+        });
+        TextView buttonNewLink = viewGroup.findViewById(R.id.button_new_link);
+        buttonNewLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogNewGroup();
+            }
+        });
+        return viewGroup;
 
 
     }
@@ -140,7 +140,7 @@ public class AllGroupsFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 RegisterInformation2 registerInformation = snapshot.getValue(RegisterInformation2.class);
-                textViewNameColeg.setText("מ-"+registerInformation.getNameCollegeHebrew()+" ל- ");
+                textViewNameColeg.setText("מ-" + registerInformation.getNameCollegeHebrew() + " ל- ");
                 arrayListGroups = new ArrayList<>();
                 arrayListGroups2 = new ArrayList<>();
 
@@ -160,6 +160,9 @@ public class AllGroupsFragment extends Fragment {
                         }
 
                         arrayAdapter.notifyDataSetChanged();
+                        if(!flagSearch.isEmpty()){
+                            search();
+                        }
                     }
 
                     @Override
@@ -191,7 +194,14 @@ public class AllGroupsFragment extends Fragment {
     }
 
     private void search() {
-        final String groupSearch = editTextSearch.getText().toString();
+        final String groupSearch;
+        if(flagSearch.isEmpty()) {
+             groupSearch = editTextSearch.getText().toString();
+        }
+        else{
+           groupSearch = flagSearch;
+
+        }
         if (groupSearch.isEmpty()) {
             editTextSearch.setError("אנא הכנס קבוצה");
             editTextSearch.requestFocus();
@@ -208,9 +218,9 @@ public class AllGroupsFragment extends Fragment {
         arrayAdapter.addAll(arrayListSerch);
         arrayAdapter.notifyDataSetChanged();
         buttonSeeAllGroups.setVisibility(View.VISIBLE);
-if(arrayListSerch.size()==0){
-    textViewNoFond.setVisibility(View.VISIBLE);
-}
+        if (arrayListSerch.size() == 0) {
+            textViewNoFond.setVisibility(View.VISIBLE);
+        }
 //        final ArrayList<String> arrayListGroups = new ArrayList<>();
 //        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups");
 //

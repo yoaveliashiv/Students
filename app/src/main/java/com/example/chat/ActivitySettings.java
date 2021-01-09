@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -24,9 +25,12 @@ import com.bumptech.glide.Glide;
 import com.example.Hikers.RegisterInformation2;
 import com.example.Hikers.RegisterLoginActivity;
 import com.example.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,11 +46,15 @@ public class ActivitySettings extends AppCompatActivity {
     private static final int GallaryPick = 1;
     private RegisterInformation2 registerInformation;
     private String uid;
+    private ProgressDialog progressDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("אנא חכה להשלמת התהליך..");
 
         Boolean flag = getIntent().getExtras().getBoolean("flag");
         imageView = findViewById(R.id.profile_image);
@@ -95,7 +103,7 @@ public class ActivitySettings extends AppCompatActivity {
                     editTextName.requestFocus();
                     return;
                 }
-
+                progressDialog.show();
                 fireBaseImage(name);
 
             }
@@ -141,53 +149,16 @@ public class ActivitySettings extends AppCompatActivity {
         buttonDeleteDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseAuth.getInstance().getCurrentUser().delete();
-//                FirebaseAuth.getInstance().getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        if(task.isSuccessful()) {
-                            Toast.makeText(ActivitySettings.this, "החשבון נמחק בהצלחה", Toast.LENGTH_LONG).show();
-                            DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-                                    .getReference("RegisterInformation2").child(uid);
-                            databaseReference.removeValue();
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(ActivitySettings.this, RegisterLoginActivity.class);
+                intent.putExtra("flagDeleteEnglish", registerInformation.getNameCollegeEnglish());
+                intent.putExtra("flagDeleteHebrew", registerInformation.getNameCollegeHebrew());
+                startActivity(intent);
 
-                            DatabaseReference databaseReference1 = FirebaseDatabase.getInstance()
-                                    .getReference("Contacts").child(uid);
-                            databaseReference1.removeValue();
 
-                            DatabaseReference databaseReference2 = FirebaseDatabase.getInstance()
-                                    .getReference("NotificationsIdSeeLast").child(uid);
-
-                            databaseReference2.removeValue();
-                            DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
-                                    .getReference("MyGroups").child(uid);
-                            databaseReference3.removeValue();
-                            DatabaseReference databaseReference4 = FirebaseDatabase.getInstance()
-                                    .getReference("Groups details");
-                            databaseReference4.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    for (DataSnapshot child : snapshot.getChildren()) {
-                                        for (DataSnapshot child2 : child.getChildren()) {
-                                            if(child2.getKey().equals(uid))
-                                                child2.getRef().removeValue();
-                                            // textViewGroupDetails.setText(child2.getKey());
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                }
-                            });
-                            Intent intent = new Intent(ActivitySettings.this, RegisterLoginActivity.class);
-                            startActivity(intent);
 //                        }
 //                    }
 //                });
-
-
 
 
             }
@@ -255,6 +226,7 @@ public class ActivitySettings extends AppCompatActivity {
 
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
             databaseReference.child(uid).child("name").setValue(name);
+            progressDialog.dismiss();
             Intent intent = new Intent(ActivitySettings.this, MainActivity3.class);
             startActivity(intent);
             finish();
@@ -262,7 +234,7 @@ public class ActivitySettings extends AppCompatActivity {
         }
 
         StorageReference riversRef = FirebaseStorage.getInstance().getReference()
-                .child("profileImage/" + registerInformation.getEmail() + ".jpg");
+                .child("profileImage/" + uid + ".jpg");
         riversRef.putFile(uriImage)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -276,6 +248,7 @@ public class ActivitySettings extends AppCompatActivity {
                                 databaseReference.child(uid).child("name").setValue(name);
                                 databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
                                 databaseReference.child(uid).child("imageUrl").setValue(uri.toString());
+                                progressDialog.dismiss();
                                 Intent intent = new Intent(ActivitySettings.this, MainActivity3.class);
                                 startActivity(intent);
                                 finish();
