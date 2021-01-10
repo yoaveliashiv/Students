@@ -1,5 +1,7 @@
 package com.example.chat;
 
+import java.util.ArrayList;
+
 public class Contact {
 
     private Message message;
@@ -9,6 +11,7 @@ public class Contact {
     private String uidI = "";
     private String phoneContacts = "";
     private int notifications = 0;
+    private String nameCollegeEnglish="";
 
     public Contact() {
     }
@@ -69,5 +72,13 @@ public class Contact {
 
     public void setPhoneContacts(String phoneContacts) {
         this.phoneContacts = phoneContacts;
+    }
+
+    public String getNameCollegeEnglish() {
+        return nameCollegeEnglish;
+    }
+
+    public void setNameCollegeEnglish(String nameCollegeEnglish) {
+        this.nameCollegeEnglish = nameCollegeEnglish;
     }
 }

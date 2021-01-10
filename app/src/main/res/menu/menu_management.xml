@@ -23,6 +23,11 @@
         android:id="@+id/link_groups"
         android:title="לינקים לווצאפ"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/price_drive"
+        android:title="הצעות מחיר נסיעה"
+        app:showAsAction="never"/>
+
 
     <item
         android:id="@+id/feeds"

@@ -63,6 +63,8 @@ public class MyGroupsFragment extends Fragment {
     private String uid;
     private ListView listView;
     private ArrayList<String> arrayList;
+    private ArrayList<String> arrayListNameCologeEnglish;
+
     private ProgressDialog progressDialog;
 
     public MyGroupsFragment() {
@@ -114,10 +116,11 @@ public class MyGroupsFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent= new Intent(getContext(), GroupChatActivity.class);
+                Intent intent = new Intent(getContext(), GroupChatActivity.class);
                 intent.putExtra("nameGroup", contactArrayList.get(i).getName());
                 intent.putExtra("flagAllGroup", false);
                 intent.putExtra("num_notifications", contactArrayList.get(i).getNotifications());
+                intent.putExtra("flagNameCologeEnglish",  contactArrayList.get(i).getNameCollegeEnglish());
 
                 startActivity(intent);
 //                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -152,12 +155,13 @@ public class MyGroupsFragment extends Fragment {
                 }
                 progressDialog.show();
                 arrayList = new ArrayList<>();
+                arrayListNameCologeEnglish = new ArrayList<>();
+
                 for (DataSnapshot child : snapshot.getChildren()) {
 
                     String uidContact = child.getKey();
-
                     arrayList.add(uidContact);
-
+                    arrayListNameCologeEnglish.add(child.getValue(String.class));
 
                 }
 
@@ -216,7 +220,7 @@ public class MyGroupsFragment extends Fragment {
     private void addContact(final String uid) {
 
         DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("NamesGroups");
-        databaseReference1.child(arrayList.get(0)).limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference1.child(arrayListNameCologeEnglish.get(0)).child(arrayList.get(0)).limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
@@ -241,8 +245,10 @@ public class MyGroupsFragment extends Fragment {
                         contact.setName(arrayList.get(0));
                         contact.setUidI(uid);
                         //contactsAdapter.notifyDataSetChanged();
-
+                        contact.setNameCollegeEnglish(arrayListNameCologeEnglish.get(0));
                         contactArrayList.add(contact);
+
+                        arrayListNameCologeEnglish.remove(0);
                         arrayList.remove(0);
                         if (arrayList.size() == 0) {
                             contactArrayList2 = new ArrayList<>(contactArrayList);
@@ -275,43 +281,43 @@ public class MyGroupsFragment extends Fragment {
 
     }
 
-    public void onStart1(Contact child) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("NamesGroups")
-                .child(child.getName());
-        reference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if (snapshot.exists()) {
-
-                    seeAllMyGroups();
-
-
-                }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//    public void onStart1(Contact child) {
+//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("NamesGroups")
+//                .child(child.getName());
+//        reference.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 //                if (snapshot.exists()) {
+//
 //                    seeAllMyGroups();
+//
+//
 //                }
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
+//            }
+//
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+////                if (snapshot.exists()) {
+////                    seeAllMyGroups();
+////                }
+//            }
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+//    }
 
     private void search() {
         groupSearch = editTextSearch.getText().toString();

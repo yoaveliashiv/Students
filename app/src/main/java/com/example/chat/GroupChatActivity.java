@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.example.Hikers.RegisterInformation2;
 import com.example.R;
+import com.google.android.gms.common.SignInButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -37,6 +38,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import static java.lang.Thread.sleep;
 
@@ -56,6 +58,7 @@ public class GroupChatActivity extends AppCompatActivity {
     private int numMembers;
     private int numNotifications = -1;
     private Boolean flagNewMessage = false;
+    private String nameCologeEnglish = "";
 
     // private TextView textViewDisplay;
     @Override
@@ -66,11 +69,10 @@ public class GroupChatActivity extends AppCompatActivity {
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         nameGroup = getIntent().getExtras().getString("nameGroup");
         flag = getIntent().getExtras().getBoolean("flagAllGroup");
-
         if (getIntent().hasExtra("num_notifications"))
             numNotifications = getIntent().getExtras().getInt("num_notifications");
-        databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups").child(nameGroup);
-
+        if (getIntent().hasExtra("flagNameCologeEnglish"))
+            nameCologeEnglish = getIntent().getExtras().getString("flagNameCologeEnglish");
         // textViewDisplay=findViewById(R.id.text_group_display);
         ImageButton imageButton = findViewById(R.id.imageButtonSendMassege);
         scrollView = findViewById(R.id.scrollView);
@@ -79,6 +81,10 @@ public class GroupChatActivity extends AppCompatActivity {
 
 
         getUserInfo();
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups")
+                .child(nameCologeEnglish).child(nameGroup);
+
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -114,10 +120,10 @@ public class GroupChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("MyGroups")
                         .child(uid).child(nameGroup);
-                databaseReference1.setValue("");
+                databaseReference1.setValue(nameCologeEnglish);
                 DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Groups details")
                         .child(nameGroup).child(uid);
-                databaseReference2.setValue("");
+                databaseReference2.setValue(nameCologeEnglish);
                 Intent intent = new Intent(GroupChatActivity.this, MainActivity3.class);
                 intent.putExtra("flagPage", 1);
                 startActivity(intent);
@@ -136,38 +142,39 @@ public class GroupChatActivity extends AppCompatActivity {
     }
 
     private void showMessage() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("NamesGroups").child(nameGroup);
-reference.addListenerForSingleValueEvent(new ValueEventListener() {
-    @Override
-    public void onDataChange(@NonNull DataSnapshot snapshot) {
-        Message message;
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("NamesGroups")
+                .child(nameCologeEnglish).child(nameGroup);
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Message message;
 
-        for(DataSnapshot child:snapshot.getChildren()){
-            message = child.getValue(Message.class);
-            arrayListMessage.add(message);
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    message = child.getValue(Message.class);
+                    arrayListMessage.add(message);
 
-        }
-        if (numNotifications>0){
-            Message message1=new Message();
-            message1.setId(numNotifications);
-            arrayListMessage.add(arrayListMessage.size()-numNotifications,message1);
-        }
+                }
+                if (arrayListMessage.size() == 0) return;
+                if (numNotifications > 0) {
+                    Message message1 = new Message();
+                    message1.setId(numNotifications);
+                    arrayListMessage.add(arrayListMessage.size() - numNotifications, message1);
+                }
 
-        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
-                .getReference("NotificationsIdSeeLast").child(uid).child(nameGroup);//set Notifications
-        databaseReference3.setValue(arrayListMessage.get(arrayListMessage.size() - 1).getId());
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                        .getReference("NotificationsIdSeeLast").child(uid).child(nameGroup);//set Notifications
+                databaseReference3.setValue(arrayListMessage.get(arrayListMessage.size() - 1).getId());
+                arrayAdapter.notifyDataSetChanged();
 
-        arrayAdapter.notifyDataSetChanged();
+                listView.setSelection(listView.getAdapter().getCount() - 1);
+                flagNewMessage = true;
+            }
 
-        listView.setSelection(listView.getAdapter().getCount() - 1);
-        flagNewMessage=true;
-    }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-    @Override
-    public void onCancelled(@NonNull DatabaseError error) {
-
-    }
-});
+            }
+        });
     }
 
     private void setGroupDetails() {
@@ -363,7 +370,8 @@ reference.addListenerForSingleValueEvent(new ValueEventListener() {
         message.setPhone(registerInformation.getEmail());
         message.setUid(uid);
         message.setTime(time);
-        DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("NamesGroups");
+        DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("NamesGroups")
+                .child(nameCologeEnglish);
         databaseReference2.child(nameGroup).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -372,7 +380,8 @@ reference.addListenerForSingleValueEvent(new ValueEventListener() {
 
 
                 message.setId(id);
-                databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups").child(nameGroup).push();
+                databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups")
+                        .child(nameCologeEnglish).child(nameGroup).push();
 
                 databaseReference.setValue(message);
             }
@@ -640,8 +649,13 @@ reference.addListenerForSingleValueEvent(new ValueEventListener() {
                 }
 
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("GroupsPriceOffer")
-                        .child(nameGroup).child(uid);
-                databaseReference.setValue(price);
+                        .child(registerInformation.getNameCollegeEnglish()).child(nameGroup).push();
+                HashMap<String, String> hashMap = new HashMap<>();
+                hashMap.put("price", price);
+                hashMap.put("key", databaseReference.getKey());
+                hashMap.put("uid", uid);
+                hashMap.put("nameGroup", nameGroup);
+                databaseReference.setValue(hashMap);
                 Toast.makeText(GroupChatActivity.this, "המחיר נשלח בהצלחה ומחכה לאישור המערכת", Toast.LENGTH_LONG).show();
                 d.dismiss();
 

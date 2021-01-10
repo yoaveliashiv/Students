@@ -76,6 +76,125 @@ public class Management extends AppCompatActivity {
 
     }
 
+    private void priceGroups() {
+        if (nameCollege.isEmpty()) {
+            spinnerNameColeg.setVisibility(View.VISIBLE);
+            buttonDo.setText("אישור");
+            buttonDo.setVisibility(View.VISIBLE);
+
+            buttonDo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (nameCollege.isEmpty() || nameCollege.equals("בחר אוניברסיטה")) {
+
+                        return;
+                    }
+                    continuepriceGroups();
+                }
+            });
+        } else
+            continuepriceGroups();
+
+    }
+
+    private void continuepriceGroups() {
+        editTextDate.setVisibility(View.GONE);
+
+        editTexto.setVisibility(View.VISIBLE);
+        editTextFrom.setVisibility(View.VISIBLE);
+        buttonDo.setVisibility(View.VISIBLE);
+        editTexto.setText("");
+        editTexto.setHint("מחיר");
+        editTextFrom.setHint("שם קבוצה");
+        editTextFrom.setText("");
+        buttonDo.setText("הוסף מחיר");
+        final ArrayList<String> arrayListGroups = new ArrayList<>();
+        final ArrayList<PriceDrive> groups = new ArrayList<>();
+
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(Management.this,
+                android.R.layout.simple_list_item_1, arrayListGroups);
+        listView.setAdapter(arrayAdapter);
+
+        DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("GroupsPriceOffer")
+                .child(nameCollege);
+        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child2 : snapshot.getChildren()) {
+                    String nameGrop = child2.getKey();
+                    groups.add(new PriceDrive());
+                    arrayListGroups.add("שם קבוצה:" + nameGrop);
+                    for (DataSnapshot child : child2.getChildren()) {
+                        PriceDrive priceDrive = child.getValue(PriceDrive.class);
+                        arrayListGroups.add(nameGrop + "  " + priceDrive.getPrice());
+                        groups.add(priceDrive);
+                    }
+                }
+                arrayListGroups.add("עד כאן הצעות");
+                arrayAdapter.notifyDataSetChanged();
+
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("GroupsPrice");
+                databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!snapshot.exists())
+                            return;
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            arrayListGroups.add(child.getKey() + ": " + child.getValue(String.class));
+                        }
+                        arrayAdapter.notifyDataSetChanged();
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i < groups.size())
+                    dialogPrice(i, groups);
+
+
+            }
+        });
+        buttonDo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String name = editTextFrom.getText().toString();
+                String price = editTexto.getText().toString();
+                if (name.isEmpty() || price.isEmpty()) {
+                    editTexto.setError("אנא הכנס פרטים תקינים");
+                    editTexto.requestFocus();
+                    return;
+                }
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("GroupsPrice")
+                        .child(name);
+                databaseReference3.setValue(price).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(Management.this, "מחיר נוסף בהצלחה", Toast.LENGTH_SHORT).show();
+                        continuepriceGroups();
+                    }
+                });
+            }
+
+        });
+
+    }
+
     private void makeGroup() {
         if (nameCollege.isEmpty()) {
             spinnerNameColeg.setVisibility(View.VISIBLE);
@@ -156,7 +275,7 @@ public class Management extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-               if(i<groups.size())
+                if (i < groups.size())
                     dialogJoinGrop(i, groups);
 
 
@@ -396,6 +515,9 @@ public class Management extends AppCompatActivity {
                 return true;
             case R.id.to_block:
                 blockMenge();
+                return true;
+            case R.id.price_drive:
+                priceGroups();
                 return true;
 
             default:
@@ -716,4 +838,55 @@ public class Management extends AppCompatActivity {
 
     }
 
+    private void dialogPrice(final int i, final ArrayList<PriceDrive> arrayListGroup) {
+        final Dialog d = new Dialog(Management.this);
+        d.setContentView(R.layout.dialog_links);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        TextView textViewJoinGroup = d.findViewById(R.id.textView_go_whatapps);
+        textViewJoinGroup.setVisibility(View.GONE);
+
+        TextView textViewFeed = d.findViewById(R.id.textView_feed);
+        textViewFeed.setVisibility(View.GONE);
+
+        final TextView textViewCopyLink = d.findViewById(R.id.textView_copy_link);
+        TextView textViewMyGroup = d.findViewById(R.id.textView_go_my_group);
+
+        textViewMyGroup.setText("מחק הצעות מקבוצה זו");
+        editTextFrom.setText(arrayListGroup.get(i).getNameGroup());
+
+        editTexto.setText(arrayListGroup.get(i).getPrice());
+
+
+        textViewCopyLink.setText("העתק שם קבוצה");
+
+        textViewCopyLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) Management.this.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("1", arrayListGroup.get(i).getNameGroup());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(Management.this, "הלינק הועתק", Toast.LENGTH_SHORT).show();
+                d.dismiss();
+            }
+        });
+        textViewMyGroup.setOnClickListener(new View.OnClickListener() {//delete
+            @Override
+            public void onClick(View view) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("GroupsPriceOffer")
+                        .child(nameCollege).child(arrayListGroup.get(i).getNameGroup());
+                databaseReference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(Management.this, "הצעות המחירים נמחקו בהצלחה", Toast.LENGTH_SHORT).show();
+                        d.dismiss();
+                        priceGroups();
+                    }
+                });
+            }
+        });
+        d.show();
+
+    }
 }
