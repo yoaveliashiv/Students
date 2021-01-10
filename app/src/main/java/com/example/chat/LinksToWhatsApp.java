@@ -3,7 +3,9 @@ package com.example.chat;
 public class LinksToWhatsApp {
     private String nameGroup="";
     private String link="";
+    private String key="";
 
+ private String uidWantNewLink="";
     public LinksToWhatsApp() {
     }
 
@@ -21,5 +23,22 @@ public class LinksToWhatsApp {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+
+    public String getUidWantNewLink() {
+        return uidWantNewLink;
+    }
+
+    public void setUidWantNewLink(String uidWantNewLink) {
+        this.uidWantNewLink = uidWantNewLink;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

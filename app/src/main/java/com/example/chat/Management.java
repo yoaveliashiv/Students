@@ -5,8 +5,13 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
 
+import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
@@ -19,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.R;
@@ -103,13 +109,35 @@ public class Management extends AppCompatActivity {
         editTexto.setHint("ל-");
         buttonDo.setText("הוסף קבוצה");
         final ArrayList<String> arrayListGroups = new ArrayList<>();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-                .getReference("NamesGroups").child(nameCollege);
+        final ArrayList<Group> groups = new ArrayList<>();
+
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(Management.this,
                 android.R.layout.simple_list_item_1, arrayListGroups);
         listView.setAdapter(arrayAdapter);
 
+        DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("NewGroups")
+                .child(nameCollege);
+        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Group group = child.getValue(Group.class);
+                    arrayListGroups.add(group.getName());
+                    groups.add(group);
+                }
+                arrayListGroups.add("      עד כאן הצעות של קבוצות");
+                arrayAdapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("NamesGroups").child(nameCollege);
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -128,6 +156,8 @@ public class Management extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+               if(i<groups.size())
+                    dialogJoinGrop(i, groups);
 
 
             }
@@ -253,37 +283,59 @@ public class Management extends AppCompatActivity {
         buttonDo.setText("הוסף לינק");
         final ArrayList<LinksToWhatsApp> arrayListLink = new ArrayList<>();
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-                .getReference("LinksToWhatsApp").child(nameCollege);
 
         final LinksToWhatsAppAdapter linksToWhatsAppAdapter = new LinksToWhatsAppAdapter(Management.this, 0, 0, arrayListLink);
 
         listView.setAdapter(linksToWhatsAppAdapter);
-
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("NewLinks")
+                .child(nameCollege);
+        databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.exists())
-                    return;
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    LinksToWhatsApp linksToWhatsApp = new LinksToWhatsApp();
-                    linksToWhatsApp.setNameGroup(child.getKey());
-                    linksToWhatsApp.setLink(child.getValue(String.class));
-                    arrayListLink.add(linksToWhatsApp);
+                    arrayListLink.add(child.getValue(LinksToWhatsApp.class));
                 }
-
+                LinksToWhatsApp linksToWhatsApp = new LinksToWhatsApp();
+                linksToWhatsApp.setNameGroup("עד כאן לינקים שהציעו");
+                arrayListLink.add(linksToWhatsApp);
                 linksToWhatsAppAdapter.notifyDataSetChanged();
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                        .getReference("LinksToWhatsApp").child(nameCollege);
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!snapshot.exists())
+                            return;
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            LinksToWhatsApp linksToWhatsApp = new LinksToWhatsApp();
+                            linksToWhatsApp.setNameGroup(child.getKey());
+                            linksToWhatsApp.setLink(child.getValue(String.class));
+                            arrayListLink.add(linksToWhatsApp);
+                        }
+
+                        linksToWhatsAppAdapter.notifyDataSetChanged();
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+                dialogJoinWhatappsGrop(i, arrayListLink);
 
             }
         });
@@ -535,11 +587,132 @@ public class Management extends AppCompatActivity {
                 dateBlock = simpleFormat.format(startDate).toString();
 
 
-               editTextDate.setText(dateBlock);
+                editTextDate.setText(dateBlock);
             }
         });
 
 
+    }
+
+
+    private void dialogJoinWhatappsGrop(final int i, final ArrayList<LinksToWhatsApp> arrayListLink) {
+        final Dialog d = new Dialog(Management.this);
+        d.setContentView(R.layout.dialog_links);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        final TextView textViewJoinGroup = d.findViewById(R.id.textView_go_whatapps);
+        TextView textViewFeed = d.findViewById(R.id.textView_feed);
+        textViewFeed.setVisibility(View.GONE);
+        final TextView textViewCopyLink = d.findViewById(R.id.textView_copy_link);
+        TextView textViewMyGroup = d.findViewById(R.id.textView_go_my_group);
+        textViewMyGroup.setText("מחק הצעה");
+        editTextFrom.setText(arrayListLink.get(i).getNameGroup());
+        editTexto.setText(arrayListLink.get(i).getLink());
+
+        textViewJoinGroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intentWhatsapp = new Intent(Intent.ACTION_VIEW);
+                String link = arrayListLink.get(i).getLink();
+                String url = link;
+                intentWhatsapp.setData(Uri.parse(url));
+                // intentWhatsapp.setPackage("com.whatsapp");
+                try {
+                    startActivity(intentWhatsapp);
+                } catch (RuntimeException e) {
+                    textViewJoinGroup.setText("קישור לא תקין");
+                    textViewJoinGroup.setTextColor(getResources().getColor(R.color.colorWarng));//TODO:set text color
+                }
+
+            }
+        });
+
+
+        textViewCopyLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) Management.this.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("1", arrayListLink.get(i).getLink());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(Management.this, "הלינק הועתק", Toast.LENGTH_SHORT).show();
+                d.dismiss();
+            }
+        });
+        textViewMyGroup.setOnClickListener(new View.OnClickListener() {//delete
+            @Override
+            public void onClick(View view) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NewLinks")
+                        .child(nameCollege).child(arrayListLink.get(i).getKey());
+                databaseReference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(Management.this, "הצעת לינק נמחקה בהצלחה", Toast.LENGTH_SHORT).show();
+                        d.dismiss();
+                        makeLinks();
+                    }
+                });
+            }
+        });
+        d.show();
+
+    }
+
+    private void dialogJoinGrop(final int i, final ArrayList<Group> arrayListGroup) {
+        final Dialog d = new Dialog(Management.this);
+        d.setContentView(R.layout.dialog_links);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        TextView textViewJoinGroup = d.findViewById(R.id.textView_go_whatapps);
+        textViewJoinGroup.setVisibility(View.GONE);
+        TextView textViewFeed = d.findViewById(R.id.textView_feed);
+        textViewFeed.setVisibility(View.GONE);
+        final TextView textViewCopyLink = d.findViewById(R.id.textView_copy_link);
+        TextView textViewMyGroup = d.findViewById(R.id.textView_go_my_group);
+        textViewMyGroup.setText("מחק הצעה");
+        String nameGroup = arrayListGroup.get(i).getName();
+        editTextFrom.setText(nameGroup.substring(0, nameGroup.indexOf("-")));
+        String to = nameGroup.substring(nameGroup.indexOf("-") + 1, nameGroup.length());
+//        String newTo = "";
+//        if(to.charAt(0)==' ') {
+//            for (int j = 0; j < to.length(); j++) {
+//                if (to.charAt(j) != ' ')
+//                    newTo += to.charAt(j);
+//            }
+//        }
+        editTexto.setText("" + to);
+
+
+        textViewCopyLink.setText("העתק שם קבוצה");
+
+        textViewCopyLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) Management.this.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("1", arrayListGroup.get(i).getName());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(Management.this, "הלינק הועתק", Toast.LENGTH_SHORT).show();
+                d.dismiss();
+            }
+        });
+        textViewMyGroup.setOnClickListener(new View.OnClickListener() {//delete
+            @Override
+            public void onClick(View view) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NewGroups")
+                        .child(nameCollege).child(arrayListGroup.get(i).getKey());
+                databaseReference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(Management.this, "הצעת הקבוצה נמחקה בהצלחה", Toast.LENGTH_SHORT).show();
+                        d.dismiss();
+                        makeGroup();
+                    }
+                });
+            }
+        });
+        d.show();
 
     }
 

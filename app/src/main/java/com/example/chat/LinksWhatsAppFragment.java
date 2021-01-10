@@ -42,7 +42,9 @@ public class LinksWhatsAppFragment extends Fragment {
     private ArrayList<LinksToWhatsApp> arrayListLink;
     private ArrayList<LinksToWhatsApp> arrayListLink2;
     private String uid;
-   private TextView textViewNameColge;
+  private TextView textViewNameColge;
+   private String nameCollegeEnglish="";
+    private String nameCollegeHebrew="";
     private TextView textViewNoFond;
     private EditText editTextSearch;
     private Button buttonSearch;
@@ -187,7 +189,8 @@ public class LinksWhatsAppFragment extends Fragment {
 
     private void chakIfExsitAndSend(final String link_, final String nameLink_, final EditText editTextLink, final EditText editTextNameGroup, final Dialog d) {
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("LinksToWhatsApp");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("LinksToWhatsApp")
+                .child(nameCollegeEnglish);
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -201,9 +204,11 @@ public class LinksWhatsAppFragment extends Fragment {
                 LinksToWhatsApp link = new LinksToWhatsApp();
                 link.setNameGroup(nameLink_);
                 link.setLink(link_);
+                link.setUidWantNewLink(uid);
                 String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NewLinks")
-                        .child(uid).push();
+                        .child(nameCollegeEnglish).push();
+                link.setKey(databaseReference.getKey());
                 databaseReference.setValue(link);
                 Toast.makeText(getContext(), "הלינק נשלח בהצלחה ומחכה לאישור המערכת", Toast.LENGTH_LONG).show();
                 d.dismiss();
@@ -346,6 +351,7 @@ public class LinksWhatsAppFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 RegisterInformation2 registerInformation = snapshot.getValue(RegisterInformation2.class);
+                nameCollegeEnglish=registerInformation.getNameCollegeEnglish();
                 textViewNameColge.setText("מ-"+registerInformation.getNameCollegeHebrew()+" ל- ");
                 arrayListLink = new ArrayList<>();
                 arrayListLink2 = new ArrayList<>();

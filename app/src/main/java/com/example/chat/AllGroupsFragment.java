@@ -47,6 +47,9 @@ public class AllGroupsFragment extends Fragment {
     private TextView textViewNameColeg;
     private String flagSearch;
     private ArrayAdapter<String> arrayAdapter;
+    private String nameCologeEnglish = "";
+    private String nameCologeHebrow = "";
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -140,7 +143,9 @@ public class AllGroupsFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 RegisterInformation2 registerInformation = snapshot.getValue(RegisterInformation2.class);
-                textViewNameColeg.setText("מ-" + registerInformation.getNameCollegeHebrew() + " ל- ");
+                nameCologeEnglish = registerInformation.getNameCollegeEnglish();
+                nameCologeHebrow=registerInformation.getNameCollegeHebrew();
+                textViewNameColeg.setText("מ-" + nameCologeHebrow + " ל- ");
                 arrayListGroups = new ArrayList<>();
                 arrayListGroups2 = new ArrayList<>();
 
@@ -160,7 +165,7 @@ public class AllGroupsFragment extends Fragment {
                         }
 
                         arrayAdapter.notifyDataSetChanged();
-                        if(!flagSearch.isEmpty()){
+                        if (!flagSearch.isEmpty()) {
                             search();
                         }
                     }
@@ -195,11 +200,10 @@ public class AllGroupsFragment extends Fragment {
 
     private void search() {
         final String groupSearch;
-        if(flagSearch.isEmpty()) {
-             groupSearch = editTextSearch.getText().toString();
-        }
-        else{
-           groupSearch = flagSearch;
+        if (flagSearch.isEmpty()) {
+            groupSearch = editTextSearch.getText().toString();
+        } else {
+            groupSearch = flagSearch;
 
         }
         if (groupSearch.isEmpty()) {
@@ -290,15 +294,19 @@ public class AllGroupsFragment extends Fragment {
                     editTextNameGroup.requestFocus();
                     return;
                 }
-                if (!nameLink_.contains("אריאל") && !nameLink_.toLowerCase().contains("ariel")) {
-                    editTextNameGroup.setError("הכנס שם קבוצה תקין,לדוגמא אריאל-אשקלון");
+                if (!nameLink_.contains(nameCologeHebrow+"-") && !nameLink_.toLowerCase().contains(nameCologeEnglish+"-")) {
+                    editTextNameGroup.setError("הכנס שם קבוצה תקין,לדוגמא אריאל-? : חובה שיהיה שם אוניברסיטה ו'-' צמודים");
                     editTextNameGroup.requestFocus();
                     return;
                 }
                 String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                Group group = new Group();
+                group.setName(nameLink_);
+                group.setUidNewGroupSend(uid);
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("NewGroups")
-                        .child(uid).push();
-                databaseReference.setValue(nameLink_);
+                        .child(nameCologeEnglish).push();
+                group.setKey(databaseReference.getKey());
+                databaseReference.setValue(group);
                 Toast.makeText(getContext(), "ההצעה נשלחה בהצלחה ומחכה לאישור המערכת", Toast.LENGTH_LONG).show();
                 d.dismiss();
 
