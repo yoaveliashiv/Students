@@ -17,15 +17,25 @@ import com.example.Hikers.RegisterLoginActivity;
 import com.example.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class MainActivity3 extends AppCompatActivity {
     private ViewPager viewPager;
     protected TabLayout tabLayout;
     private TabsAccessorAdapter tabsAccessorAdapter;
-    protected static String search="";
+    protected static String search = "";
+    private boolean flagBloked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        blocked();
 //if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
 //    NotificationChannel notificationChannel= new NotificationChannel
 //            ("new message","new message", NotificationManager.IMPORTANCE_DEFAULT);
@@ -53,6 +63,51 @@ public class MainActivity3 extends AppCompatActivity {
 //        intentWhatsapp.setData(Uri.parse(url));
 //       // intentWhatsapp.setPackage("com.whatsapp");
 //        startActivity(intentWhatsapp);
+
+
+    }
+
+    private void blocked() {
+        final String phone = FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Blocked")
+                .child(phone);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()){
+                    build();
+                    return;
+                }
+
+                Blocked blocked = snapshot.getValue(Blocked.class);
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                String date = simpleDateFormat.format(calendar.getTime());
+                if (dateSearch(date,blocked.getDate())) {
+                    Intent intent = new Intent(MainActivity3.this, ActivitySettings.class);
+                    intent.putExtra("flagBloked", blocked.getDate());
+                    startActivity(intent);
+                    finish();
+                    return;
+                } else {
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("BlockedHistory")
+                            .child(phone).push();
+                    reference.setValue(blocked);
+                    DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Blocked")
+                            .child(phone);
+                    databaseReference2.removeValue();
+                    build();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void build() {
         viewPager = (ViewPager) findViewById(R.id.viewPagerMain);
         tabsAccessorAdapter = new TabsAccessorAdapter(getSupportFragmentManager());
         viewPager.setAdapter(tabsAccessorAdapter);
@@ -63,7 +118,7 @@ public class MainActivity3 extends AppCompatActivity {
         if (getIntent().hasExtra("flagPage"))
             viewPager.setCurrentItem(getIntent().getExtras().getInt("flagPage"));
         if (getIntent().hasExtra("flag_serch")) {
-            search=getIntent().getExtras().getString("flag_serch");
+            search = getIntent().getExtras().getString("flag_serch");
             viewPager.setCurrentItem(2);
         }
     }
@@ -121,4 +176,27 @@ public class MainActivity3 extends AppCompatActivity {
         }
     }
 
+    public boolean dateSearch(String o1_date, String o2_date) {
+//        Toast.makeText(MainActivity1.this, "" + dateStartUser + " " + dateEndUser + ";" + dateStart + " " + dateEnd, Toast.LENGTH_LONG).show();
+//        final Button buttonData = findViewById(R.id.buttonDate2);
+//        buttonData.setTextSize(8);
+
+        int yearStartUser = Integer.valueOf(o1_date.substring(6));
+        int monthStartUser = Integer.valueOf(o1_date.substring(3, 5));
+        int dayStartUser = Integer.valueOf(o1_date.substring(0, 2));
+
+        int yearEnd = Integer.valueOf(o2_date.substring(6));
+        int monthEnd = Integer.valueOf(o2_date.substring(3, 5));
+        int dayEnd = Integer.valueOf(o2_date.substring(0, 2));
+
+        if (yearEnd > yearStartUser)
+            return true;
+        if (yearEnd == yearStartUser && monthEnd > monthStartUser)
+            return true;
+        if (yearEnd == yearStartUser && monthEnd == monthStartUser && dayEnd > dayStartUser)
+            return true;
+
+
+        return false;
+    }
 }

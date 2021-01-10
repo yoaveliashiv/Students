@@ -740,7 +740,7 @@ public class ChatActivity extends AppCompatActivity {
                 String date = simpleDateFormat.format(calendar.getTime());
                 databaseReference.setValue(date + " " + uidSend);
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Blocked")
-                        .child(uidRecive).child(uidSend);
+                        .child(uidRecive).child(registerInformationRecive.getEmail());
                 databaseReference1.setValue(date + " " + uidSend);
 
                 Toast.makeText(ChatActivity.this, "החשבון נחסם בהצלחה", Toast.LENGTH_LONG).show();

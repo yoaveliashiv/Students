@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -47,7 +48,7 @@ public class ActivitySettings extends AppCompatActivity {
     private RegisterInformation2 registerInformation;
     private String uid;
     private ProgressDialog progressDialog;
-
+private String dataBlock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +56,14 @@ public class ActivitySettings extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("אנא חכה להשלמת התהליך..");
-
-        Boolean flag = getIntent().getExtras().getBoolean("flag");
+        Boolean flag=false;
+        if(getIntent().hasExtra("flag")){
+             flag = getIntent().getExtras().getBoolean("flag");
+        }
+        if(getIntent().hasExtra("flagBloked")){
+            dataBlock = getIntent().getExtras().getString("flagBloked");
+            dialodBlockMenge();
+        }
         imageView = findViewById(R.id.profile_image);
         getSupportActionBar().setTitle("הגדרות חשבון");
 
@@ -280,6 +287,7 @@ public class ActivitySettings extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.refresh);
         item.setTitle("לדף הראשי");
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -314,5 +322,24 @@ public class ActivitySettings extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    private void dialodBlockMenge() {
+        final Dialog d = new Dialog(ActivitySettings.this);
+        d.setContentView(R.layout.dialog_is_blocking);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        TextView textView=d.findViewById(R.id.textView_date_blocked);
+        Button buttonClose = d.findViewById(R.id.button_close_window);
+       buttonClose.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               d.dismiss();
+           }
+       });
+       textView.setText("נחסמת עד תאריך"+dataBlock);
+
+        d.show();
+
     }
 }

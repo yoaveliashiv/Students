@@ -7,7 +7,7 @@ public class Contact {
     private String image = "";
     private String uidContacts = "";
     private String uidI = "";
-
+    private String phoneContacts = "";
     private int notifications = 0;
 
     public Contact() {
@@ -61,5 +61,13 @@ public class Contact {
 
     public void setUidI(String uidI) {
         this.uidI = uidI;
+    }
+
+    public String getPhoneContacts() {
+        return phoneContacts;
+    }
+
+    public void setPhoneContacts(String phoneContacts) {
+        this.phoneContacts = phoneContacts;
     }
 }

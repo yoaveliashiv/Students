@@ -18,6 +18,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <EditText
         android:id="@+id/editTextGrohp_To"
         android:layout_width="wrap_content"
@@ -31,15 +32,29 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+        android:id="@+id/editTextGrohp_cose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:ems="9"
+        android:hint="תאריך"
+
+       android:textColor="@color/colorBlack"
+        app:backgroundTint="#EFE6E6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/editTextGrope_From"
+        app:layout_constraintTop_toBottomOf="@+id/editTextGrope_From" />
+
+    <Button
         android:id="@+id/buttonDo_Grohp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="10dp"
         android:text="הוסף קבוצה"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextGrope_From" />
+        app:layout_constraintTop_toBottomOf="@+id/spinner_name_cologe" />
 
     <ListView
         android:id="@+id/list_management"
@@ -55,9 +70,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="100dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextGrope_From" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextGrohp_cose" />
 </androidx.constraintlayout.widget.ConstraintLayout>

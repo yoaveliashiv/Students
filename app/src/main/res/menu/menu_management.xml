@@ -7,7 +7,10 @@
         android:icon="@drawable/student_icon"
         android:title="לדף הראשי"
         app:showAsAction="ifRoom" />
-
+    <item
+        android:id="@+id/to_block"
+        android:title="לחסום"
+        app:showAsAction="never"/>
     <item
         android:id="@+id/new_cologe"
         android:title="אוניברסיטה חדשה"

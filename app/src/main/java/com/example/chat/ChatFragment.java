@@ -53,6 +53,7 @@ public class ChatFragment extends Fragment {
     private ArrayList<Contact> contactArrayList;
     private String nameContact = "";
     private String imageContact = "";
+    private String phoneContact = "";
     private ContactsAdapter contactsAdapter;
     private DatabaseReference reference;
     private ListView listView;
@@ -242,7 +243,7 @@ public class ChatFragment extends Fragment {
                     nameContact = registerInformationRecive.getName();
                     if (nameContact.isEmpty())
                         nameContact = registerInformationRecive.getEmail();
-
+                    phoneContact = nameContact = registerInformationRecive.getEmail();
                     imageContact = registerInformationRecive.getImageUrl();
                 }
 
@@ -292,7 +293,7 @@ public class ChatFragment extends Fragment {
                 int numNewMessage = messageContact.getId() - lastSee;
                 contact.setNotifications(numNewMessage);
 
-
+                contact.setPhoneContacts(phoneContact);
                 contact.setImage(imageContact);
                 contact.setMessage(messageContact);
                 contact.setName(nameContact);
@@ -383,7 +384,7 @@ public class ChatFragment extends Fragment {
 
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Blocked")
-                .child(uid).child(contactArrayList.get(i).getUidContacts());
+                .child(uid).child(contactArrayList.get(i).getPhoneContacts());
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

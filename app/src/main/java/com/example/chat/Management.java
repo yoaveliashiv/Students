@@ -1,9 +1,13 @@
 package com.example.chat;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.util.Pair;
 
 import android.content.Intent;
+import android.icu.text.SimpleDateFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,6 +23,8 @@ import android.widget.Toast;
 
 import com.example.R;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,16 +32,21 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class Management extends AppCompatActivity {
     EditText editTextFrom;
     Button buttonDo;
     EditText editTexto;
+    Button editTextDate;
+
     ListView listView;
     Spinner spinnerNameColeg;
     String nameCollege = "";
     String nameCollegeHebrow = "";
+    String dateBlock = "";
 
 
     @Override
@@ -47,16 +58,20 @@ public class Management extends AppCompatActivity {
         editTextFrom = findViewById(R.id.editTextGrope_From);
         buttonDo = findViewById(R.id.buttonDo_Grohp);
         spinnerNameColeg = findViewById(R.id.spinner_name_cologe);
+        editTextDate = findViewById(R.id.editTextGrohp_cose);
         spinnerNameColeg.setVisibility(View.GONE);
         editTexto.setVisibility(View.GONE);
         editTextFrom.setVisibility(View.GONE);
+        editTextDate.setVisibility(View.GONE);
+
         buttonDo.setVisibility(View.GONE);
+
         setSpinnerNaemeColge();
 
     }
 
     private void makeGroup() {
-        if(nameCollege.isEmpty()) {
+        if (nameCollege.isEmpty()) {
             spinnerNameColeg.setVisibility(View.VISIBLE);
             buttonDo.setText("אישור");
             buttonDo.setVisibility(View.VISIBLE);
@@ -71,13 +86,13 @@ public class Management extends AppCompatActivity {
                     continueMakeGroup();
                 }
             });
-        }
-        else
+        } else
             continueMakeGroup();
 
     }
 
     private void continueMakeGroup() {
+        editTextDate.setVisibility(View.GONE);
 
         editTexto.setVisibility(View.VISIBLE);
         editTextFrom.setVisibility(View.VISIBLE);
@@ -204,7 +219,7 @@ public class Management extends AppCompatActivity {
     }
 
     private void makeLinks() {
-        if(nameCollege.isEmpty()) {
+        if (nameCollege.isEmpty()) {
 
             spinnerNameColeg.setVisibility(View.VISIBLE);
             buttonDo.setText("אישור");
@@ -220,13 +235,13 @@ public class Management extends AppCompatActivity {
                     continueMakeLinks();
                 }
             });
-        }
-        else
+        } else
             continueMakeLinks();
 
     }
 
     private void continueMakeLinks() {
+        editTextDate.setVisibility(View.GONE);
 
         editTexto.setVisibility(View.VISIBLE);
         editTextFrom.setVisibility(View.VISIBLE);
@@ -327,13 +342,99 @@ public class Management extends AppCompatActivity {
             case R.id.link_groups:
                 makeLinks();
                 return true;
+            case R.id.to_block:
+                blockMenge();
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void blockMenge() {
+        editTexto.setVisibility(View.VISIBLE);
+        editTextFrom.setVisibility(View.VISIBLE);
+        buttonDo.setVisibility(View.VISIBLE);
+        editTextDate.setVisibility(View.VISIBLE);
+        editTextFrom.setText("");
+        editTexto.setText("");
+        editTexto.setHint("סיבה");
+        editTextFrom.setHint("מספר פלאפון");
+        buttonDo.setText("חסום");
+        setDate();
+        final ArrayList<String> arrayListBlocked = new ArrayList<>();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Blocked");
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(Management.this,
+                android.R.layout.simple_list_item_1, arrayListBlocked);
+        listView.setAdapter(arrayAdapter);
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists())
+                    return;
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Blocked blocked = child.getValue(Blocked.class);
+                    arrayListBlocked.add(blocked.getPhone() + ": " + blocked.getDate()
+                            + " - " + blocked.getCause_of_blockage());
+                }
+
+                arrayAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+
+            }
+        });
+        buttonDo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String phone = editTextFrom.getText().toString();
+                String date = editTextDate.getText().toString();
+                String cose = editTexto.getText().toString();
+                if (phone.length() < 9) {
+                    editTextFrom.setError("פלאפון קצר מדי");
+                    editTextFrom.requestFocus();
+                    return;
+                }
+                if (date.length() < 6) {
+                    editTextDate.setError("תאריך קצר מדי");
+                    editTextDate.requestFocus();
+                    return;
+                }
+                Blocked blocked = new Blocked();
+                blocked.setDate(date);
+                blocked.setPhone(phone);
+                blocked.setCause_of_blockage(cose);
+                DatabaseReference cardRef2 = FirebaseDatabase.getInstance()
+                        .getReference("Blocked").child(phone);
+                cardRef2.setValue(blocked).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(Management.this, "חסימה בוצעה בהצלחה", Toast.LENGTH_SHORT).show();
+
+                        blockMenge();
+                    }
+                });
+            }
+
+
+        });
+
+    }
+
     private void newCologe() {
+        editTextDate.setVisibility(View.GONE);
+
         editTexto.setVisibility(View.VISIBLE);
         editTextFrom.setVisibility(View.VISIBLE);
         buttonDo.setVisibility(View.VISIBLE);
@@ -401,6 +502,45 @@ public class Management extends AppCompatActivity {
 
 
         });
+    }
+
+    private void setDate() {
+
+        MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
+        // MaterialDatePicker.Builder builder=MaterialDatePicker.Builder.dateRangePicker();
+        builder.setTitleText("בחר תאריך");
+        final MaterialDatePicker materialDatePicker = builder.build();
+
+        editTextDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                materialDatePicker.show(getSupportFragmentManager(), "DATE_PICKER");
+
+            }
+        });
+
+        materialDatePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onPositiveButtonClick(Object selection) {
+                Pair selectedDates = (Pair) materialDatePicker.getSelection();
+//              then obtain the startDate & endDate from the range
+                final Pair<Date, Date> rangeDate = new Pair<>(new Date((Long) selectedDates.first), new Date((Long) selectedDates.second));
+//              assigned variables
+                Date startDate = rangeDate.first;
+//              Format the dates in ur desired display mode
+
+                SimpleDateFormat simpleFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+//              Display it by setText
+                dateBlock = simpleFormat.format(startDate).toString();
+
+
+               editTextDate.setText(dateBlock);
+            }
+        });
+
+
+
     }
 
 }

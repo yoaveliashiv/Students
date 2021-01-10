@@ -36,7 +36,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private String uidProfile;
     private String uidVisit;
-
+private   RegisterInformation2 registerInformationProfile;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,18 +90,18 @@ public class ProfileActivity extends AppCompatActivity {
                 CircleImageView circleImageView = findViewById(R.id.image_profile);
                 TextView textViewName = findViewById(R.id.text_view_name_profile);
                 TextView textViewPhone = findViewById(R.id.text_view_phone_profile);
-                RegisterInformation2 registerInformation = new RegisterInformation2();
-                registerInformation = snapshot.getValue(RegisterInformation2.class);
-                textViewName.setText(registerInformation.getName());
-                name = registerInformation.getName();
+                 registerInformationProfile = new RegisterInformation2();
+                registerInformationProfile = snapshot.getValue(RegisterInformation2.class);
+                textViewName.setText(registerInformationProfile.getName());
+                name = registerInformationProfile.getName();
                 if (name.isEmpty())
-                    name = registerInformation.getEmail();
-                textViewPhone.setText(registerInformation.getEmail());
-                if (!registerInformation.getImageUrl().isEmpty())
+                    name = registerInformationProfile.getEmail();
+                textViewPhone.setText(registerInformationProfile.getEmail());
+                if (!registerInformationProfile.getImageUrl().isEmpty())
                     Glide.with(ProfileActivity.this)
-                            .load(registerInformation.getImageUrl())
+                            .load(registerInformationProfile.getImageUrl())
                             .into(circleImageView);
-                image = registerInformation.getImageUrl();
+                image = registerInformationProfile.getImageUrl();
 
 
             }
@@ -143,7 +143,7 @@ public class ProfileActivity extends AppCompatActivity {
                 String date = simpleDateFormat.format(calendar.getTime());
                 databaseReference.setValue(date+" "+uidVisit);
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Blocked")
-                        .child(uidProfile).child(uidVisit);
+                        .child(uidProfile).child(registerInformationProfile.getEmail());
                 databaseReference1.setValue(date+" "+uidVisit);
                 Toast.makeText(ProfileActivity.this, "החשבון נחסם בהצלחה", Toast.LENGTH_LONG).show();
 
@@ -206,7 +206,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
     private void chakIfBlockAndSend() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Blocked")
-                .child(uidVisit).child(uidProfile);
+                .child(uidVisit).child(registerInformationProfile.getEmail());
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

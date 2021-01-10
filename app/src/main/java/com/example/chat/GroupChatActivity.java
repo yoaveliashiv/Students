@@ -303,7 +303,7 @@ reference.addListenerForSingleValueEvent(new ValueEventListener() {
 
     private void chakIfBlockAndSend(final int i) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Blocked")
-                .child(uid).child(arrayListMessage.get(i).getUid());
+                .child(uid).child(arrayListMessage.get(i).getPhone());
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
