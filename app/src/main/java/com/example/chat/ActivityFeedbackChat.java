@@ -94,12 +94,15 @@ public class ActivityFeedbackChat extends AppCompatActivity {
             Message message = (Message) getIntent().getSerializableExtra("message");
             feedbackChat.setMessage(message);
             feedbackChat.setUidReportingOn(message.getUid());
+            feedbackChat.setPhoneReportingOn(message.getPhone());
         }
         feedbackChat.setType(type);
         feedbackChat.setFeedback(feedback);
         feedbackChat.setUidReportingSend(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        feedbackChat.setPhoneReportingSend(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("FeedbackChat")
                 .child(type).push();
+        feedbackChat.setKey(databaseReference.getKey());
         databaseReference.setValue(feedbackChat);
 
 

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.Dialog;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 
 import com.example.Hikers.RegisterLoginActivity;
@@ -84,10 +88,8 @@ public class MainActivity3 extends AppCompatActivity {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
                 String date = simpleDateFormat.format(calendar.getTime());
                 if (dateSearch(date,blocked.getDate())) {
-                    Intent intent = new Intent(MainActivity3.this, ActivitySettings.class);
-                    intent.putExtra("flagBloked", blocked.getDate());
-                    startActivity(intent);
-                    finish();
+                    dialodBlockMenge(blocked.getDate());
+                   flagBloked=true;
                     return;
                 } else {
                     DatabaseReference reference = FirebaseDatabase.getInstance().getReference("BlockedHistory")
@@ -138,19 +140,26 @@ public class MainActivity3 extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.mainIconMenu:
-                intent2 = new Intent(MainActivity3.this, MainActivity3.class);
-                startActivity(intent2);
+                if (!flagBloked) {
+                    intent2 = new Intent(MainActivity3.this, MainActivity3.class);
+                    startActivity(intent2);
+                }
                 return true;
 
             case R.id.settingsMenu:
-                intent2 = new Intent(MainActivity3.this, ActivitySettings.class);
-                intent2.putExtra("flag", false);
-                startActivity(intent2);
+                if (!flagBloked) {
+
+                    intent2 = new Intent(MainActivity3.this, ActivitySettings.class);
+                    intent2.putExtra("flag", false);
+                    startActivity(intent2);
+                }
                 return true;
             case R.id.feedbackMenu:
-                intent2 = new Intent(MainActivity3.this, ActivityFeedbackChat.class);
-                intent2.putExtra("flag", false);
-                startActivity(intent2);
+                if (!flagBloked) {
+                    intent2 = new Intent(MainActivity3.this, ActivityFeedbackChat.class);
+                    intent2.putExtra("flag", false);
+                    startActivity(intent2);
+                }
                 return true;
             case R.id.logout:
                 FirebaseAuth.getInstance().signOut();
@@ -158,18 +167,21 @@ public class MainActivity3 extends AppCompatActivity {
                 startActivity(intent2);
                 return true;
             case R.id.refresh:
-                try {
+                if (!flagBloked) {
 
-                    if (FirebaseAuth.getInstance().getCurrentUser().
-                            getPhoneNumber().equals("+972544540185")) {
-                        intent2 = new Intent(MainActivity3.this, Management.class);
-                        startActivity(intent2);
-                        return true;
+                    try {
+
+                        if (FirebaseAuth.getInstance().getCurrentUser().
+                                getPhoneNumber().equals("+972544540185")) {
+                            intent2 = new Intent(MainActivity3.this, Management.class);
+                            startActivity(intent2);
+                            return true;
+                        }
+                    } catch (RuntimeException e) {
                     }
-                } catch (RuntimeException e) {
+                    intent2 = new Intent(MainActivity3.this, MainActivity3.class);
+                    startActivity(intent2);
                 }
-                intent2 = new Intent(MainActivity3.this, MainActivity3.class);
-                startActivity(intent2);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -198,5 +210,24 @@ public class MainActivity3 extends AppCompatActivity {
 
 
         return false;
+    }
+    private void dialodBlockMenge(String date) {
+        final Dialog d = new Dialog(MainActivity3.this);
+        d.setContentView(R.layout.dialog_is_blocking);
+        d.setTitle("Manage");
+
+        d.setCancelable(false);
+        TextView textView=d.findViewById(R.id.textView_date_blocked);
+        Button buttonClose = d.findViewById(R.id.button_close_window);
+        buttonClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.dismiss();
+            }
+        });
+        textView.setText("נחסמת עד תאריך"+date);
+
+        d.show();
+
     }
 }

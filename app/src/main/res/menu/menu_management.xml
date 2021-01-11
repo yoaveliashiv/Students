@@ -27,7 +27,10 @@
         android:id="@+id/price_drive"
         android:title="הצעות מחיר נסיעה"
         app:showAsAction="never"/>
-
+    <item
+        android:id="@+id/feedback"
+        android:title="משובים"
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/feeds"

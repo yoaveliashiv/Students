@@ -42,9 +42,9 @@ public class LinksWhatsAppFragment extends Fragment {
     private ArrayList<LinksToWhatsApp> arrayListLink;
     private ArrayList<LinksToWhatsApp> arrayListLink2;
     private String uid;
-  private TextView textViewNameColge;
-   private String nameCollegeEnglish="";
-    private String nameCollegeHebrew="";
+    private TextView textViewNameColge;
+    private String nameCollegeEnglish = "";
+    private String nameCollegeHebrew = "";
     private TextView textViewNoFond;
     private EditText editTextSearch;
     private Button buttonSearch;
@@ -98,48 +98,47 @@ public class LinksWhatsAppFragment extends Fragment {
                              Bundle savedInstanceState) {
 
 
+        viewGroup = inflater.inflate(R.layout.fragment_links_whats_app, container, false);
+        listView = (ListView) viewGroup.findViewById(R.id.list_view);
+        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        textViewNameColge = viewGroup.findViewById(R.id.textView_name_cologe1);
+        textViewNoFond = viewGroup.findViewById(R.id.textView_no_found);
+        editTextSearch = viewGroup.findViewById(R.id.editText_search);
+        buttonSearch = viewGroup.findViewById(R.id.button_search);
+        buttonSeeAllGroups = viewGroup.findViewById(R.id.button_all_groups);
+        allLinks();
+        buttonSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                search();
+            }
+        });
+        buttonSeeAllGroups.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                linksToWhatsAppAdapter.clear();
+                ArrayList<LinksToWhatsApp> arrayList = new ArrayList<>(arrayListLink2);
+                linksToWhatsAppAdapter.addAll(arrayList);
+                linksToWhatsAppAdapter.notifyDataSetChanged();
+                buttonSeeAllGroups.setVisibility(View.GONE);
+                textViewNoFond.setVisibility(View.GONE);
+            }
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                dialogJoinWhatappsGrop(i);
+            }
+        });
 
-            viewGroup = inflater.inflate(R.layout.fragment_links_whats_app, container, false);
-            listView = (ListView) viewGroup.findViewById(R.id.list_view);
-            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            textViewNameColge=viewGroup.findViewById(R.id.textView_name_cologe1);
-            textViewNoFond = viewGroup.findViewById(R.id.textView_no_found);
-            editTextSearch = viewGroup.findViewById(R.id.editText_search);
-            buttonSearch = viewGroup.findViewById(R.id.button_search);
-            buttonSeeAllGroups = viewGroup.findViewById(R.id.button_all_groups);
-            allLinks();
-            buttonSearch.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    search();
-                }
-            });
-            buttonSeeAllGroups.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    linksToWhatsAppAdapter.clear();
-                    ArrayList<LinksToWhatsApp> arrayList = new ArrayList<>(arrayListLink2);
-                    linksToWhatsAppAdapter.addAll(arrayList);
-                    linksToWhatsAppAdapter.notifyDataSetChanged();
-                    buttonSeeAllGroups.setVisibility(View.GONE);
-                    textViewNoFond.setVisibility(View.GONE);
-                }
-            });
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    dialogJoinWhatappsGrop(i);
-                }
-            });
-
-            TextView buttonNewLink = viewGroup.findViewById(R.id.button_new_link);
-            buttonNewLink.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialogNewLink();
-                }
-            });
-            return viewGroup;
+        TextView buttonNewLink = viewGroup.findViewById(R.id.button_new_link);
+        buttonNewLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogNewLink();
+            }
+        });
+        return viewGroup;
 
 
     }
@@ -228,7 +227,7 @@ public class LinksWhatsAppFragment extends Fragment {
 
         d.setCancelable(true);
         TextView textViewJoinGroup = d.findViewById(R.id.textView_go_whatapps);
-        TextView textViewFeed = d.findViewById(R.id.textView_feed);
+        TextView textViewFeed = d.findViewById(R.id.feed_block_i);
 
         TextView textViewCopyLink = d.findViewById(R.id.textView_copy_link);
         TextView textViewMyGroup = d.findViewById(R.id.textView_go_my_group);
@@ -236,13 +235,13 @@ public class LinksWhatsAppFragment extends Fragment {
         textViewMyGroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              Intent  intent = new Intent(getContext(), MainActivity3.class);
+                Intent intent = new Intent(getContext(), MainActivity3.class);
 
-              String nameGroup1=arrayListLink.get(i).getNameGroup();
-              int size=nameGroup1.indexOf(" ");
-              if(size==-1)size=nameGroup1.length();
-                String nameGroup2=nameGroup1.substring(0,size);
-                intent.putExtra("flag_serch",nameGroup2 );
+                String nameGroup1 = arrayListLink.get(i).getNameGroup();
+                int size = nameGroup1.indexOf(" ");
+                if (size == -1) size = nameGroup1.length();
+                String nameGroup2 = nameGroup1.substring(0, size);
+                intent.putExtra("flag_serch", nameGroup2);
                 startActivity(intent);
             }
         });
@@ -275,7 +274,7 @@ public class LinksWhatsAppFragment extends Fragment {
         textViewFeed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "העמוד בבניה", Toast.LENGTH_SHORT).show();
+                dialogFeedLink(arrayListLink.get(i));
                 d.dismiss();
             }
         });
@@ -351,8 +350,8 @@ public class LinksWhatsAppFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 RegisterInformation2 registerInformation = snapshot.getValue(RegisterInformation2.class);
-                nameCollegeEnglish=registerInformation.getNameCollegeEnglish();
-                textViewNameColge.setText("מ-"+registerInformation.getNameCollegeHebrew()+" ל- ");
+                nameCollegeEnglish = registerInformation.getNameCollegeEnglish();
+                textViewNameColge.setText("מ-" + registerInformation.getNameCollegeHebrew() + " ל- ");
                 arrayListLink = new ArrayList<>();
                 arrayListLink2 = new ArrayList<>();
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance()
@@ -395,4 +394,38 @@ public class LinksWhatsAppFragment extends Fragment {
 
     }
 
+    private void dialogFeedLink(final LinksToWhatsApp linksToWhatsApp) {
+        final Dialog d2 = new Dialog(getContext());
+        d2.setContentView(R.layout.dialog_feedback_link_dont_work);
+        d2.setTitle("Manage");
+
+        d2.setCancelable(true);
+        Button buttonYes = d2.findViewById(R.id.buttonYes);
+        Button buttonNo = d2.findViewById(R.id.buttonNo);
+        buttonNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d2.dismiss();
+            }
+        });
+        buttonYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FeedbackChat feedbackChat = new FeedbackChat();
+                feedbackChat.setFeedback("לינק לא תקין");
+                feedbackChat.setType("בעיות טכניות");
+                feedbackChat.setLinksToWhatsApp(linksToWhatsApp);
+                linksToWhatsApp.setNameCollegeEnglish(nameCollegeEnglish);
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("FeedbackChat")
+                        .child("בעיות טכניות").push();
+                feedbackChat.setKey(databaseReference.getKey());
+                databaseReference.setValue(feedbackChat);
+                Toast.makeText(getContext(), "דיווח נשלח בהצלחה", Toast.LENGTH_SHORT).show();
+                d2.dismiss();
+            }
+        });
+
+        d2.show();
+
+    }
 }

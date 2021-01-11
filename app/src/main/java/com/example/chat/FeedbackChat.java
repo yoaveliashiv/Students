@@ -7,11 +7,14 @@ public class FeedbackChat {
 
     private String feedback="";
     private String uidReportingOn="";
+    private String phoneReportingOn="";
     private String uidReportingSend="";
+    private String phoneReportingSend="";
     private int id=-1;
     private String key="";
     private String type="";
     private Message message=null;
+    private LinksToWhatsApp linksToWhatsApp=null;
 
 
 
@@ -74,5 +77,29 @@ public class FeedbackChat {
 
     public void setMessage(Message message) {
         this.message = message;
+    }
+
+    public LinksToWhatsApp getLinksToWhatsApp() {
+        return linksToWhatsApp;
+    }
+
+    public void setLinksToWhatsApp(LinksToWhatsApp linksToWhatsApp) {
+        this.linksToWhatsApp = linksToWhatsApp;
+    }
+
+    public String getPhoneReportingOn() {
+        return phoneReportingOn;
+    }
+
+    public void setPhoneReportingOn(String phoneReportingOn) {
+        this.phoneReportingOn = phoneReportingOn;
+    }
+
+    public String getPhoneReportingSend() {
+        return phoneReportingSend;
+    }
+
+    public void setPhoneReportingSend(String phoneReportingSend) {
+        this.phoneReportingSend = phoneReportingSend;
     }
 }

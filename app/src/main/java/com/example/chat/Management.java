@@ -39,7 +39,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 
 public class Management extends AppCompatActivity {
@@ -53,7 +52,7 @@ public class Management extends AppCompatActivity {
     String nameCollege = "";
     String nameCollegeHebrow = "";
     String dateBlock = "";
-
+String blockPhone="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +72,10 @@ public class Management extends AppCompatActivity {
         buttonDo.setVisibility(View.GONE);
 
         setSpinnerNaemeColge();
+        if(getIntent().hasExtra("blockPhone")){
+            blockPhone=getIntent().getExtras().getString("blockPhone");
+            blockMenge();/**/
+        }
 
     }
 
@@ -89,15 +92,15 @@ public class Management extends AppCompatActivity {
 
                         return;
                     }
-                    continuepriceGroups();
+                    continuePriceGroups();
                 }
             });
         } else
-            continuepriceGroups();
+            continuePriceGroups();
 
     }
 
-    private void continuepriceGroups() {
+    private void continuePriceGroups() {
         editTextDate.setVisibility(View.GONE);
 
         editTexto.setVisibility(View.VISIBLE);
@@ -186,7 +189,7 @@ public class Management extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(Management.this, "מחיר נוסף בהצלחה", Toast.LENGTH_SHORT).show();
-                        continuepriceGroups();
+                        continuePriceGroups();
                     }
                 });
             }
@@ -519,6 +522,10 @@ public class Management extends AppCompatActivity {
             case R.id.price_drive:
                 priceGroups();
                 return true;
+            case R.id.feedback:
+                intent2 = new Intent(Management.this, Management2Feedbacks.class);
+                startActivity(intent2);
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -535,6 +542,9 @@ public class Management extends AppCompatActivity {
         editTexto.setHint("סיבה");
         editTextFrom.setHint("מספר פלאפון");
         buttonDo.setText("חסום");
+        if(!blockPhone.isEmpty()){
+            editTextFrom.setText(blockPhone);
+        }
         setDate();
         final ArrayList<String> arrayListBlocked = new ArrayList<>();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Blocked");
@@ -724,7 +734,7 @@ public class Management extends AppCompatActivity {
 
         d.setCancelable(true);
         final TextView textViewJoinGroup = d.findViewById(R.id.textView_go_whatapps);
-        TextView textViewFeed = d.findViewById(R.id.textView_feed);
+        TextView textViewFeed = d.findViewById(R.id.feed_block_i);
         textViewFeed.setVisibility(View.GONE);
         final TextView textViewCopyLink = d.findViewById(R.id.textView_copy_link);
         TextView textViewMyGroup = d.findViewById(R.id.textView_go_my_group);
@@ -789,7 +799,7 @@ public class Management extends AppCompatActivity {
         d.setCancelable(true);
         TextView textViewJoinGroup = d.findViewById(R.id.textView_go_whatapps);
         textViewJoinGroup.setVisibility(View.GONE);
-        TextView textViewFeed = d.findViewById(R.id.textView_feed);
+        TextView textViewFeed = d.findViewById(R.id.feed_block_i);
         textViewFeed.setVisibility(View.GONE);
         final TextView textViewCopyLink = d.findViewById(R.id.textView_copy_link);
         TextView textViewMyGroup = d.findViewById(R.id.textView_go_my_group);
@@ -847,7 +857,7 @@ public class Management extends AppCompatActivity {
         TextView textViewJoinGroup = d.findViewById(R.id.textView_go_whatapps);
         textViewJoinGroup.setVisibility(View.GONE);
 
-        TextView textViewFeed = d.findViewById(R.id.textView_feed);
+        TextView textViewFeed = d.findViewById(R.id.feed_block_i);
         textViewFeed.setVisibility(View.GONE);
 
         final TextView textViewCopyLink = d.findViewById(R.id.textView_copy_link);

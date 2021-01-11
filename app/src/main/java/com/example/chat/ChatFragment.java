@@ -395,6 +395,9 @@ public class ChatFragment extends Fragment {
                     Intent intent = new Intent(getContext(), ChatActivity.class);
                     intent.putExtra("send_message_user_id", uid);
                     intent.putExtra("to_message_user_id", contactArrayList.get(i).getUidContacts());
+                    if (contactArrayList.get(i).getMessage().getPhone().equals("הודעת מערכת"))
+                        intent.putExtra("flagMengeSend", true);
+
                     // Toast.makeText(getContext(), uid, Toast.LENGTH_LONG).show();
                     intent.putExtra("num_notifications", contactArrayList.get(i).getNotifications());
                     startActivityForResult(intent, 0);

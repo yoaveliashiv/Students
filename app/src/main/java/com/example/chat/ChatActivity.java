@@ -69,7 +69,7 @@ public class ChatActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private int numNotifications = -1;
     private Boolean flagNewMessage=false;
-
+private boolean flagMengeSend=false;
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,61 +79,70 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         uidSend = getIntent().getExtras().getString("send_message_user_id");
         uidRecive = getIntent().getExtras().getString("to_message_user_id");
-        if (getIntent().hasExtra("num_notifications"))
-            numNotifications = getIntent().getExtras().getInt("num_notifications");
-
-        databaseReferenceOn = FirebaseDatabase.getInstance().getReference("Contacts").child(uidSend).child(uidRecive);
-        ImageButton imageButtonPic = findViewById(R.id.imageButton_send_pick);
-        ImageButton imageButtonText = findViewById(R.id.imageButtonSendMassege);
         editText = findViewById(R.id.editTextMssege);
 
-        getUserReciveInfo();
-        getUserSendInfo();
-        imageButtonPic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openImage();
-            }
-        });
-        imageButtonText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String sms = editText.getText().toString();
-                if (sms.isEmpty()) {
-                    editText.setError("אנא הכנס הודעה");
-                    editText.requestFocus();
-                    return;
-                }
-
-                saveDatabase(sms);
-
-
-                editText.setText("");
-            }
-        });
+        if (getIntent().hasExtra("flagMengeSend")) {
+            flagMengeSend = getIntent().getExtras().getBoolean("flagMengeSend");
+            editText.setText("לא ניתן להגיב להודעה זו");
+            editText.setHint("לא ניתן להגיב להודעה זו");
+        }
         listView = findViewById(R.id.list_view_message);
 
-        // String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         arrayListMessage = new ArrayList<>();
 
         arrayAdapter = new MessageAdapter(ChatActivity.this, 0, 0, arrayListMessage, uidSend);
         listView.setAdapter(arrayAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                dialodSendPrivateMassege(i);
-            }
-        });
-        circleImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ChatActivity.this, ProfileActivity.class);
-                intent.putExtra("profile_user_id", uidRecive);
-                intent.putExtra("visit_user_id", uidSend);
-                startActivity(intent);
-            }
-        });
-        add();
+        if(!flagMengeSend) {
+            if (getIntent().hasExtra("num_notifications"))
+                numNotifications = getIntent().getExtras().getInt("num_notifications");
+
+            databaseReferenceOn = FirebaseDatabase.getInstance().getReference("Contacts").child(uidSend).child(uidRecive);
+            ImageButton imageButtonPic = findViewById(R.id.imageButton_send_pick);
+            ImageButton imageButtonText = findViewById(R.id.imageButtonSendMassege);
+
+
+            getUserReciveInfo();
+            getUserSendInfo();
+            imageButtonPic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openImage();
+                }
+            });
+            imageButtonText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String sms = editText.getText().toString();
+                    if (sms.isEmpty()) {
+                        editText.setError("אנא הכנס הודעה");
+                        editText.requestFocus();
+                        return;
+                    }
+
+                    saveDatabase(sms);
+
+
+                    editText.setText("");
+                }
+            });
+
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    dialodSendPrivateMassege(i);
+                }
+            });
+            circleImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(ChatActivity.this, ProfileActivity.class);
+                    intent.putExtra("profile_user_id", uidRecive);
+                    intent.putExtra("visit_user_id", uidSend);
+                    startActivity(intent);
+                }
+            });
+            add();
+        }
         showMessage();
 
         onCreateOptionsMenu1();
@@ -217,17 +226,19 @@ public class ChatActivity extends AppCompatActivity {
 
 
     private void dialodSendPrivateMassege(final int i) {
+        if(arrayListMessage.get(i).getPhone().equals("הודעת מערכת"))
+            return;
         final Dialog d = new Dialog(this);
         d.setContentView(R.layout.dialog_massge);
         d.setTitle("Manage");
 
         d.setCancelable(true);
-        TextView textViewSendMassge = d.findViewById(R.id.textView_send_massage);
-        TextView textViewOpenProfile = d.findViewById(R.id.textView_propile_open);
-        TextView textViewSendWhatappsMassge = d.findViewById(R.id.textView_send_whatapps);
-        TextView textViewCopyPhone = d.findViewById(R.id.textView_copy_phone);
-        TextView textViewCopyMessage = d.findViewById(R.id.textView_copy_massage);
-        TextView textViewFeed = d.findViewById(R.id.textView_feed);
+        TextView textViewSendMassge = d.findViewById(R.id.feed_delete);
+        TextView textViewOpenProfile = d.findViewById(R.id.feed_send_message);
+        TextView textViewSendWhatappsMassge = d.findViewById(R.id.feed_chak_link);
+        TextView textViewCopyPhone = d.findViewById(R.id.feed_delete_link);
+        TextView textViewCopyMessage = d.findViewById(R.id.feed_block_he);
+        TextView textViewFeed = d.findViewById(R.id.feed_block_i);
 
         textViewOpenProfile.setOnClickListener(new View.OnClickListener() {
             @Override

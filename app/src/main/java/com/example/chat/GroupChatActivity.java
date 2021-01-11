@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 import com.example.Hikers.RegisterInformation2;
 import com.example.R;
-import com.google.android.gms.common.SignInButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -234,12 +233,12 @@ public class GroupChatActivity extends AppCompatActivity {
         d.setContentView(R.layout.dialog_massge);
         d.setTitle("Manage");
 
-        TextView textViewSendMassge = d.findViewById(R.id.textView_send_massage);
-        TextView textViewOpenProfile = d.findViewById(R.id.textView_propile_open);
-        TextView textViewSendWhatappsMassge = d.findViewById(R.id.textView_send_whatapps);
-        TextView textViewCopyPhone = d.findViewById(R.id.textView_copy_phone);
-        TextView textViewCopyMessage = d.findViewById(R.id.textView_copy_massage);
-        TextView textViewFeed = d.findViewById(R.id.textView_feed);
+        TextView textViewSendMassge = d.findViewById(R.id.feed_delete);
+        TextView textViewOpenProfile = d.findViewById(R.id.feed_send_message);
+        TextView textViewSendWhatappsMassge = d.findViewById(R.id.feed_chak_link);
+        TextView textViewCopyPhone = d.findViewById(R.id.feed_delete_link);
+        TextView textViewCopyMessage = d.findViewById(R.id.feed_block_he);
+        TextView textViewFeed = d.findViewById(R.id.feed_block_i);
 
         textViewOpenProfile.setOnClickListener(new View.OnClickListener() {
             @Override

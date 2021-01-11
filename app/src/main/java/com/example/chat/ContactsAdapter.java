@@ -64,9 +64,11 @@ public class ContactsAdapter extends ArrayAdapter<Contact> {
 
 
         TextView textViewName = (TextView) view.findViewById(R.id.textView_name_list);
+        if(contact.getMessage().getPhone().equals("הודעת מערכת"))
+            textViewName.setText("הודעת מערכת");
+       else  textViewName.setText(contact.getName());
 
-        textViewName.setText(contact.getName());
-        if (!contact.getImage().isEmpty()) {
+            if (!contact.getImage().isEmpty()) {
             CircleImageView circleImageView = (CircleImageView) view.findViewById(R.id.circleimageview_list);
 
             Glide.with(view)

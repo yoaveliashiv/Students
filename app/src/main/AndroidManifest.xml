@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".chat.ActivityFeedbackChat"></activity>
+        <activity android:name=".chat.Management2Feedbacks"></activity>
+        <activity android:name=".chat.ActivityFeedbackChat" />
         <activity android:name=".chat.Management" />
         <activity android:name=".chat.ChatActivity" />
         <activity android:name=".chat.ProfileActivity" />

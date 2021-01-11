@@ -4,6 +4,7 @@ public class LinksToWhatsApp {
     private String nameGroup="";
     private String link="";
     private String key="";
+    private String nameCollegeEnglish="";
 
  private String uidWantNewLink="";
     public LinksToWhatsApp() {
@@ -40,5 +41,13 @@ public class LinksToWhatsApp {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getNameCollegeEnglish() {
+        return nameCollegeEnglish;
+    }
+
+    public void setNameCollegeEnglish(String nameCollegeEnglish) {
+        this.nameCollegeEnglish = nameCollegeEnglish;
     }
 }
