@@ -68,8 +68,10 @@ public class ChatActivity extends AppCompatActivity {
     private int k = 0;
     private ProgressDialog progressDialog;
     private int numNotifications = -1;
-    private Boolean flagNewMessage=false;
-private boolean flagMengeSend=false;
+    private Boolean flagNewMessage = false;
+    private boolean flagMengeSend = false;
+    private ChildEventListener childEventListener = null;
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,8 +85,9 @@ private boolean flagMengeSend=false;
 
         if (getIntent().hasExtra("flagMengeSend")) {
             flagMengeSend = getIntent().getExtras().getBoolean("flagMengeSend");
-            editText.setText("לא ניתן להגיב להודעה זו");
-            editText.setHint("לא ניתן להגיב להודעה זו");
+            editText.setHint("לא ניתן להגיב להודעת מערכת");
+            // editText.setText("לא ניתן להגיב להודעה זו");
+            editText.setEnabled(false);
         }
         listView = findViewById(R.id.list_view_message);
 
@@ -92,7 +95,7 @@ private boolean flagMengeSend=false;
 
         arrayAdapter = new MessageAdapter(ChatActivity.this, 0, 0, arrayListMessage, uidSend);
         listView.setAdapter(arrayAdapter);
-        if(!flagMengeSend) {
+        if (!flagMengeSend) {
             if (getIntent().hasExtra("num_notifications"))
                 numNotifications = getIntent().getExtras().getInt("num_notifications");
 
@@ -155,8 +158,10 @@ private boolean flagMengeSend=false;
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.exists())
+                if (!snapshot.exists()) {
+                    flagNewMessage = true;
                     return;
+            }
                 Message message;
                 for (DataSnapshot child : snapshot.getChildren()) {
                     message = child.getValue(Message.class);
@@ -164,10 +169,10 @@ private boolean flagMengeSend=false;
 
 
                 }
-                if (numNotifications>0){
-                    Message message1=new Message();
+                if (numNotifications > 0) {
+                    Message message1 = new Message();
                     message1.setId(numNotifications);
-                    arrayListMessage.add(arrayListMessage.size()-numNotifications,message1);
+                    arrayListMessage.add(arrayListMessage.size() - numNotifications, message1);
                 }
 
                 DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
@@ -177,7 +182,7 @@ private boolean flagMengeSend=false;
                 arrayAdapter.notifyDataSetChanged();
 
                 listView.setSelection(listView.getAdapter().getCount() - 1);
-                flagNewMessage=true;
+                flagNewMessage = true;
             }
 
             @Override
@@ -188,11 +193,10 @@ private boolean flagMengeSend=false;
     }
 
     private void add() {
-        databaseReferenceOn.addChildEventListener(new ChildEventListener() {
+        childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if (snapshot.exists()&&flagNewMessage) {
-
+                if (snapshot.exists() && flagNewMessage) {
                     displayMessage(snapshot);
                 }
             }
@@ -220,13 +224,14 @@ private boolean flagMengeSend=false;
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        };
+        databaseReferenceOn.addChildEventListener(childEventListener);
 
     }
 
 
     private void dialodSendPrivateMassege(final int i) {
-        if(arrayListMessage.get(i).getPhone().equals("הודעת מערכת"))
+        if (arrayListMessage.get(i).getPhone().equals("הודעת מערכת"))
             return;
         final Dialog d = new Dialog(this);
         d.setContentView(R.layout.dialog_massge);
@@ -428,12 +433,6 @@ private boolean flagMengeSend=false;
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-
-    }
 
     private void displayMessage(DataSnapshot snapshot) {
 
@@ -523,6 +522,7 @@ private boolean flagMengeSend=false;
         try {
             if (ActivityCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+
             } else {
                 Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -585,8 +585,10 @@ private boolean flagMengeSend=false;
             @Override
             public void onClick(View view) {
                 d.dismiss();
-                progressDialog.setMessage("אנא חכה להשלמת התהליך..");
+                progressDialog.setMessage("אנא חכה להשלמת התהליך העלאת תמונה לוקחת יותר זמן מהרגיל..");
                 progressDialog.show();
+                progressDialog.setCancelable(false);
+
                 StorageReference riversRef = FirebaseStorage.getInstance().getReference()
                         .child("sendMessageImage/" + registerInformationSend.getEmail() + "/" +
                                 registerInformationRecive.getEmail() + "/image" + registerInformationSend.getIdImageSend() + ".jpg");
@@ -796,5 +798,13 @@ private boolean flagMengeSend=false;
 
         });
         d.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (childEventListener != null) {
+            databaseReferenceOn.removeEventListener(childEventListener);
+        }
     }
 }

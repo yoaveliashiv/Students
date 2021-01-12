@@ -19,7 +19,7 @@
         app:showAsAction="never"/>
     <item
         android:id="@+id/delete_group_Menu"
-        android:title="עזוב קבוצה זו"
+        android:title="מחיקת קבוצה זו"
         app:buttonGravity="center_vertical"
         app:showAsAction="never"/>
     <item

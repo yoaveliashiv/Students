@@ -23,16 +23,9 @@
         android:title="משוב"
         app:buttonGravity="center_vertical"
         app:showAsAction="never"/>
-
-
     <item
         android:id="@+id/refresh"
         android:title="רענן"
         app:showAsAction="never"/>
-    <item
-        android:id="@+id/logout"
-        android:title="יציאה"
-        app:showAsAction="never"/>
-
 
 </menu>

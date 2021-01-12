@@ -16,9 +16,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,12 +29,9 @@ import com.bumptech.glide.Glide;
 import com.example.Hikers.RegisterInformation2;
 import com.example.Hikers.RegisterLoginActivity;
 import com.example.R;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,6 +41,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
+
 public class ActivitySettings extends AppCompatActivity {
     private Uri uriImage = null;
     private ImageView imageView;
@@ -48,7 +50,9 @@ public class ActivitySettings extends AppCompatActivity {
     private RegisterInformation2 registerInformation;
     private String uid;
     private ProgressDialog progressDialog;
-private String dataBlock;
+    private String dataBlock;
+    private String nameCollegeEnglishSpinerr = "";
+    private String nameCollegeHebrowSpinerr = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +60,11 @@ private String dataBlock;
         setContentView(R.layout.activity_settings);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("אנא חכה להשלמת התהליך..");
-        Boolean flag=false;
-        if(getIntent().hasExtra("flag")){
-             flag = getIntent().getExtras().getBoolean("flag");
+        Boolean flag = false;
+        if (getIntent().hasExtra("flag")) {
+            flag = getIntent().getExtras().getBoolean("flag");
         }
-        if(getIntent().hasExtra("flagBloked")){
+        if (getIntent().hasExtra("flagBloked")) {
             dataBlock = getIntent().getExtras().getString("flagBloked");
             dialodBlockMenge();
         }
@@ -115,16 +119,26 @@ private String dataBlock;
 
             }
         });
-        Button buttonDelete = findViewById(R.id.button_delete_usur);
-        buttonDelete.setOnClickListener(new View.OnClickListener() {
+        Button button_setting_account = findViewById(R.id.button_setting_account);
+        button_setting_account.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialodDelete();
+                dialodSettingAccount();
+            }
+        });
+
+        Button buttonLogOut = findViewById(R.id.button_log_out);
+        buttonLogOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               dialogLogOut();
             }
         });
 
         if (flag) {
-            buttonDelete.setVisibility(View.GONE);
+            buttonLogOut.setVisibility(View.GONE);
+            button_setting_account.setVisibility(View.GONE);
+
             Button buttonSkip = findViewById(R.id.button_skip);
             buttonSkip.setVisibility(View.VISIBLE);
             buttonSkip.setOnClickListener(new View.OnClickListener() {
@@ -136,6 +150,46 @@ private String dataBlock;
                 }
             });
         }
+    }
+
+    private void dialodSettingAccount() {
+        final Dialog d = new Dialog(ActivitySettings.this);
+        d.setContentView(R.layout.dialog_setting_account);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        Button buttonDelete = d.findViewById(R.id.button_delete_account);
+        Button buttonChanghColege = d.findViewById(R.id.button_chang_cologe);
+        final Spinner spinner = d.findViewById(R.id.spinner_name_coleg);
+        setSpinner(spinner);
+
+        buttonChanghColege.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference cardRef4 = FirebaseDatabase.getInstance().getReference("RegisterInformation2")
+                        .child(uid);
+                registerInformation.setNameCollegeEnglish(nameCollegeEnglishSpinerr);
+                registerInformation.setNameCollegeHebrew(nameCollegeHebrowSpinerr);
+                cardRef4.setValue(registerInformation).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(ActivitySettings.this, "מוסד אקדמי השתנה בהצלחה", Toast.LENGTH_SHORT).show();
+                        d.dismiss();
+                    }
+                });
+            }
+        });
+        buttonDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+              dialodDelete();
+
+            }
+
+        });
+
+        d.show();
+
     }
 
     private void dialodDelete() {
@@ -161,11 +215,6 @@ private String dataBlock;
                 intent.putExtra("flagDeleteEnglish", registerInformation.getNameCollegeEnglish());
                 intent.putExtra("flagDeleteHebrew", registerInformation.getNameCollegeHebrew());
                 startActivity(intent);
-
-
-//                        }
-//                    }
-//                });
 
 
             }
@@ -308,11 +357,7 @@ private String dataBlock;
                 intent2.putExtra("flag", false);
                 startActivity(intent2);
                 return true;
-            case R.id.logout:
-                FirebaseAuth.getInstance().signOut();
-                intent2 = new Intent(ActivitySettings.this, RegisterLoginActivity.class);
-                startActivity(intent2);
-                return true;
+
             case R.id.refresh:
 
 
@@ -323,23 +368,101 @@ private String dataBlock;
                 return super.onOptionsItemSelected(item);
         }
     }
+
     private void dialodBlockMenge() {
         final Dialog d = new Dialog(ActivitySettings.this);
         d.setContentView(R.layout.dialog_is_blocking);
         d.setTitle("Manage");
 
         d.setCancelable(true);
-        TextView textView=d.findViewById(R.id.textView_date_blocked);
+        TextView textView = d.findViewById(R.id.textView_date_blocked);
         Button buttonClose = d.findViewById(R.id.button_close_window);
-       buttonClose.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
-               d.dismiss();
-           }
-       });
-       textView.setText("נחסמת עד תאריך"+dataBlock);
+        buttonClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.dismiss();
+            }
+        });
+        textView.setText("נחסמת עד תאריך" + dataBlock);
 
         d.show();
+
+    }
+
+    private void setSpinner(final Spinner spinner) {
+        final ArrayList<String> arrayListNameSpinnerHebrow = new ArrayList<>();
+        final ArrayList<String> arrayListNameSpinnerEnglish = new ArrayList<>();
+        arrayListNameSpinnerEnglish.add("בחר מוסד אקדמי");
+        arrayListNameSpinnerHebrow.add("בחר מוסד אקדמי");
+
+        final ArrayAdapter<String> nameClogeAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_dropdown_item, arrayListNameSpinnerHebrow);
+        spinner.setAdapter(nameClogeAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                nameCollegeEnglishSpinerr = arrayListNameSpinnerEnglish.get(i);
+                nameCollegeHebrowSpinerr = arrayListNameSpinnerHebrow.get(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("NamesColleges");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int i = 1;
+                int index = 0;
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    arrayListNameSpinnerEnglish.add(child.getKey());
+                    arrayListNameSpinnerHebrow.add(child.getValue(String.class));
+                    if (registerInformation.getNameCollegeHebrew()
+                            .equals(arrayListNameSpinnerHebrow.get(i)))
+                        index = i;
+                    i++;
+                }
+                nameClogeAdapter.notifyDataSetChanged();
+                spinner.setSelection(index);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
+    private void dialogLogOut() {
+        final Dialog d2 = new Dialog(ActivitySettings.this);
+        d2.setContentView(R.layout.dialog_feedback_link_dont_work);
+        d2.setTitle("Manage");
+
+        d2.setCancelable(true);
+        TextView textView = d2.findViewById(R.id.textView__link_log_out);
+        textView.setText("האם אתה בטוח שאתה רוצה לצאת מהאפליקציה?");
+        Button buttonYes = d2.findViewById(R.id.buttonYes);
+        buttonYes.setText("התנתק");
+        Button buttonNo = d2.findViewById(R.id.buttonNo);
+        buttonNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d2.dismiss();
+            }
+        });
+        buttonYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(ActivitySettings.this, RegisterLoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        d2.show();
 
     }
 }

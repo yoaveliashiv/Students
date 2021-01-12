@@ -136,14 +136,14 @@ private   RegisterInformation2 registerInformationProfile;
             @Override
             public void onClick(View view) {
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Blocked")
-                        .child(uidVisit).child(uidProfile);
+                        .child(uidVisit).child(registerInformationProfile.getEmail());
 
                 Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
                 String date = simpleDateFormat.format(calendar.getTime());
                 databaseReference.setValue(date+" "+uidVisit);
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Blocked")
-                        .child(uidProfile).child(registerInformationProfile.getEmail());
+                        .child(uidProfile).child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
                 databaseReference1.setValue(date+" "+uidVisit);
                 Toast.makeText(ProfileActivity.this, "החשבון נחסם בהצלחה", Toast.LENGTH_LONG).show();
 
@@ -189,11 +189,7 @@ private   RegisterInformation2 registerInformationProfile;
                 intent2.putExtra("flag", false);
                 startActivity(intent2);
                 return true;
-            case R.id.logout:
-                FirebaseAuth.getInstance().signOut();
-                intent2 = new Intent(ProfileActivity.this, RegisterLoginActivity.class);
-                startActivity(intent2);
-                return true;
+
             case R.id.refresh:
 
 

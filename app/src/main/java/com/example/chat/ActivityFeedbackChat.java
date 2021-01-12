@@ -121,9 +121,8 @@ public class ActivityFeedbackChat extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.refresh);
-        item.setVisible(false);
-        item = menu.findItem(R.id.logout);
         item.setTitle("לדף הראשי");
+
         return super.onPrepareOptionsMenu(menu);
     }
     @Override
@@ -146,7 +145,7 @@ public class ActivityFeedbackChat extends AppCompatActivity {
                 intent2.putExtra("flag", false);
                 startActivity(intent2);
                 return true;
-            case R.id.logout:
+            case R.id.refresh:
                 intent2 = new Intent(ActivityFeedbackChat.this, MainActivity3.class);
                 startActivity(intent2);
                 return true;

@@ -58,6 +58,7 @@ public class GroupChatActivity extends AppCompatActivity {
     private int numNotifications = -1;
     private Boolean flagNewMessage = false;
     private String nameCologeEnglish = "";
+    ChildEventListener childEventListener=null;
 
     // private TextView textViewDisplay;
     @Override
@@ -126,12 +127,14 @@ public class GroupChatActivity extends AppCompatActivity {
                 Intent intent = new Intent(GroupChatActivity.this, MainActivity3.class);
                 intent.putExtra("flagPage", 1);
                 startActivity(intent);
+                finish();
                 // setGroupDetails();
                 // Toast.makeText(GroupChatActivity.this, "הצטרפת לקבוצה בהצלחה", Toast.LENGTH_SHORT).show();
 
             }
         });
         textViewGroupDetails = findViewById(R.id.textView_group_details);
+        textViewGroupDetails.setVisibility(View.GONE);
         setGroupDetails();
 
         onStart1();
@@ -195,6 +198,8 @@ public class GroupChatActivity extends AppCompatActivity {
                                 String price = snapshot.getValue(String.class);
                                 textViewGroupDetails.setText(" מספר המשתתפים " + numMembers + ". " + "מחיר נסיעה " +
                                         price + " ");
+                                textViewGroupDetails.setVisibility(View.VISIBLE);
+
 
                             } else {
                                 if (!flag) {
@@ -206,9 +211,14 @@ public class GroupChatActivity extends AppCompatActivity {
                                             dialogPriceGroup();
                                         }
                                     });
+
+
                                 }
                                 textViewGroupDetails.setText(" מספר המשתתפים " + numMembers + ". " + "מחיר נסיעה ? ");
+                                textViewGroupDetails.setVisibility(View.VISIBLE);
+
                             }
+
                         }
 
 
@@ -218,6 +228,8 @@ public class GroupChatActivity extends AppCompatActivity {
                         }
                     });
                 }
+                else                                 textViewGroupDetails.setVisibility(View.VISIBLE);
+
             }
 
             @Override
@@ -247,6 +259,7 @@ public class GroupChatActivity extends AppCompatActivity {
                 intent.putExtra("profile_user_id", arrayListMessage.get(i).getUid());
                 intent.putExtra("visit_user_id", uid);
                 startActivity(intent);
+                finish();
 
             }
         });
@@ -302,6 +315,7 @@ public class GroupChatActivity extends AppCompatActivity {
                 intent.putExtra("message", arrayListMessage.get(i));
                 intent.putExtra("flag", true);
                 startActivity(intent);
+                finish();
             }
         });
         d.show();
@@ -321,6 +335,7 @@ public class GroupChatActivity extends AppCompatActivity {
                     intent.putExtra("send_message_user_id", uid);
                     intent.putExtra("to_message_user_id", arrayListMessage.get(i).getUid());
                     startActivityForResult(intent, 0);
+                    finish();
 
                 }
             }
@@ -430,9 +445,9 @@ public class GroupChatActivity extends AppCompatActivity {
 
 
     protected void onStart1() {//TODO:
+      //  databaseReference.removeEventListener();
 
-
-        databaseReference.addChildEventListener(new ChildEventListener() {
+        childEventListener=new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (snapshot.exists() && flagNewMessage) {
@@ -461,7 +476,8 @@ public class GroupChatActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        };
+        databaseReference.addChildEventListener(childEventListener);
     }
 
     private void displayMessage(DataSnapshot snapshot) {
@@ -536,12 +552,14 @@ public class GroupChatActivity extends AppCompatActivity {
             case R.id.mainIconMenu:
                 intent2 = new Intent(GroupChatActivity.this, MainActivity3.class);
                 startActivity(intent2);
+                finish();
                 return true;
 
             case R.id.settingsMenu:
                 intent2 = new Intent(GroupChatActivity.this, ActivitySettings.class);
                 intent2.putExtra("flag", false);
                 startActivity(intent2);
+                finish();
                 return true;
             case R.id.delete_group_Menu:
                 dialogDelete();
@@ -550,11 +568,13 @@ public class GroupChatActivity extends AppCompatActivity {
                 intent2 = new Intent(GroupChatActivity.this, ActivityFeedbackChat.class);
                 intent2.putExtra("flag", false);
                 startActivity(intent2);
+                finish();
                 return true;
             case R.id.returnMainMenu:
 
                 intent2 = new Intent(GroupChatActivity.this, MainActivity3.class);
                 startActivity(intent2);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -590,6 +610,7 @@ public class GroupChatActivity extends AppCompatActivity {
                 Intent intent = new Intent(GroupChatActivity.this, MainActivity3.class);
 
                 startActivityForResult(intent, 0);
+                finish();
             }
 
         });
@@ -662,5 +683,13 @@ public class GroupChatActivity extends AppCompatActivity {
         });
         d.show();
 
+    }
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        if (childEventListener != null) {
+            databaseReference.removeEventListener(childEventListener);
+        }
     }
 }

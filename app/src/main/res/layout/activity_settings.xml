@@ -46,7 +46,7 @@
         android:layout_marginEnd="15dp"
 
         android:padding="6dp"
-        android:text="אישור"
+        android:text="שנה פרופיל"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="@android:color/background_light"
@@ -76,13 +76,22 @@
         />
 
     <Button
-        android:id="@+id/button_delete_usur"
-        android:layout_width="wrap_content"
+        android:id="@+id/button_setting_account"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/button_set_settings"
         android:layout_centerHorizontal="true"
-        android:text="מחיקת משתמש"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:text="הגדרות חשבון" />
+
+    <Button
+        android:id="@+id/button_log_out"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_setting_account"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="התנתק " />
 
 
 </RelativeLayout>

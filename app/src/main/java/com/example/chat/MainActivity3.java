@@ -110,6 +110,9 @@ public class MainActivity3 extends AppCompatActivity {
     }
 
     private void build() {
+        if (getIntent().hasExtra("flag_serch")) {
+            search = getIntent().getExtras().getString("flag_serch");
+        }
         viewPager = (ViewPager) findViewById(R.id.viewPagerMain);
         tabsAccessorAdapter = new TabsAccessorAdapter(getSupportFragmentManager());
         viewPager.setAdapter(tabsAccessorAdapter);
@@ -120,7 +123,6 @@ public class MainActivity3 extends AppCompatActivity {
         if (getIntent().hasExtra("flagPage"))
             viewPager.setCurrentItem(getIntent().getExtras().getInt("flagPage"));
         if (getIntent().hasExtra("flag_serch")) {
-            search = getIntent().getExtras().getString("flag_serch");
             viewPager.setCurrentItem(2);
         }
     }
@@ -161,11 +163,7 @@ public class MainActivity3 extends AppCompatActivity {
                     startActivity(intent2);
                 }
                 return true;
-            case R.id.logout:
-                FirebaseAuth.getInstance().signOut();
-                intent2 = new Intent(MainActivity3.this, RegisterLoginActivity.class);
-                startActivity(intent2);
-                return true;
+
             case R.id.refresh:
                 if (!flagBloked) {
 
@@ -219,12 +217,7 @@ public class MainActivity3 extends AppCompatActivity {
         d.setCancelable(false);
         TextView textView=d.findViewById(R.id.textView_date_blocked);
         Button buttonClose = d.findViewById(R.id.button_close_window);
-        buttonClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                d.dismiss();
-            }
-        });
+        buttonClose.setVisibility(View.GONE);
         textView.setText("נחסמת עד תאריך"+date);
 
         d.show();

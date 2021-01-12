@@ -91,8 +91,10 @@ public class RegisterLoginActivity extends AppCompatActivity {
         buttonSendPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                progressDialog.setMessage("שולח קוד  אישור אנא חכה להשלמת התהליך...");
+                progressDialog.setMessage("שולח קוד אישור אנא חכה להשלמת התהליך...");
                 progressDialog.show();
+                progressDialog.setCancelable(false);
+
                 mobile = editTextPhone.getText().toString().trim();
                 if (mobile.isEmpty() || (mobile.length() < 10 || mobile.length() > 13)) {
                     editTextPhone.setError("הכנס מספר תקין");
@@ -210,6 +212,7 @@ public class RegisterLoginActivity extends AppCompatActivity {
 
             @Override
             public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                progressDialog.dismiss();
                 super.onCodeSent(s, forceResendingToken);
                 mVerificationId = s;
                 Toast.makeText(RegisterLoginActivity.this, "קוד נשלח ל-" + mobile + " אנא המתן לקבלת הקוד", Toast.LENGTH_LONG).show();

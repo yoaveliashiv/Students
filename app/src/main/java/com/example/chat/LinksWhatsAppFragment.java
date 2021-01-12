@@ -107,9 +107,11 @@ public class LinksWhatsAppFragment extends Fragment {
         buttonSearch = viewGroup.findViewById(R.id.button_search);
         buttonSeeAllGroups = viewGroup.findViewById(R.id.button_all_groups);
         allLinks();
-        buttonSearch.setOnClickListener(new View.OnClickListener() {
+        buttonSearch.setOnClickListener(
+                new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                textViewNoFond.setVisibility(View.GONE);
                 search();
             }
         });
