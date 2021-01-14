@@ -1,6 +1,5 @@
 package com.example.chat;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -11,9 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +22,6 @@ import android.widget.Toast;
 
 import com.example.Hikers.RegisterInformation2;
 import com.example.R;
-import com.example.students.MainActivityRegisterTutor;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -34,9 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 
 /**
@@ -65,6 +59,7 @@ public class ChatFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private ProgressDialog progressDialog;
+    private boolean flagNewConcat = false;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -103,8 +98,8 @@ public class ChatFragment extends Fragment {
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         reference = FirebaseDatabase.getInstance().getReference("Contacts").child(uid);
 
-        list();
         onStart1();
+       list();
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -126,7 +121,7 @@ public class ChatFragment extends Fragment {
         databaseReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+                flagNewConcat=true;
                 if (!snapshot.exists()) {
                     TextView textView = viewContacts.findViewById(R.id.textView_empty);
                     textView.setVisibility(View.VISIBLE);
@@ -220,7 +215,7 @@ public class ChatFragment extends Fragment {
         d.setTitle("Manage");
 
         d.setCancelable(true);
-        Button buttonClose = d.findViewById(R.id.button_close_window);
+        Button buttonClose = d.findViewById(R.id.button_close);
         buttonClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -325,12 +320,8 @@ public class ChatFragment extends Fragment {
         reference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if (snapshot.exists()) {
-//                    i++;
-//                    if (i>1)
-//                    Toast.makeText(getContext(), "החשבון נמחק בהצלחה"+i, Toast.LENGTH_LONG).show();
-
-
+                if (snapshot.exists()&&flagNewConcat) {
+                    list();
                 }
             }
 

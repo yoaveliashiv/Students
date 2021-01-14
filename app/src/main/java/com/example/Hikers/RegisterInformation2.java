@@ -15,13 +15,12 @@ import java.util.List;
 
 @IgnoreExtraProperties
 public class RegisterInformation2 {
-   // private static  RegisterInformation2 registerInformation2=null;
+    // private static  RegisterInformation2 registerInformation2=null;
     private String name = "";
     private String email = "";
-    private  String deviceToken = "";
-    private String nameCollegeEnglish="";
-    private String nameCollegeHebrew="";
-
+    private String deviceToken = "";
+    private String nameCollegeEnglish = "";
+    private String nameCollegeHebrew = "";
     private int idImageSend = 0;
     private String imageUrl = "";
 
@@ -33,6 +32,7 @@ public class RegisterInformation2 {
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -54,8 +54,6 @@ public class RegisterInformation2 {
     public void setName(String name) {
         this.name = name;
     }
-
-
 
 
     public String getDeviceToken() {
@@ -89,4 +87,6 @@ public class RegisterInformation2 {
     public void setNameCollegeHebrew(String nameCollegeHebrew) {
         this.nameCollegeHebrew = nameCollegeHebrew;
     }
+
+
 }

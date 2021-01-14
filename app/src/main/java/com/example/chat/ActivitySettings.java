@@ -376,7 +376,7 @@ public class ActivitySettings extends AppCompatActivity {
 
         d.setCancelable(true);
         TextView textView = d.findViewById(R.id.textView_date_blocked);
-        Button buttonClose = d.findViewById(R.id.button_close_window);
+        Button buttonClose = d.findViewById(R.id.button_close);
         buttonClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

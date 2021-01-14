@@ -5,9 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.Dialog;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,7 +16,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 
-import com.example.Hikers.RegisterLoginActivity;
 import com.example.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,6 +34,7 @@ public class MainActivity3 extends AppCompatActivity {
     private TabsAccessorAdapter tabsAccessorAdapter;
     protected static String search = "";
     private boolean flagBloked = false;
+    private String verison = "1";//
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +77,8 @@ public class MainActivity3 extends AppCompatActivity {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.exists()){
-                    build();
+                if (!snapshot.exists()) {
+                    newVersion();
                     return;
                 }
 
@@ -87,9 +86,9 @@ public class MainActivity3 extends AppCompatActivity {
                 Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
                 String date = simpleDateFormat.format(calendar.getTime());
-                if (dateSearch(date,blocked.getDate())) {
+                if (dateSearch(date, blocked.getDate())) {
                     dialodBlockMenge(blocked.getDate());
-                   flagBloked=true;
+                    flagBloked = true;
                     return;
                 } else {
                     DatabaseReference reference = FirebaseDatabase.getInstance().getReference("BlockedHistory")
@@ -98,7 +97,7 @@ public class MainActivity3 extends AppCompatActivity {
                     DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Blocked")
                             .child(phone);
                     databaseReference2.removeValue();
-                    build();
+                    newVersion();
                 }
             }
 
@@ -110,6 +109,7 @@ public class MainActivity3 extends AppCompatActivity {
     }
 
     private void build() {
+
         if (getIntent().hasExtra("flag_serch")) {
             search = getIntent().getExtras().getString("flag_serch");
         }
@@ -125,6 +125,36 @@ public class MainActivity3 extends AppCompatActivity {
         if (getIntent().hasExtra("flag_serch")) {
             viewPager.setCurrentItem(2);
         }
+    }
+
+    private void newVersion() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("VersionNotifications");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    build();
+                    return;
+                }
+                String data = snapshot.getValue(String.class);
+                int i = data.indexOf(" ");
+                String verisonSnap = data.substring(0, i);
+                String type = data.substring(i + 1, i + 2);
+                if (verisonSnap.equals(verison)) {
+                    build();
+                    return;
+                }
+
+                dialodVerison(type);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     @Override
@@ -171,7 +201,7 @@ public class MainActivity3 extends AppCompatActivity {
 
                         if (FirebaseAuth.getInstance().getCurrentUser().
                                 getPhoneNumber().equals("+972544540185")) {
-                            intent2 = new Intent(MainActivity3.this, Management.class);
+                            intent2 = new Intent(MainActivity3.this, Management3.class);
                             startActivity(intent2);
                             return true;
                         }
@@ -209,17 +239,46 @@ public class MainActivity3 extends AppCompatActivity {
 
         return false;
     }
+
     private void dialodBlockMenge(String date) {
         final Dialog d = new Dialog(MainActivity3.this);
         d.setContentView(R.layout.dialog_is_blocking);
         d.setTitle("Manage");
 
         d.setCancelable(false);
-        TextView textView=d.findViewById(R.id.textView_date_blocked);
-        Button buttonClose = d.findViewById(R.id.button_close_window);
+        TextView textView = d.findViewById(R.id.textView_date_blocked);
+        Button buttonClose = d.findViewById(R.id.button_close);
         buttonClose.setVisibility(View.GONE);
-        textView.setText("נחסמת עד תאריך"+date);
+        textView.setText("נחסמת עד תאריך" + date);
 
+        d.show();
+
+    }
+
+    private void dialodVerison(String type) {
+
+        final Dialog d = new Dialog(MainActivity3.this);
+        d.setContentView(R.layout.dialog_verison);
+        d.setTitle("Manage");
+
+        TextView textView = d.findViewById(R.id.textView_text);
+        if (type.equals("1")) {
+            d.setCancelable(false);
+            textView.setText("אנא עדכן גרסא");
+        }
+        Button buttonVerison = d.findViewById(R.id.button_close);
+        // textView.setText("נחסמת עד תאריך"+date);
+        buttonVerison.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentWhatsapp = new Intent(Intent.ACTION_VIEW);
+
+                intentWhatsapp.setData(Uri.parse("https://news.google.com/topstories?hl=he&gl=IL&ceid=IL:he"));
+                // intentWhatsapp.setPackage("com.whatsapp");
+                startActivity(intentWhatsapp);
+            }
+        });
+        if (type.equals("2"))   build();
         d.show();
 
     }

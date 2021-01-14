@@ -52,12 +52,14 @@ public class Management extends AppCompatActivity {
     String nameCollege = "";
     String nameCollegeHebrow = "";
     String dateBlock = "";
-String blockPhone="";
+    String blockPhone = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_management);
+
+
         editTexto = findViewById(R.id.editTextGrohp_To);
         listView = findViewById(R.id.list_management);
         editTextFrom = findViewById(R.id.editTextGrope_From);
@@ -72,10 +74,49 @@ String blockPhone="";
         buttonDo.setVisibility(View.GONE);
 
         setSpinnerNaemeColge();
-        if(getIntent().hasExtra("blockPhone")){
-            blockPhone=getIntent().getExtras().getString("blockPhone");
+        if (getIntent().hasExtra("blockPhone")) {
+            blockPhone = getIntent().getExtras().getString("blockPhone");
             blockMenge();/**/
         }
+        if (getIntent().hasExtra("flagPrice")) {
+            nameCollege = getIntent().getExtras().getString("flagPrice");
+            nameHebrow("flagPrice");
+        }
+        if (getIntent().hasExtra("flagGroups")) {
+            nameCollege = getIntent().getExtras().getString("flagGroups");
+            nameHebrow("flagGroups");
+        }
+        if (getIntent().hasExtra("flagLinks")) {
+            nameCollege = getIntent().getExtras().getString("flagLinks");
+            nameHebrow("flagLinks");
+        }
+
+
+        getSupportActionBar().setTitle(nameCollege);
+
+    }
+
+    private void nameHebrow(final String fun) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("NamesColleges").child(nameCollege);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                nameCollegeHebrow = snapshot.getValue(String.class);
+                if (fun.equals("flagPrice"))
+                    priceGroups();
+                if (fun.equals("flagGroups"))
+                    makeGroup();
+                if (fun.equals("flagLinks"))
+                    makeLinks();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
     }
 
@@ -127,14 +168,14 @@ String blockPhone="";
                 for (DataSnapshot child2 : snapshot.getChildren()) {
                     String nameGrop = child2.getKey();
                     groups.add(new PriceDrive());
-                    arrayListGroups.add("שם קבוצה:" + nameGrop);
+                    arrayListGroups.add("                          שם קבוצה:" + nameGrop);
                     for (DataSnapshot child : child2.getChildren()) {
                         PriceDrive priceDrive = child.getValue(PriceDrive.class);
                         arrayListGroups.add(nameGrop + "  " + priceDrive.getPrice());
                         groups.add(priceDrive);
                     }
                 }
-                arrayListGroups.add("עד כאן הצעות");
+                arrayListGroups.add("                            עד כאן הצעות");
                 arrayAdapter.notifyDataSetChanged();
 
                 DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("GroupsPrice");
@@ -398,7 +439,7 @@ String blockPhone="";
         editTexto.setVisibility(View.VISIBLE);
         editTextFrom.setVisibility(View.VISIBLE);
         buttonDo.setVisibility(View.VISIBLE);
-        editTextFrom.setText("");
+        editTextFrom.setText(nameCollegeHebrow + "-");
         editTexto.setText("");
         editTextFrom.setHint("שם הקבוצה");
         editTexto.setHint("לינק");
@@ -418,7 +459,7 @@ String blockPhone="";
                     arrayListLink.add(child.getValue(LinksToWhatsApp.class));
                 }
                 LinksToWhatsApp linksToWhatsApp = new LinksToWhatsApp();
-                linksToWhatsApp.setNameGroup("עד כאן לינקים שהציעו");
+                linksToWhatsApp.setNameGroup("                            עד כאן לינקים שהציעו");
                 arrayListLink.add(linksToWhatsApp);
                 linksToWhatsAppAdapter.notifyDataSetChanged();
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance()
@@ -526,10 +567,91 @@ String blockPhone="";
                 intent2 = new Intent(Management.this, Management2Feedbacks.class);
                 startActivity(intent2);
                 return true;
+            case R.id.verison:
+                notificationsVerison();
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    private void notificationsVerison() {
+        editTextDate.setVisibility(View.GONE);
+        spinnerNameColeg.setVisibility(View.GONE);
+        editTexto.setVisibility(View.VISIBLE);
+        editTextFrom.setVisibility(View.VISIBLE);
+        buttonDo.setVisibility(View.VISIBLE);
+        editTextFrom.setText("");
+        editTextFrom.setHint("גרסאת התראה שחייב להוריד");
+        editTexto.setHint("גרסאת התראה שלא חייב להוריד");
+
+        buttonDo.setText("הפעל התראה");
+        buttonDo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String verison1mast = editTextFrom.getText().toString();
+                String verison2noMast  = editTexto.getText().toString();
+
+                if (verison1mast.length() > 4 || verison2noMast.length() > 4||(!verison1mast.isEmpty() && !verison2noMast.isEmpty())
+                ||(verison1mast.isEmpty()  && verison2noMast.isEmpty())) {
+                    editTextFrom.setError("אנא הכנס מספר תקין");
+                    editTextFrom.requestFocus();
+                    return;
+                }
+                if (verison1mast.isEmpty()){
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                            .getReference("VersionNotifications");
+                    databaseReference.setValue(verison2noMast+" 2").addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            buttonDo.setText("גרסא שונתה בהצלחה");
+                        }
+                    });
+                }
+                if (verison2noMast.isEmpty()){
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                            .getReference("VersionNotifications");
+                    databaseReference.setValue(verison1mast+" 1").addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            buttonDo.setText("גרסא שונתה בהצלחה");
+                        }
+                    });
+                }
+
+
+            }
+        });
+    }
+    private void makeVerison() {
+        editTextDate.setVisibility(View.GONE);
+        spinnerNameColeg.setVisibility(View.GONE);
+        editTexto.setVisibility(View.GONE);
+        editTextFrom.setVisibility(View.VISIBLE);
+        buttonDo.setVisibility(View.VISIBLE);
+        editTextFrom.setText("");
+        editTextFrom.setHint("גרסא");
+        buttonDo.setText("שנה גרסא");
+        buttonDo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String verison = editTextFrom.getText().toString();
+                if (verison.length() > 4||verison.length() <1) {
+                    editTextFrom.setError("אנא הכנס מספר תקין");
+                    editTextFrom.requestFocus();
+                    return;
+                }
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                        .getReference("Version");
+                databaseReference.setValue(verison).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        buttonDo.setText("גרסא שונתה בהצלחה");
+                    }
+                });
+
+            }
+        });
     }
 
     private void blockMenge() {
@@ -542,7 +664,7 @@ String blockPhone="";
         editTexto.setHint("סיבה");
         editTextFrom.setHint("מספר פלאפון");
         buttonDo.setText("חסום");
-        if(!blockPhone.isEmpty()){
+        if (!blockPhone.isEmpty()) {
             editTextFrom.setText(blockPhone);
         }
         setDate();

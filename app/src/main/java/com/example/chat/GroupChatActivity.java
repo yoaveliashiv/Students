@@ -156,7 +156,11 @@ public class GroupChatActivity extends AppCompatActivity {
                     arrayListMessage.add(message);
 
                 }
-                if (arrayListMessage.size() == 0) return;
+                if (arrayListMessage.size() == 0){
+                    flagNewMessage = true;
+
+                    return;
+                }
                 if (numNotifications > 0) {
                     Message message1 = new Message();
                     message1.setId(numNotifications);
@@ -353,7 +357,7 @@ public class GroupChatActivity extends AppCompatActivity {
         dialog.setTitle("Manage");
 
         dialog.setCancelable(true);
-        Button buttonClose = dialog.findViewById(R.id.button_close_window);
+        Button buttonClose = dialog.findViewById(R.id.button_close);
         buttonClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -492,9 +496,7 @@ public class GroupChatActivity extends AppCompatActivity {
         arrayListMessage.add(message);
 
         arrayAdapter.notifyDataSetChanged();
-// Force scroll to the top of the scroll view.
-// Because, when the list view gets loaded it focuses the list view
-// automatically at the bottom of this page.
+
         listView.setSelection(listView.getAdapter().getCount() - 1);
 
 

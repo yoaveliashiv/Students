@@ -38,7 +38,9 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -57,9 +59,9 @@ public class RegisterLoginActivity extends AppCompatActivity {
     private Boolean flagDelete = false;
     private Spinner spinner;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         progressDialog = new ProgressDialog(this);
 
         mAuth = FirebaseAuth.getInstance();
@@ -80,9 +82,9 @@ public class RegisterLoginActivity extends AppCompatActivity {
             flagDelete = true;
             spinner.setVisibility(View.GONE);
             buttonVerifi.setText("אשר מחיקה");
-            nameCollegeEnglish =  getIntent().getExtras().getString("flagDeleteEnglish");
-            nameCollegeHebrow =  getIntent().getExtras().getString("flagDeleteHebrew");
-        }else {
+            nameCollegeEnglish = getIntent().getExtras().getString("flagDeleteEnglish");
+            nameCollegeHebrow = getIntent().getExtras().getString("flagDeleteHebrew");
+        } else {
             setSpinner();
         }
 
@@ -282,7 +284,6 @@ public class RegisterLoginActivity extends AppCompatActivity {
                                         registerInformation = new RegisterInformation2();
                                         registerInformation.setNameCollegeEnglish(nameCollegeEnglish);
                                         registerInformation.setNameCollegeHebrew(nameCollegeHebrow);
-
                                         registerInformation.setDeviceToken(deviceToken);
                                         registerInformation.setEmail(mobile);
                                         saveRegisterDataFireBase();
@@ -292,7 +293,6 @@ public class RegisterLoginActivity extends AppCompatActivity {
                                                 .child(uid);
                                         registerInformation.setNameCollegeEnglish(nameCollegeEnglish);
                                         registerInformation.setNameCollegeHebrew(nameCollegeHebrow);
-
                                         registerInformation.setDeviceToken(deviceToken);
                                         cardRef4.setValue(registerInformation);
                                         if (flagDelete) {
@@ -333,9 +333,16 @@ public class RegisterLoginActivity extends AppCompatActivity {
 
 
     private void saveRegisterDataFireBase() {
-        // registerInformation.foundId();
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Calendar calendar = Calendar.getInstance();//new users count
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String date = simpleDateFormat.format(calendar.getTime());
+        DatabaseReference cardRef5 = FirebaseDatabase.getInstance()
+                .getReference("NewUsers").child(date).push();
+        HashMap<String,String> hashMap=new HashMap<String,String>();
+        hashMap.put("nameCollegeEnglish",nameCollegeEnglish);
+        cardRef5.setValue(hashMap);
 
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference cardRef4 = FirebaseDatabase.getInstance().getReference("RegisterInformation2").child(uid);
         cardRef4.setValue(registerInformation);
 
@@ -352,59 +359,68 @@ public class RegisterLoginActivity extends AppCompatActivity {
 
     private void deleteUser() {
 
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                final String uid = user.getUid();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String uid = user.getUid();
 
-                user.delete()
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-                                            .getReference("RegisterInformation2").child(uid);
-                                    databaseReference.removeValue();
+        user.delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Calendar calendar = Calendar.getInstance();//delete users count
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                            String date = simpleDateFormat.format(calendar.getTime());
+                            DatabaseReference cardRef5 = FirebaseDatabase.getInstance()
+                                    .getReference("DeleteUsers").child(date).push();
+                            HashMap<String,String> hashMap=new HashMap<String,String>();
+                            hashMap.put("nameCollegeEnglish",nameCollegeEnglish);
+                            cardRef5.setValue(hashMap);
 
-                                    DatabaseReference databaseReference1 = FirebaseDatabase.getInstance()
-                                            .getReference("Contacts").child(uid);
-                                    databaseReference1.removeValue();
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                                    .getReference("RegisterInformation2").child(uid);
+                            databaseReference.removeValue();
 
-                                    DatabaseReference databaseReference2 = FirebaseDatabase.getInstance()
-                                            .getReference("NotificationsIdSeeLast").child(uid);
-                                    databaseReference2.removeValue();
-                                    if (!registerInformation.getImageUrl().isEmpty()) {
-                                        StorageReference riversRef = FirebaseStorage.getInstance().getReference()
-                                                .child("profileImage/" + uid + ".jpg");
-                                        riversRef.delete();
-                                    }
-                                    DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
-                                            .getReference("MyGroups").child(uid);
-                                    databaseReference3.removeValue();
-                                    DatabaseReference databaseReference4 = FirebaseDatabase.getInstance()
-                                            .getReference("Groups details");
-                                    databaseReference4.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            for (DataSnapshot child : snapshot.getChildren()) {
-                                                for (DataSnapshot child2 : child.getChildren()) {
-                                                    if (child2.getKey().equals(uid))
-                                                        child2.getRef().removeValue();
-                                                    // textViewGroupDetails.setText(child2.getKey());
-                                                }
-                                            }
-                                        }
+                            DatabaseReference databaseReference1 = FirebaseDatabase.getInstance()
+                                    .getReference("Contacts").child(uid);
+                            databaseReference1.removeValue();
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-
-                                        }
-                                    });
-                                    Toast.makeText(RegisterLoginActivity.this, "החשבון נמחק בהצלחה", Toast.LENGTH_LONG).show();
-                                    progressDialog.dismiss();
-                                    Intent intent = new Intent(RegisterLoginActivity.this, RegisterLoginActivity.class);
-                                    startActivity(intent);
-                                }
+                            DatabaseReference databaseReference2 = FirebaseDatabase.getInstance()
+                                    .getReference("NotificationsIdSeeLast").child(uid);
+                            databaseReference2.removeValue();
+                            if (!registerInformation.getImageUrl().isEmpty()) {
+                                StorageReference riversRef = FirebaseStorage.getInstance().getReference()
+                                        .child("profileImage/" + uid + ".jpg");
+                                riversRef.delete();
                             }
-                        });
+                            DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                                    .getReference("MyGroups").child(uid);
+                            databaseReference3.removeValue();
+                            DatabaseReference databaseReference4 = FirebaseDatabase.getInstance()
+                                    .getReference("Groups details");
+                            databaseReference4.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    for (DataSnapshot child : snapshot.getChildren()) {
+                                        for (DataSnapshot child2 : child.getChildren()) {
+                                            if (child2.getKey().equals(uid))
+                                                child2.getRef().removeValue();
+                                            // textViewGroupDetails.setText(child2.getKey());
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+                            Toast.makeText(RegisterLoginActivity.this, "החשבון נמחק בהצלחה", Toast.LENGTH_LONG).show();
+                            progressDialog.dismiss();
+                            Intent intent = new Intent(RegisterLoginActivity.this, RegisterLoginActivity.class);
+                            startActivity(intent);
+                        }
+                    }
+                });
 
     }
 

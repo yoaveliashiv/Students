@@ -1,20 +1,21 @@
 {
   "project_info": {
-    "project_number": "916298952404",
-    "project_id": "students-36631",
-    "storage_bucket": "students-36631.appspot.com"
+    "project_number": "345285097098",
+    "firebase_url": "https://students-d5a2b-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "students-d5a2b",
+    "storage_bucket": "students-d5a2b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:916298952404:android:387e5c635338d06ccf5541",
+        "mobilesdk_app_id": "1:345285097098:android:24ed338ddeb8cdda23df73",
         "android_client_info": {
           "package_name": "com.example.students"
         }
       },
       "oauth_client": [
         {
-          "client_id": "916298952404-oi3i5m4nrdsdt0bbjt8f3etsob9ioif8.apps.googleusercontent.com",
+          "client_id": "345285097098-iqtlp0es9bhvji8tq8e1janil8fual69.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.students",
@@ -22,20 +23,20 @@
           }
         },
         {
-          "client_id": "916298952404-a4ds6uv9us95gc0tmr6nqdtr07gpa44l.apps.googleusercontent.com",
+          "client_id": "345285097098-udbvmfadnginvj2uqarffql7i3ofr39m.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD6dnnrOwXYhrbC3c_UbFg5bHDr6vHIX-U"
+          "current_key": "AIzaSyBY7rohuZ9OyXq70DcOKW8o0ytmLw6HA3U"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "916298952404-a4ds6uv9us95gc0tmr6nqdtr07gpa44l.apps.googleusercontent.com",
+              "client_id": "345285097098-udbvmfadnginvj2uqarffql7i3ofr39m.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

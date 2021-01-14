@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.Hikers.RegisterInformation2;
-import com.example.Hikers.RegisterLoginActivity;
 import com.example.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -229,7 +228,7 @@ private   RegisterInformation2 registerInformationProfile;
         dialog.setTitle("Manage");
 
         dialog.setCancelable(true);
-        Button buttonClose = dialog.findViewById(R.id.button_close_window);
+        Button buttonClose = dialog.findViewById(R.id.button_close);
         buttonClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

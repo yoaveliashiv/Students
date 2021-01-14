@@ -71,7 +71,7 @@ public class Management2Feedbacks extends AppCompatActivity {
                         groups.add(feedbackChat);
                     }
                 }
-                arrayListGroups.add("סוף                   ");
+                arrayListGroups.add("                                           סוף");
                 arrayAdapter.notifyDataSetChanged();
             }
 
