@@ -43,7 +43,7 @@ public class MainActivity3 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("time");
-        databaseReference.setValue(ServerValue.TIMESTAMP);
+     //   databaseReference.setValue(ServerValue.TIMESTAMP);
         blocked();
 //if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
 //    NotificationChannel notificationChannel= new NotificationChannel

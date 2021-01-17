@@ -19,10 +19,15 @@ import com.example.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -76,6 +81,26 @@ public class ContactsAdapter extends ArrayAdapter<Contact> {
                     .into(circleImageView);
         }
 
+        long d=getTimestamp(contact.getMessage().getDateTimeZone());
+        SimpleDateFormat format = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ssZ");
+        String dateString = format.format(new Date(d));
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        String date2 = "";
+        String time2 = "";
+        try {
+            Date value = format.parse(dateString);
+
+            SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("dd/MM");
+            SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm");
+            simpleDateFormatDate.setTimeZone(TimeZone.getDefault());
+            simpleDateFormatTime.setTimeZone(TimeZone.getDefault());
+
+            date2 = simpleDateFormatDate.format(value);
+            time2 = simpleDateFormatTime.format(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
 
         String name = contact.getMessage().getName();
 
@@ -85,15 +110,18 @@ public class ContactsAdapter extends ArrayAdapter<Contact> {
         TextView textViewTime = (TextView) view.findViewById(R.id.textView_time);
 
         if (contact.getNotifications() > 0) {
-            textViewTime.setText(contact.getMessage().getTime() + "\n" + contact.getNotifications() + " הודעות חדשות");
+            textViewTime.setText(date2+" "+time2 + "\n" + contact.getNotifications() + " הודעות חדשות");
             textViewTime.setTextSize(15);
             textViewTime.setTextColor(Color.BLUE);
             return view;
 
         }
-        textViewTime.setText(contact.getMessage().getTime());
+        textViewTime.setText(date2+" "+time2);
         return view;
     }
-
+    @Exclude
+    public long getTimestamp(Object timestamp) {
+        return (long) timestamp;
+    }
 
 }

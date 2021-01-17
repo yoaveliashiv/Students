@@ -17,8 +17,13 @@ import com.bumptech.glide.load.engine.Resource;
 import com.example.R;
 import com.example.students.MainActivity1;
 import com.example.students.MainActivityCardView;
+import com.google.firebase.database.Exclude;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class MessageAdapter extends ArrayAdapter<Message> {
 
@@ -75,12 +80,34 @@ public class MessageAdapter extends ArrayAdapter<Message> {
                 imageView.setVisibility(View.VISIBLE);
             }
 
+            long d=getTimestamp(listMessage.get(position).getDateTimeZone());
+            SimpleDateFormat format = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ssZ");
+            String dateString = format.format(new Date(d));
+            format.setTimeZone(TimeZone.getTimeZone("GMT"));
+            String date2 = "";
+            String time2 = "";
+            try {
+                Date value = format.parse(dateString);
+
+                SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("dd/MM");
+                SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm");
+                simpleDateFormatDate.setTimeZone(TimeZone.getDefault());
+                simpleDateFormatTime.setTimeZone(TimeZone.getDefault());
+
+                 date2 = simpleDateFormatDate.format(value);
+                 time2 = simpleDateFormatTime.format(value);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+
+
             String name = listMessage.get(position).getName();
             String message = listMessage.get(position).getMessage();
             // String phone = listMessage.get(position).getPhone();
             String time = listMessage.get(position).getTime();
             String date = listMessage.get(position).getDate().substring(0, 5);
-            textViewName.setText(name + "   " + time + " " + date + " ");
+            textViewName.setText(name + "   " + time2 + " " + date2 + " ");
 
             textViewMessage.setText(message + " ");
             return view;
@@ -91,6 +118,9 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 
         return view;
     }
-
+    @Exclude
+    public long getTimestamp(Object timestamp) {
+        return (long) timestamp;
+    }
 
 }

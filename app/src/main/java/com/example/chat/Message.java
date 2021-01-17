@@ -7,28 +7,32 @@ import java.io.Serializable;
 @IgnoreExtraProperties
 public class Message implements Serializable {
 
-    private String message="";
-    private String imageMessage="";
-    private String name="";
-    private String phone="";
-    private String date="";
-    private String time="";
-    private String uid="";
-    private int id=0;
-    private String deviceToken="";
+    private String message = "";
+    private String imageMessage = "";
+    private String name = "";
+    private String phone = "";
+    private String date = "";
+    private String time = "";
+    private Object dateTimeZone=null;
+    private String uid = "";
+    private int id = 0;
+    private String deviceToken = "";
 
     public Message() {
     }
+
     public Message(Message message) {
-        this.message=message.message;
-        this.name=message.name;
-        this.date=message.date;
-        this.time=message.time;
-        this.phone=message.phone;
-        this.uid=message.uid;
-        this.id=message.id;
+        this.message = message.message;
+        this.name = message.name;
+        this.date = message.date;
+        this.time = message.time;
+        this.phone = message.phone;
+        this.uid = message.uid;
+        this.id = message.id;
+        this.dateTimeZone=message.dateTimeZone;
 
     }
+
     public String getMessage() {
         return message;
     }
@@ -99,5 +103,13 @@ public class Message implements Serializable {
 
     public void setImageMessage(String imageMessage) {
         this.imageMessage = imageMessage;
+    }
+
+    public Object getDateTimeZone() {
+        return dateTimeZone;
+    }
+
+    public void setDateTimeZone(Object dateTimeZone) {
+        this.dateTimeZone = dateTimeZone;
     }
 }

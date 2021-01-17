@@ -1,7 +1,13 @@
 package com.example.chat;
 
 
+import com.google.firebase.database.Exclude;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class ComperatorContact implements Comparator<Contact> {
     public ComperatorContact() {
@@ -13,8 +19,46 @@ public class ComperatorContact implements Comparator<Contact> {
             return 1;
         if(o2.getMessage().getTime().isEmpty())
             return -1;
-        return dateSearch(o1.getMessage().getDate(), o1.getMessage().getTime()
-                , o2.getMessage().getDate(), o2.getMessage().getTime());
+        long d=getTimestamp(o1.getMessage().getDateTimeZone());
+        SimpleDateFormat format = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ssZ");
+        String dateString = format.format(new Date(d));
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        String date2 = "";
+        String time2 = "";
+        try {
+            Date value = format.parse(dateString);
+
+            SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm");
+            simpleDateFormatDate.setTimeZone(TimeZone.getDefault());
+            simpleDateFormatTime.setTimeZone(TimeZone.getDefault());
+
+            date2 = simpleDateFormatDate.format(value);
+            time2 = simpleDateFormatTime.format(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+         d=getTimestamp(o2.getMessage().getDateTimeZone());
+         format = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ssZ");
+         dateString = format.format(new Date(d));
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        String date3 = "";
+        String time3 = "";
+        try {
+            Date value = format.parse(dateString);
+
+            SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm");
+            simpleDateFormatDate.setTimeZone(TimeZone.getDefault());
+            simpleDateFormatTime.setTimeZone(TimeZone.getDefault());
+
+            date3 = simpleDateFormatDate.format(value);
+            time3 = simpleDateFormatTime.format(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dateSearch(date2, time2
+                , date3, time3);
     }
 
     public int dateSearch(String o1_date, String o1_time, String o2_date, String o2_time) {
@@ -47,4 +91,9 @@ public class ComperatorContact implements Comparator<Contact> {
         return -1;
     }
 
+
+    @Exclude
+    public long getTimestamp(Object timestamp) {
+        return (long) timestamp;
+    }
 }

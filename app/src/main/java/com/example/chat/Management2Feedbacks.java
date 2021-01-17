@@ -26,6 +26,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
@@ -136,8 +137,8 @@ public class Management2Feedbacks extends AppCompatActivity {
             public void onClick(View view) {
                 DatabaseReference cardRef2 = FirebaseDatabase.getInstance()
                         .getReference("LinksToWhatsApp")
-                        .child(arrayList.get(i).getLinksToWhatsApp().getNameCollegeEnglish());
-                cardRef2.child(arrayList.get(i).getLinksToWhatsApp().getNameGroup());
+                        .child(arrayList.get(i).getLinksToWhatsApp().getNameCollegeEnglish())
+                .child(arrayList.get(i).getLinksToWhatsApp().getNameGroup());
                 cardRef2.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -204,6 +205,7 @@ public class Management2Feedbacks extends AppCompatActivity {
                 String time = simpleDateFormat.format(calendar.getTime());
                 message.setTime(time);
                 message.setDate(date);
+                message.setDateTimeZone(ServerValue.TIMESTAMP);
 
                 String uidI = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Contacts")

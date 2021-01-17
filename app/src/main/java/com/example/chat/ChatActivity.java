@@ -38,6 +38,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -48,6 +49,45 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.Hikers.RegisterInformation2;
+import com.example.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 
 
 public class ChatActivity extends AppCompatActivity {
@@ -378,6 +418,7 @@ public class ChatActivity extends AppCompatActivity {
             message.setName(registerInformationSend.getName());
         else
             message.setName(registerInformationSend.getEmail());
+        message.setDateTimeZone(ServerValue.TIMESTAMP);
 
         message.setPhone(registerInformationSend.getEmail());
         message.setUid(uidSend);
@@ -646,6 +687,8 @@ public class ChatActivity extends AppCompatActivity {
         message.setUid(uidSend);
         message.setDeviceToken(registerInformationRecive.getDeviceToken());
         message.setTime(time);
+        message.setDateTimeZone(ServerValue.TIMESTAMP);
+
         final DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("Contacts")
                 .child(uidSend).child(uidRecive);
         databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {

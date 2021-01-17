@@ -32,6 +32,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
@@ -384,6 +385,7 @@ public class GroupChatActivity extends AppCompatActivity {
             message.setName(registerInformation.getName());
         else
             message.setName(registerInformation.getEmail());
+        message.setDateTimeZone(ServerValue.TIMESTAMP);
 
         message.setPhone(registerInformation.getEmail());
         message.setUid(uid);
