@@ -23,6 +23,7 @@ public class RegisterInformation2 {
     private String nameCollegeHebrew = "";
     private int idImageSend = 0;
     private String imageUrl = "";
+    private String dateRegister = "";
 
     public RegisterInformation2() {
         ;
@@ -88,5 +89,11 @@ public class RegisterInformation2 {
         this.nameCollegeHebrew = nameCollegeHebrew;
     }
 
+    public String getDateRegister() {
+        return dateRegister;
+    }
 
+    public void setDateRegister(String dateRegister) {
+        this.dateRegister = dateRegister;
+    }
 }

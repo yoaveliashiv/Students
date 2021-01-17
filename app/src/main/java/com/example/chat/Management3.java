@@ -22,7 +22,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class Management3 extends AppCompatActivity {
     Button buttonFeed, buttonLinks, buttonGroups, buttonPrice, buttonNumUsers, buttonNumNewUsers, buttonNumDeleteUsers;
@@ -34,6 +36,10 @@ public class Management3 extends AppCompatActivity {
     ArrayAdapter<String> arrayAdapterPrice;
     ArrayList<String> arrayListNumUsers;
     ArrayAdapter<String> arrayAdapterNumUsers;
+    ArrayList<String> arrayListNumUsersNew;
+    ArrayAdapter<String> arrayAdapterNumUsersNew;
+    ArrayList<String> arrayListNumUsersDelete;
+    ArrayAdapter<String> arrayAdapterNumUsersDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,24 +58,24 @@ public class Management3 extends AppCompatActivity {
         groupsMake();
         priceMake();
         numUesrsMake();
-
+        numNewUesrsMake();
+        numDeleteUesrsMake();
 
     }
-
-    private void numUesrsMake() {
+    private void numDeleteUesrsMake() {
+        Calendar calendar = Calendar.getInstance();//new users count
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        final String date = simpleDateFormat.format(calendar.getTime());
         DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-                .getReference("RegisterInformation2");
+                .getReference("DeleteUsers").child(date);
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull final DataSnapshot snapshot) {
-                if (snapshot.exists())
-                    buttonNumUsers.setText("מספר משתמשים: " + snapshot.getChildrenCount());
-                buttonNumUsers.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialogNumUesrs(snapshot);
-                    }
-                });
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int num=0;
+                if(snapshot.exists()) {
+                    num = (int) snapshot.getChildrenCount();
+                }
+                buttonNumDeleteUsers.setText("משתמשים שנמחקו היום: "+num);
             }
 
             @Override
@@ -77,9 +83,50 @@ public class Management3 extends AppCompatActivity {
 
             }
         });
-    }
+        DatabaseReference databaseReference2 = FirebaseDatabase.getInstance()
+                .getReference("NamesColleges");
+        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                arrayListNumUsersDelete=new ArrayList<>();
+                for(DataSnapshot child:snapshot.getChildren()){
+                    final String collegeHebrew = child.getValue(String.class);
+                    DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                            .getReference("DeleteUsers").child(date);
+                    databaseReference3.orderByChild("nameCollegeHebrow").equalTo(collegeHebrew)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    int num=0;
+                                    if(snapshot.exists()) {
+                                        num = (int) snapshot.getChildrenCount();
+                                    }
+                                    else return;
+                                    arrayListNumUsersDelete.add(collegeHebrew+": "+num);
 
-    private void dialogNumUesrs(DataSnapshot snapshot) {
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        buttonNumDeleteUsers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogNumUesrsDelete();
+            }
+        });
+    }
+    private void dialogNumUesrsDelete() {
         final Dialog d = new Dialog(Management3.this);
         d.setContentView(R.layout.dialog_list_menage);
         d.setTitle("Manage");
@@ -87,23 +134,184 @@ public class Management3 extends AppCompatActivity {
         d.setCancelable(true);
         ListView listView = d.findViewById(R.id.dialog_list_mange);
 
-        arrayListNumUsers = new ArrayList<>();
-        arrayAdapterNumUsers = new ArrayAdapter<String>(Management3.this,
-                android.R.layout.simple_list_item_1, arrayListNumUsers);
-        listView.setAdapter(arrayAdapterPrice);
-        // arrayAdapterPrice.notifyDataSetChanged();
-        for (DataSnapshot child:snapshot.getChildren()) {
-            
+        arrayAdapterNumUsersDelete = new ArrayAdapter<String>(Management3.this,
+                android.R.layout.simple_list_item_1, arrayListNumUsersDelete);
+        listView.setAdapter(arrayAdapterNumUsersDelete);
+        arrayAdapterNumUsersDelete.notifyDataSetChanged();
 
-        }
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(Management3.this, Management.class);
-                String nameCollegeEnglish = arrayListPrice.get(i).substring(0,
-                        arrayListPrice.get(i).indexOf(":"));
-                intent.putExtra("flagPrice", nameCollegeEnglish);
-                startActivity(intent);
+
+
+            }
+        });
+
+        d.show();
+    }
+    private void numNewUesrsMake() {
+        Calendar calendar = Calendar.getInstance();//new users count
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+       final String date = simpleDateFormat.format(calendar.getTime());
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("NewUsers").child(date);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int num=0;
+                if(snapshot.exists()) {
+                    num = (int) snapshot.getChildrenCount();
+                }
+                buttonNumNewUsers.setText("משתמשים חדשים היום: "+num);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        DatabaseReference databaseReference2 = FirebaseDatabase.getInstance()
+                .getReference("NamesColleges");
+        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                arrayListNumUsersNew=new ArrayList<>();
+                for(DataSnapshot child:snapshot.getChildren()){
+                    final String collegeHebrew = child.getValue(String.class);
+                    DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                            .getReference("NewUsers").child(date);
+                    databaseReference3.orderByChild("nameCollegeHebrow").equalTo(collegeHebrew)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    int num=0;
+                                            if(snapshot.exists()) {
+                                                num = (int) snapshot.getChildrenCount();
+                                            }
+                                            else return;
+                                    arrayListNumUsersNew.add(collegeHebrew+": "+num);
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        buttonNumNewUsers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogNumUesrsNew();
+            }
+        });
+    }
+    private void dialogNumUesrsNew() {
+        final Dialog d = new Dialog(Management3.this);
+        d.setContentView(R.layout.dialog_list_menage);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        ListView listView = d.findViewById(R.id.dialog_list_mange);
+
+        arrayAdapterNumUsersNew = new ArrayAdapter<String>(Management3.this,
+                android.R.layout.simple_list_item_1, arrayListNumUsersNew);
+        listView.setAdapter(arrayAdapterNumUsersNew);
+        arrayAdapterNumUsersNew.notifyDataSetChanged();
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+
+            }
+        });
+
+        d.show();
+    }
+    private void numUesrsMake() {
+        DatabaseReference databaseReference2 = FirebaseDatabase.getInstance()
+                .getReference("NamesColleges");
+        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                        .getReference("RegisterInformation2");
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        int num=0;
+                        if(snapshot.exists()) {
+                            num = (int) snapshot.getChildrenCount();
+                        }
+                        buttonNumUsers.setText("מספר משתמשים: "+num);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+                arrayListNumUsers = new ArrayList<>();
+
+                for (DataSnapshot child:snapshot.getChildren()) {
+                   final String collegeHebrew = child.getValue(String.class);
+                   databaseReference.orderByChild("nameCollegeHebrew")
+                           .equalTo(collegeHebrew).addListenerForSingleValueEvent(new ValueEventListener() {
+                       @Override
+                       public void onDataChange(@NonNull final DataSnapshot snapshot) {
+                           if (!snapshot.exists())
+                               return;
+                               arrayListNumUsers.add(collegeHebrew+": "+(int)snapshot.getChildrenCount());
+
+                       }
+
+                       @Override
+                       public void onCancelled(@NonNull DatabaseError error) {
+
+                       }
+                   });
+               }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+buttonNumUsers.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View view) {
+        dialogNumUesrs();
+    }
+});
+    }
+
+    private void dialogNumUesrs() {
+        final Dialog d = new Dialog(Management3.this);
+        d.setContentView(R.layout.dialog_list_menage);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        ListView listView = d.findViewById(R.id.dialog_list_mange);
+
+        arrayAdapterNumUsers = new ArrayAdapter<String>(Management3.this,
+                android.R.layout.simple_list_item_1, arrayListNumUsers);
+        listView.setAdapter(arrayAdapterNumUsers);
+       arrayAdapterNumUsers.notifyDataSetChanged();
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
 
             }
         });

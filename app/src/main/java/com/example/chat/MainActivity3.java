@@ -23,10 +23,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class MainActivity3 extends AppCompatActivity {
     private ViewPager viewPager;
@@ -38,6 +42,8 @@ public class MainActivity3 extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("time");
+        databaseReference.setValue(ServerValue.TIMESTAMP);
         blocked();
 //if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
 //    NotificationChannel notificationChannel= new NotificationChannel
@@ -278,8 +284,28 @@ public class MainActivity3 extends AppCompatActivity {
                 startActivity(intentWhatsapp);
             }
         });
-        if (type.equals("2"))   build();
+        if (type.equals("2")) build();
         d.show();
 
+    }
+
+    private String localTime(long time) {
+        SimpleDateFormat format = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ssZ");
+        String dateString = format.format(new Date(time));
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        try {
+            Date value = format.parse(dateString);
+
+            SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm");
+            simpleDateFormatDate.setTimeZone(TimeZone.getDefault());
+            simpleDateFormatTime.setTimeZone(TimeZone.getDefault());
+
+            String date = simpleDateFormatDate.format(value);
+            String time2 = simpleDateFormatTime.format(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dateString;
     }
 }

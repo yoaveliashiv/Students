@@ -805,6 +805,9 @@ public class ChatActivity extends AppCompatActivity {
         super.onDestroy();
         if (childEventListener != null) {
             databaseReferenceOn.removeEventListener(childEventListener);
+            Intent intent = new Intent(ChatActivity.this, MainActivity3.class);
+            startActivityForResult(intent, 0);
+            finish();
         }
     }
 }

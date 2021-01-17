@@ -338,10 +338,12 @@ public class RegisterLoginActivity extends AppCompatActivity {
         String date = simpleDateFormat.format(calendar.getTime());
         DatabaseReference cardRef5 = FirebaseDatabase.getInstance()
                 .getReference("NewUsers").child(date).push();
-        HashMap<String,String> hashMap=new HashMap<String,String>();
-        hashMap.put("nameCollegeEnglish",nameCollegeEnglish);
-        cardRef5.setValue(hashMap);
+        HashMap<String, String> hashMap = new HashMap<String, String>();
+        hashMap.put("nameCollegeEnglish", nameCollegeEnglish);
+        hashMap.put("nameCollegeHebrow", nameCollegeHebrow);
 
+        cardRef5.setValue(hashMap);
+        registerInformation.setDateRegister(date);
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference cardRef4 = FirebaseDatabase.getInstance().getReference("RegisterInformation2").child(uid);
         cardRef4.setValue(registerInformation);
@@ -372,8 +374,10 @@ public class RegisterLoginActivity extends AppCompatActivity {
                             String date = simpleDateFormat.format(calendar.getTime());
                             DatabaseReference cardRef5 = FirebaseDatabase.getInstance()
                                     .getReference("DeleteUsers").child(date).push();
-                            HashMap<String,String> hashMap=new HashMap<String,String>();
-                            hashMap.put("nameCollegeEnglish",nameCollegeEnglish);
+                            HashMap<String, String> hashMap = new HashMap<String, String>();
+                            hashMap.put("nameCollegeEnglish", nameCollegeEnglish);
+                            hashMap.put("nameCollegeHebrow", nameCollegeHebrow);
+
                             cardRef5.setValue(hashMap);
 
                             DatabaseReference databaseReference = FirebaseDatabase.getInstance()
