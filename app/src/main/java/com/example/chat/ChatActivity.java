@@ -288,6 +288,8 @@ public class ChatActivity extends AppCompatActivity {
         textViewOpenProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                databaseReferenceOn.removeEventListener(childEventListener);
+                flagNewMessage=false;
 
                 Intent intent = new Intent(ChatActivity.this, ProfileActivity.class);
                 intent.putExtra("profile_user_id", arrayListMessage.get(i).getUid());
@@ -431,7 +433,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 int num = 0;
                 if (snapshot.exists()) num = (int) snapshot.getChildrenCount();
-                message.setId(num);
+                message.setId(num+1);
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Contacts")
                         .child(uidSend).child(uidRecive).push();
                 DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Contacts")
@@ -477,19 +479,32 @@ public class ChatActivity extends AppCompatActivity {
 
     private void displayMessage(DataSnapshot snapshot) {
 
-        Message message;
+       final Message message;
 
         message = snapshot.getValue(Message.class);
-        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
-                .getReference("NotificationsIdSeeLast").child(uidSend).child(uidRecive);//set Notifications
-        databaseReference3.setValue(message.getId());
-        arrayListMessage.add(message);
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Contacts")
+                .child(uidSend).child(uidRecive);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                        .getReference("NotificationsIdSeeLast").child(uidSend).child(uidRecive);//set Notifications
+                databaseReference3.setValue((int)snapshot.getChildrenCount());
+                arrayListMessage.add(message);
 
-        arrayAdapter.notifyDataSetChanged();
+                arrayAdapter.notifyDataSetChanged();
 // Force scroll to the top of the scroll view.
 // Because, when the list view gets loaded it focuses the list view
 // automatically at the bottom of this page.
-        listView.setSelection(listView.getAdapter().getCount() - 1);
+                listView.setSelection(listView.getAdapter().getCount() - 1);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
 
 
     }
@@ -696,7 +711,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 int num = 0;
                 if (snapshot.exists()) num = (int) snapshot.getChildrenCount();
-                message.setId(num);
+                message.setId(num+1);
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("Contacts")
                         .child(uidSend).child(uidRecive).push();
                 DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Contacts")
@@ -735,11 +750,16 @@ public class ChatActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
 
                     case R.id.mainIconMenu:
+                        databaseReferenceOn.removeEventListener(childEventListener);
+                        flagNewMessage=false;
                         intent2 = new Intent(ChatActivity.this, MainActivity3.class);
                         startActivity(intent2);
                         return true;
 
                     case R.id.settingsMenu:
+                        databaseReferenceOn.removeEventListener(childEventListener);
+                        flagNewMessage=false;
+
                         intent2 = new Intent(ChatActivity.this, ActivitySettings.class);
                         intent2.putExtra("flag", false);
                         startActivity(intent2);
@@ -748,6 +768,8 @@ public class ChatActivity extends AppCompatActivity {
                         dialogDelete();
                         return true;
                     case R.id.returnMainMenu:
+                        databaseReferenceOn.removeEventListener(childEventListener);
+                        flagNewMessage=false;
 
                         intent2 = new Intent(ChatActivity.this, MainActivity3.class);
                         startActivity(intent2);
@@ -755,6 +777,8 @@ public class ChatActivity extends AppCompatActivity {
 
 
                     case R.id.feedbackMenu:
+                        databaseReferenceOn.removeEventListener(childEventListener);
+                        flagNewMessage=false;
 
                         intent2 = new Intent(ChatActivity.this, ActivityFeedbackChat.class);
                         startActivity(intent2);
@@ -831,7 +855,9 @@ public class ChatActivity extends AppCompatActivity {
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Contacts")
                         .child(uidSend).child(uidRecive);
                 databaseReference.removeValue();
-
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                        .getReference("NotificationsIdSeeLast").child(uidSend).child(uidRecive);//set Notifications
+                databaseReference3.removeValue();
 
                 Toast.makeText(ChatActivity.this, "השיחה נמחקה בהצלחה", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(ChatActivity.this, MainActivity3.class);
@@ -848,9 +874,10 @@ public class ChatActivity extends AppCompatActivity {
         super.onDestroy();
         if (childEventListener != null) {
             databaseReferenceOn.removeEventListener(childEventListener);
+            flagNewMessage=false;
             Intent intent = new Intent(ChatActivity.this, MainActivity3.class);
             startActivityForResult(intent, 0);
-            finish();
+
         }
     }
 }

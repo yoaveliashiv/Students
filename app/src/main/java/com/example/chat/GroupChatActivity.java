@@ -399,7 +399,7 @@ public class GroupChatActivity extends AppCompatActivity {
                 if (snapshot.exists()) id = (int) snapshot.getChildrenCount();
 
 
-                message.setId(id);
+                message.setId(id+1);
                 databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups")
                         .child(nameCologeEnglish).child(nameGroup).push();
 
@@ -609,6 +609,10 @@ public class GroupChatActivity extends AppCompatActivity {
                 DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference("Groups details")
                         .child(nameGroup).child(uid);
                 databaseReference2.removeValue();
+
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                        .getReference("NotificationsIdSeeLast").child(uid).child(nameGroup);//set Notifications
+                databaseReference3.removeValue();
 
                 Toast.makeText(GroupChatActivity.this, "יצאת מהקבוצה בהצלחה", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(GroupChatActivity.this, MainActivity3.class);

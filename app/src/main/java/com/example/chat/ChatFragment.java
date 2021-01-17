@@ -60,6 +60,7 @@ public class ChatFragment extends Fragment {
     private String mParam2;
     private ProgressDialog progressDialog;
     private boolean flagNewConcat = false;
+    private int  lastSee;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -196,7 +197,9 @@ public class ChatFragment extends Fragment {
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Contacts")
                         .child(uid).child(contactArrayList.get(i).getUidContacts());
                 databaseReference.removeValue();
-
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                        .getReference("NotificationsIdSeeLast").child(uid).child(contactArrayList.get(i).getUidContacts());//set Notifications
+                databaseReference3.removeValue();
 
                 Toast.makeText(getContext(), "השיחה נמחקה בהצלחה", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getContext(), MainActivity3.class);
@@ -279,32 +282,45 @@ public class ChatFragment extends Fragment {
         databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-
-                Contact contact = new Contact();
-
-                int lastSee = 0;
+                 lastSee = 0;
                 if (snapshot.exists()) lastSee = snapshot.getValue(Integer.class);
-                int numNewMessage = messageContact.getId() - lastSee;
-                contact.setNotifications(numNewMessage);
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Contacts")
+                        .child(uid).child(uidContact.get(0));
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Contact contact = new Contact();
 
-                contact.setPhoneContacts(phoneContact);
-                contact.setImage(imageContact);
-                contact.setMessage(messageContact);
-                contact.setName(nameContact);
-                contact.setUidI(uid);
-                contact.setUidContacts(uidContact.get(0));
-                contactArrayList.add(contact);
-                uidContact.remove(0);
-                if (uidContact.size() == 0) {
-                    if (contactArrayList.size() > 1) {
-                        Collections.sort(contactArrayList, new ComperatorContact());
+
+                        int numNewMessage = (int)snapshot.getChildrenCount() - lastSee;
+                        contact.setNotifications(numNewMessage);
+
+                        contact.setPhoneContacts(phoneContact);
+                        contact.setImage(imageContact);
+                        contact.setMessage(messageContact);
+                        contact.setName(nameContact);
+                        contact.setUidI(uid);
+                        contact.setUidContacts(uidContact.get(0));
+                        contactArrayList.add(contact);
+                        uidContact.remove(0);
+                        if (uidContact.size() == 0) {
+                            if (contactArrayList.size() > 1) {
+                                Collections.sort(contactArrayList, new ComperatorContact());
+                            }
+                            contactsAdapter.notifyDataSetChanged();
+                            progressDialog.dismiss();
+                        }
+
+                        if (uidContact.size() > 0) addContact(uidContact, uid);
                     }
-                    contactsAdapter.notifyDataSetChanged();
-                    progressDialog.dismiss();
-                }
 
-                if (uidContact.size() > 0) addContact(uidContact, uid);
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+
             }
 
             @Override

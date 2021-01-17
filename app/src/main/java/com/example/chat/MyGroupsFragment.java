@@ -376,6 +376,10 @@ public class MyGroupsFragment extends Fragment {
                         .child(contactArrayList.get(i).getName()).child(uid);
                 databaseReference2.removeValue();
 
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                        .getReference("NotificationsIdSeeLast").child(uid).child(contactArrayList.get(i).getName());//set Notifications
+                databaseReference3.removeValue();
+
                 Toast.makeText(getContext(), "יצאת מהקבוצה בהצלחה", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getContext(), MainActivity3.class);
                 intent.putExtra("flagPage", 1);
