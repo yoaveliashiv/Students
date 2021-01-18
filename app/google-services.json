@@ -8,6 +8,43 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:345285097098:android:afe11d46a4e3a94923df73",
+        "android_client_info": {
+          "package_name": "com.code.students"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "345285097098-opk4asoffan1lsg1b4kjsaq81rh0ln85.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.code.students",
+            "certificate_hash": "e0cd3bcf9e8b5a2eec56c90a759e439b4bce045f"
+          }
+        },
+        {
+          "client_id": "345285097098-udbvmfadnginvj2uqarffql7i3ofr39m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBY7rohuZ9OyXq70DcOKW8o0ytmLw6HA3U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "345285097098-udbvmfadnginvj2uqarffql7i3ofr39m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:345285097098:android:24ed338ddeb8cdda23df73",
         "android_client_info": {
           "package_name": "com.example.students"

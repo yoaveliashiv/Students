@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example">
+    package="com.code">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -16,29 +15,29 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".chat.Management3"></activity>
-        <activity android:name=".chat.Management2Feedbacks" />
-        <activity android:name=".chat.ActivityFeedbackChat" />
-        <activity android:name=".chat.Management" />
-        <activity android:name=".chat.ChatActivity" />
-        <activity android:name=".chat.ProfileActivity" />
-        <activity android:name=".chat.GroupChatActivity" />
+        <activity android:name="com.code.chat.Management3"></activity>
+        <activity android:name="com.code.chat.Management2Feedbacks" />
+        <activity android:name="com.code.chat.ActivityFeedbackChat" />
+        <activity android:name="com.code.chat.Management" />
+        <activity android:name="com.code.chat.ChatActivity" />
+        <activity android:name="com.code.chat.ProfileActivity" />
+        <activity android:name="com.code.chat.GroupChatActivity" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name=".chat.ActivitySettings" />
-        <activity android:name=".chat.MainActivity3" />
-        <activity android:name=".Hikers.MainActivityChat" />
-        <activity android:name=".students.MainActivityAddExpertise" />
-        <activity android:name=".students.MainActivityListFeedbackPage" />
-        <activity android:name=".students.MainActivity_Feedback" />
-        <activity android:name=".students.MainActivityCardView" />
-        <activity android:name=".students.MainActivityManagementCardsApprov" />
-        <activity android:name=".students.MainActivityPageUser" />
-        <activity android:name=".students.MainActivityRegisterTutor" />
-        <activity android:name=".students.MainActivityRegister" />
-        <activity android:name=".students.MainActivity1" />
-        <activity android:name=".Hikers.RegisterLoginActivity">
+        <activity android:name="com.code.chat.ActivitySettings" />
+        <activity android:name="com.code.chat.MainActivity3" />
+        <activity android:name="com.code.Hikers.MainActivityChat" />
+        <activity android:name="com.code.students.MainActivityAddExpertise" />
+        <activity android:name="com.code.students.MainActivityListFeedbackPage" />
+        <activity android:name="com.code.students.MainActivity_Feedback" />
+        <activity android:name="com.code.students.MainActivityCardView" />
+        <activity android:name="com.code.students.MainActivityManagementCardsApprov" />
+        <activity android:name="com.code.students.MainActivityPageUser" />
+        <activity android:name="com.code.students.MainActivityRegisterTutor" />
+        <activity android:name="com.code.students.MainActivityRegister" />
+        <activity android:name="com.code.students.MainActivity1" />
+        <activity android:name="com.code.Hikers.RegisterLoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

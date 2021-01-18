@@ -12,7 +12,10 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:textColor="#EF2B2B"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/loginEmail"
+        app:layout_constraintStart_toStartOf="@+id/txtWarnPssword"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/loginEmail"
@@ -32,7 +35,9 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:textColor="#EF2B2B"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/loginPassword"
@@ -53,7 +58,9 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:textColor="#EF2B2B"
-        android:visibility="gone" />
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/loginButton2"

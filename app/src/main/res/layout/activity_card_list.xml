@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="130dp"
     android:fillViewport="true"
-    tools:context=".CardList">
+   >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
