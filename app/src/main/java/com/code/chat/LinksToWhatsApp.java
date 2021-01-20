@@ -1,12 +1,16 @@
 package com.code.chat;
 
 public class LinksToWhatsApp {
-    private String nameGroup="";
-    private String link="";
-    private String key="";
-    private String nameCollegeEnglish="";
+    private String nameGroup = "";
+    private String link = "";
+    private String key = "";
+    private String nameCollegeEnglish = "";
+    private String numOfMembers = "";
+    private Object dateUpdateNumOfMembers =null;
 
- private String uidWantNewLink="";
+
+    private String uidWantNewLink = "";
+
     public LinksToWhatsApp() {
     }
 
@@ -49,5 +53,21 @@ public class LinksToWhatsApp {
 
     public void setNameCollegeEnglish(String nameCollegeEnglish) {
         this.nameCollegeEnglish = nameCollegeEnglish;
+    }
+
+    public String getNumOfMembers() {
+        return numOfMembers;
+    }
+
+    public void setNumOfMembers(String numOfMembers) {
+        this.numOfMembers = numOfMembers;
+    }
+
+    public Object getDateUpdateNumOfMembers() {
+        return dateUpdateNumOfMembers;
+    }
+
+    public void setDateUpdateNumOfMembers(Object dateUpdateNumOfMembers) {
+        this.dateUpdateNumOfMembers = dateUpdateNumOfMembers;
     }
 }

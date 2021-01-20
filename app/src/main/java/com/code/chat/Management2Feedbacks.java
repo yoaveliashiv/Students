@@ -94,8 +94,8 @@ public class Management2Feedbacks extends AppCompatActivity {
 
         d.setCancelable(true);
         TextView textViewDelete = d.findViewById(R.id.feed_delete);
-        TextView textViewSendMessage = d.findViewById(R.id.feed_send_message);
-        TextView textView_chak_link = d.findViewById(R.id.feed_chak_link);
+        TextView textViewSendMessage = d.findViewById(R.id.profile_blocked);
+        TextView textView_chak_link = d.findViewById(R.id.delete_blocked);
         TextView textView_delete_link = d.findViewById(R.id.feed_delete_link);
         TextView textView_block_he = d.findViewById(R.id.feed_block_he);
         TextView textView_block_i = d.findViewById(R.id.feed_block_i);

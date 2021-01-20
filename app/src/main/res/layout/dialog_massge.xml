@@ -30,7 +30,7 @@
         android:textColor="@color/colorBlack"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/feed_chak_link" />
+        app:layout_constraintTop_toBottomOf="@+id/delete_blocked" />
 
     <TextView
         android:id="@+id/feed_block_he"
@@ -57,7 +57,7 @@
         app:layout_constraintTop_toBottomOf="@+id/feed_block_he" />
 
     <TextView
-        android:id="@+id/feed_chak_link"
+        android:id="@+id/delete_blocked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -66,10 +66,10 @@
         android:textColor="@color/colorBlack"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/feed_send_message" />
+        app:layout_constraintTop_toBottomOf="@+id/profile_blocked" />
 
     <TextView
-        android:id="@+id/feed_send_message"
+        android:id="@+id/profile_blocked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"

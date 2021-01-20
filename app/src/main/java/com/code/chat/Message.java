@@ -17,6 +17,7 @@ public class Message implements Serializable {
     private String uid = "";
     private int id = 0;
     private String deviceToken = "";
+    private String key = "";
 
     public Message() {
     }
@@ -111,5 +112,13 @@ public class Message implements Serializable {
 
     public void setDateTimeZone(Object dateTimeZone) {
         this.dateTimeZone = dateTimeZone;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

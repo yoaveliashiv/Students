@@ -251,8 +251,8 @@ public class GroupChatActivity extends AppCompatActivity {
         d.setTitle("Manage");
 
         TextView textViewSendMassge = d.findViewById(R.id.feed_delete);
-        TextView textViewOpenProfile = d.findViewById(R.id.feed_send_message);
-        TextView textViewSendWhatappsMassge = d.findViewById(R.id.feed_chak_link);
+        TextView textViewOpenProfile = d.findViewById(R.id.profile_blocked);
+        TextView textViewSendWhatappsMassge = d.findViewById(R.id.delete_blocked);
         TextView textViewCopyPhone = d.findViewById(R.id.feed_delete_link);
         TextView textViewCopyMessage = d.findViewById(R.id.feed_block_he);
         TextView textViewFeed = d.findViewById(R.id.feed_block_i);
@@ -402,7 +402,7 @@ public class GroupChatActivity extends AppCompatActivity {
                 message.setId(id+1);
                 databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups")
                         .child(nameCologeEnglish).child(nameGroup).push();
-
+                message.setKey(databaseReference.getKey());
                 databaseReference.setValue(message);
             }
 

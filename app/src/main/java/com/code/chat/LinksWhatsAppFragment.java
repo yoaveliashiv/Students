@@ -371,10 +371,7 @@ public class LinksWhatsAppFragment extends Fragment {
                             return;
                         for (DataSnapshot child : snapshot.getChildren()) {
 
-                            LinksToWhatsApp linksToWhatsApp = new LinksToWhatsApp();
-                            linksToWhatsApp.setNameGroup(child.getKey());
-                            linksToWhatsApp.setLink(child.getValue(String.class));
-                            arrayListLink.add(linksToWhatsApp);
+                            arrayListLink.add(child.getValue(LinksToWhatsApp.class));
                         }
                         arrayListLink2 = new ArrayList<>(arrayListLink);
                         linksToWhatsAppAdapter.notifyDataSetChanged();

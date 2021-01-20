@@ -470,10 +470,8 @@ public class Management extends AppCompatActivity {
                         if (!snapshot.exists())
                             return;
                         for (DataSnapshot child : snapshot.getChildren()) {
-                            LinksToWhatsApp linksToWhatsApp = new LinksToWhatsApp();
-                            linksToWhatsApp.setNameGroup(child.getKey());
-                            linksToWhatsApp.setLink(child.getValue(String.class));
-                            arrayListLink.add(linksToWhatsApp);
+
+                            arrayListLink.add(child.getValue(LinksToWhatsApp.class));
                         }
 
                         linksToWhatsAppAdapter.notifyDataSetChanged();
@@ -519,7 +517,11 @@ public class Management extends AppCompatActivity {
 
                 DatabaseReference cardRef2 = FirebaseDatabase.getInstance()
                         .getReference("LinksToWhatsApp").child(nameCollege);
-                cardRef2.child(from).setValue(to);
+                LinksToWhatsApp linksToWhatsApp=new LinksToWhatsApp();
+                linksToWhatsApp.setNameGroup(from);
+                linksToWhatsApp.setLink(to);
+                linksToWhatsApp.setNameCollegeEnglish(nameCollege);
+                cardRef2.child(from).setValue(linksToWhatsApp);
                 Toast.makeText(Management.this, "לינק נוסף בהצלחה", Toast.LENGTH_SHORT).show();
 
                 continueMakeLinks();

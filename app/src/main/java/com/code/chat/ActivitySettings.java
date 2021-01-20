@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +54,7 @@ public class ActivitySettings extends AppCompatActivity {
     private String dataBlock;
     private String nameCollegeEnglishSpinerr = "";
     private String nameCollegeHebrowSpinerr = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,13 +159,19 @@ public class ActivitySettings extends AppCompatActivity {
         final Dialog d = new Dialog(ActivitySettings.this);
         d.setContentView(R.layout.dialog_setting_account);
         d.setTitle("Manage");
-
         d.setCancelable(true);
         Button buttonDelete = d.findViewById(R.id.button_delete_account);
         Button buttonChanghColege = d.findViewById(R.id.button_chang_cologe);
+        Button buttonBloke = d.findViewById(R.id.button_i_bloke);
+
         final Spinner spinner = d.findViewById(R.id.spinner_name_coleg);
         setSpinner(spinner);
-
+buttonBloke.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View view) {
+        dialogIBlock();
+    }
+});
         buttonChanghColege.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -184,6 +192,124 @@ public class ActivitySettings extends AppCompatActivity {
             @Override
             public void onClick(View view) {
               dialodDelete();
+
+            }
+
+        });
+
+        d.show();
+
+    }
+
+    private void dialogIBlock() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("Blocked").child(uid);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                ArrayList<String>arrayListBlok=new ArrayList<>();
+                final ArrayList<Blocked>arrayListBlok2=new ArrayList<>();
+
+                for(DataSnapshot child:snapshot.getChildren()){
+                    Blocked blocked=child.getValue(Blocked.class);
+                    if(blocked.getIBloked()) {
+                        arrayListBlok.add(child.getKey());
+                        arrayListBlok2.add(blocked);
+                    }
+                }
+                final Dialog d = new Dialog(ActivitySettings.this);
+                d.setContentView(R.layout.dialog_list_menage);
+                d.setTitle("Manage");
+
+
+
+                d.setCancelable(true);
+                ListView listView = d.findViewById(R.id.dialog_list_mange);
+                ArrayAdapter<String> arrayAdapterBlocked = new ArrayAdapter<String>(ActivitySettings.this,
+                        android.R.layout.simple_list_item_1, arrayListBlok);
+                listView.setAdapter( arrayAdapterBlocked);
+                arrayAdapterBlocked.notifyDataSetChanged();
+
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+dialogDeleteBlock(arrayListBlok2.get(i),d);
+
+                    }
+                });
+
+                d.show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
+
+    private void dialogDeleteBlock(final Blocked blocked, final Dialog dialog) {
+        final Dialog d = new Dialog(ActivitySettings.this);
+        d.setContentView(R.layout.dialog_i_blocked);
+        d.setTitle("Manage");
+
+        d.setCancelable(true);
+        TextView buttonDelete = d.findViewById(R.id.delete_blocked);
+        final TextView buttonProfile = d.findViewById(R.id.profile_blocked);
+        buttonProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference("RegisterInformation2")
+                       .child(blocked.getUidBloked());
+               databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                   @Override
+                   public void onDataChange(@NonNull DataSnapshot snapshot) {
+                       if(!snapshot.exists()){
+                           buttonProfile. setText("משתמש מחק את החשבון שחסמת");
+                           buttonProfile.setTextColor(getResources().getColor(R.color.colorWarng));
+                           return;
+                       }
+                       Intent intent = new Intent(ActivitySettings.this, ProfileActivity.class);
+                       intent.putExtra("profile_user_id", blocked.getUidBloked());
+                       intent.putExtra("visit_user_id", uid);
+                       startActivity(intent);
+
+                   }
+
+                   @Override
+                   public void onCancelled(@NonNull DatabaseError error) {
+
+                   }
+               });
+            }
+        });
+        buttonDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                        .getReference("Blocked").child(uid).child(blocked.getPhone());
+                databaseReference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                                .getReference("Blocked").child(blocked.getUidBloked()).child(registerInformation.getEmail());
+                        databaseReference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                d.dismiss();
+                                dialog.dismiss();
+                                dialogIBlock();
+                                Toast.makeText(ActivitySettings.this, "חסימה נמחקה בהצלחה", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    }
+                });
+
+
+
 
             }
 

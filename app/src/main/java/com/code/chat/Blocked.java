@@ -1,9 +1,18 @@
 package com.code.chat;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 public class Blocked {
-    private String date="";
-    private String Cause_of_blockage="";
-private String phone="";
+    private String date = "";
+    private String Cause_of_blockage = "";
+    private String phone = "";
+    private String uidBloked = "";
+    private Boolean IBloked = false;
+
     public Blocked() {
     }
 
@@ -29,5 +38,21 @@ private String phone="";
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getUidBloked() {
+        return uidBloked;
+    }
+
+    public void setUidBloked(String uidBloked) {
+        this.uidBloked = uidBloked;
+    }
+
+    public Boolean getIBloked() {
+        return IBloked;
+    }
+
+    public void setIBloked(Boolean IBloked) {
+        this.IBloked = IBloked;
     }
 }

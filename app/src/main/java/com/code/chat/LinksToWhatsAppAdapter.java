@@ -9,8 +9,13 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.code.R;
+import com.google.firebase.database.Exclude;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class LinksToWhatsAppAdapter extends ArrayAdapter<LinksToWhatsApp> {
 
@@ -34,9 +39,36 @@ public class LinksToWhatsAppAdapter extends ArrayAdapter<LinksToWhatsApp> {
         LayoutInflater layoutInflater = ((Activity) context).getLayoutInflater();
         view = layoutInflater.inflate(R.layout.link_list, parent, false);
 
-
         TextView textViewName = (TextView) view.findViewById(R.id.textView_name_group);
 
+        if(!listLink.get(position).getNumOfMembers().isEmpty()){
+
+
+        long d=getTimestamp(listLink.get(position).getDateUpdateNumOfMembers());
+        SimpleDateFormat format = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ssZ");
+        String dateString = format.format(new Date(d));
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        String date2 = "";
+        String time2 = "";
+        try {
+            Date value = format.parse(dateString);
+
+            SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("dd/MM");
+            SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm");
+            simpleDateFormatDate.setTimeZone(TimeZone.getDefault());
+            simpleDateFormatTime.setTimeZone(TimeZone.getDefault());
+
+            date2 = simpleDateFormatDate.format(value);
+            time2 = simpleDateFormatTime.format(value);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+            textViewName.setText(listLink.get(position).getNameGroup()+"  מספר משתתפים:"+
+                    listLink.get(position).getNumOfMembers()+" נכון ל- "+time2+" "+date2 );
+
+        }
+        else
         textViewName.setText(listLink.get(position).getNameGroup());
 
 
@@ -44,6 +76,10 @@ public class LinksToWhatsAppAdapter extends ArrayAdapter<LinksToWhatsApp> {
         TextView textViewLink = (TextView) view.findViewById(R.id.textView_link);
        textViewLink.setText(listLink.get(position).getLink());
         return view;
+    }
+    @Exclude
+    public long getTimestamp(Object timestamp) {
+        return (long) timestamp;
     }
 
 
