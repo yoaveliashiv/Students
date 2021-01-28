@@ -6,6 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -535,5 +538,29 @@ buttonNumUsers.setOnClickListener(new View.OnClickListener() {
 
             }
         });
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // if (flagConnected) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_management, menu);
+        return true;
+        //   }
+        //   return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Intent intent2;
+        switch (item.getItemId()) {
+
+            case R.id.mainIconMenuManga:
+                intent2 = new Intent(Management3.this, Management.class);
+                startActivity(intent2);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

@@ -546,8 +546,8 @@ public class Management extends AppCompatActivity {
         Intent intent2;
         switch (item.getItemId()) {
 
-            case R.id.mainIconMenu:
-                intent2 = new Intent(Management.this, MainActivity3.class);
+            case R.id.mainIconMenuManga:
+                intent2 = new Intent(Management.this, Management.class);
                 startActivity(intent2);
                 return true;
             case R.id.new_cologe:

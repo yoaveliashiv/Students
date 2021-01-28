@@ -121,6 +121,7 @@ public class MyGroupsFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
                 Intent intent = new Intent(getContext(), GroupChatActivity.class);
                 intent.putExtra("nameGroup", contactArrayList.get(i).getName());
                 intent.putExtra("flagAllGroup", false);
@@ -128,6 +129,8 @@ public class MyGroupsFragment extends Fragment {
                 intent.putExtra("flagNameCologeEnglish", contactArrayList.get(i).getNameCollegeEnglish());
 
                 startActivity(intent);
+                contactArrayList.get(i).setNotifications(0);
+                contactsAdapter.notifyDataSetChanged();
 //                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 //                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
 //                databaseReference.child(uid).child("hitchhikingGroups").setValue(arrayListGroups.get(i));
