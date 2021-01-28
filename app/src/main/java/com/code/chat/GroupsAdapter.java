@@ -68,13 +68,16 @@ public class GroupsAdapter extends ArrayAdapter<Contact> {
                     .load(contact.getImage())
                     .into(circleImageView);
         }
+        TextView textViewTime = (TextView) view.findViewById(R.id.textView_time);
+        String date2 = "";
+        String time2 = "";
 
+        if(contact.getMessage().getDateTimeZone()!=null){
             long d=getTimestamp(contact.getMessage().getDateTimeZone());
             SimpleDateFormat format = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ssZ");
             String dateString = format.format(new Date(d));
             format.setTimeZone(TimeZone.getTimeZone("GMT"));
-            String date2 = "";
-            String time2 = "";
+
             try {
                 Date value = format.parse(dateString);
 
@@ -89,6 +92,8 @@ public class GroupsAdapter extends ArrayAdapter<Contact> {
                 e.printStackTrace();
             }
 
+        }
+
 
 
             String name = contact.getMessage().getName();
@@ -99,7 +104,6 @@ public class GroupsAdapter extends ArrayAdapter<Contact> {
         textViewMessage.setText(name + ": " + contact.getMessage().getMessage());
         if (name.isEmpty())
             textViewMessage.setText("");
-        TextView textViewTime = (TextView) view.findViewById(R.id.textView_time);
 
         if (contact.getNotifications() > 0) {
             textViewTime.setText(""+time2+" "+date2 + "\n" + contact.getNotifications() + " הודעות חדשות");

@@ -72,27 +72,28 @@ public class ContactsAdapter extends ArrayAdapter<Contact> {
                     .load(contact.getImage())
                     .into(circleImageView);
         }
-
-        long d=getTimestamp(contact.getMessage().getDateTimeZone());
-        SimpleDateFormat format = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ssZ");
-        String dateString = format.format(new Date(d));
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
         String date2 = "";
         String time2 = "";
-        try {
-            Date value = format.parse(dateString);
+        if(contact.getMessage().getDateTimeZone()!=null) {
+            long d = getTimestamp(contact.getMessage().getDateTimeZone());
+            SimpleDateFormat format = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ssZ");
+            String dateString = format.format(new Date(d));
+            format.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-            SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("dd/MM");
-            SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm");
-            simpleDateFormatDate.setTimeZone(TimeZone.getDefault());
-            simpleDateFormatTime.setTimeZone(TimeZone.getDefault());
+            try {
+                Date value = format.parse(dateString);
 
-            date2 = simpleDateFormatDate.format(value);
-            time2 = simpleDateFormatTime.format(value);
-        } catch (ParseException e) {
-            e.printStackTrace();
+                SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("dd/MM");
+                SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm");
+                simpleDateFormatDate.setTimeZone(TimeZone.getDefault());
+                simpleDateFormatTime.setTimeZone(TimeZone.getDefault());
+
+                date2 = simpleDateFormatDate.format(value);
+                time2 = simpleDateFormatTime.format(value);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
-
 
         String name = contact.getName();
 

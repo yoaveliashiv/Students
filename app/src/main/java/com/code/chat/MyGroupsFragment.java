@@ -22,11 +22,13 @@ import android.widget.Toast;
 
 import com.code.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,9 +61,14 @@ public class MyGroupsFragment extends Fragment {
     private Button buttonSearch;
     private Button buttonSeeAllGroups;
     private String uid;
+    private boolean flagStart1 = false;
+
     private ListView listView;
     private ArrayList<String> arrayList;
+    private ArrayList<String> arrayListName2;
+
     private ArrayList<String> arrayListNameCologeEnglish;
+    private ArrayList<String> arrayListNameCologeEnglish2;
 
     private ProgressDialog progressDialog;
 
@@ -118,7 +125,7 @@ public class MyGroupsFragment extends Fragment {
                 intent.putExtra("nameGroup", contactArrayList.get(i).getName());
                 intent.putExtra("flagAllGroup", false);
                 intent.putExtra("num_notifications", contactArrayList.get(i).getNotifications());
-                intent.putExtra("flagNameCologeEnglish",  contactArrayList.get(i).getNameCollegeEnglish());
+                intent.putExtra("flagNameCologeEnglish", contactArrayList.get(i).getNameCollegeEnglish());
 
                 startActivity(intent);
 //                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -153,22 +160,25 @@ public class MyGroupsFragment extends Fragment {
                 }
                 progressDialog.show();
                 arrayList = new ArrayList<>();
+                arrayListName2=new ArrayList<>();
                 arrayListNameCologeEnglish = new ArrayList<>();
+                arrayListNameCologeEnglish2 = new ArrayList<>();
 
                 for (DataSnapshot child : snapshot.getChildren()) {
 
                     String uidContact = child.getKey();
                     arrayList.add(uidContact);
+                    arrayListName2.add(uidContact);
                     arrayListNameCologeEnglish.add(child.getValue(String.class));
+                    arrayListNameCologeEnglish2.add(child.getValue(String.class));
 
                 }
-
+                onStart1();
                 if (arrayList.size() > 0) {
                     buttonSearch.setVisibility(View.VISIBLE);
                     addContact(uid);
                 }
 
-//  contactsAdapter.notifyDataSetChanged();
 
 
             }
@@ -256,7 +266,7 @@ public class MyGroupsFragment extends Fragment {
                             contactsAdapter.notifyDataSetChanged();
                             getView().setClickable(true);
                             progressDialog.dismiss();
-
+                            flagStart1 = true;
                         }
 
                         if (arrayList.size() > 0) addContact(uid);
@@ -279,43 +289,73 @@ public class MyGroupsFragment extends Fragment {
 
     }
 
-//    public void onStart1(Contact child) {
-//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("NamesGroups")
-//                .child(child.getName());
-//        reference.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//                if (snapshot.exists()) {
+    public void onStart1() {
+        ArrayList < DatabaseReference> arrayListRe=new ArrayList<>();
+        for (int i=0;i<arrayListName2.size();i++) {
+            arrayListRe.add(FirebaseDatabase.getInstance().getReference("NamesGroups"));
+        }
+        for (int i=0;i<arrayListName2.size();i++) {
+            final String nameGroup2 = arrayListName2.get(i);
+
+             arrayListRe.get(i).child(arrayListNameCologeEnglish2.get(i)).child(nameGroup2)
+            .addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    if (snapshot.exists() && flagStart1) {
+                        arrayListNameCologeEnglish = new ArrayList<>();
+                        for (Contact contact : contactArrayList) {
+                            if (contact.getName().equals(nameGroup2)) {
+                                arrayListNameCologeEnglish.add(contact.getNameCollegeEnglish());
+                                contactArrayList.remove(contact);
+                                break;
+                            }
+                        }
+                        arrayList = new ArrayList<>();
+                        arrayList.add(nameGroup2);
+                        addContact(uid);
+
+
+                    }
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//                    if (snapshot.exists() && flagStart1) {
+//                        if (snapshot.exists()) {
+//                            arrayListNameCologeEnglish = new ArrayList<>();
+//                            for (Contact contact : contactArrayList) {
+//                                if (contact.getName().equals(nameGroup2)) {
+//                                    arrayListNameCologeEnglish.add(contact.getNameCollegeEnglish());
+//                                    contactArrayList.remove(contact);
+//                                    break;
+//                                }
+//                            }
+//                            arrayList = new ArrayList<>();
+//                            arrayList.add(nameGroup2);
+//                            addContact(uid);
 //
-//                    seeAllMyGroups();
 //
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-////                if (snapshot.exists()) {
-////                    seeAllMyGroups();
-////                }
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//    }
+//                        }
+//                    }
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+    }
 
     private void search() {
         groupSearch = editTextSearch.getText().toString();

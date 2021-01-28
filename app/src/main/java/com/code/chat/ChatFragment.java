@@ -52,7 +52,6 @@ public class ChatFragment extends Fragment {
     private DatabaseReference reference;
     private ListView listView;
     private String uid;
-    private int i = 0;
     private Message messageContact = new Message();
     private View viewContacts;
     // TODO: Rename and change types of parameters
