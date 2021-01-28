@@ -36,8 +36,10 @@ public class MainActivity3 extends AppCompatActivity {
     protected TabLayout tabLayout;
     private TabsAccessorAdapter tabsAccessorAdapter;
     protected static String search = "";
+
     private boolean flagBloked = false;
-    private String verison = "1";//
+    private String verison = "6";//
+    private String urlGoogleStore = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -273,14 +275,29 @@ public class MainActivity3 extends AppCompatActivity {
         }
         Button buttonVerison = d.findViewById(R.id.button_close);
         // textView.setText("נחסמת עד תאריך"+date);
+        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                .getReference("UrlGoogleStore");
+        databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists())
+                    urlGoogleStore = snapshot.getValue(String.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         buttonVerison.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentWhatsapp = new Intent(Intent.ACTION_VIEW);
-
-                intentWhatsapp.setData(Uri.parse("https://news.google.com/topstories?hl=he&gl=IL&ceid=IL:he"));
-                // intentWhatsapp.setPackage("com.whatsapp");
-                startActivity(intentWhatsapp);
+                if (!urlGoogleStore.isEmpty()) {
+                    Intent intentWhatsapp = new Intent(Intent.ACTION_VIEW);
+                    intentWhatsapp.setData(Uri.parse(urlGoogleStore));
+                    // intentWhatsapp.setPackage("com.whatsapp");
+                    startActivity(intentWhatsapp);
+                }
             }
         });
         if (type.equals("2")) build();
