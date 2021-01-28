@@ -847,8 +847,8 @@ public class ChatActivity extends AppCompatActivity {
         if (childEventListener != null) {
             databaseReferenceOn.removeEventListener(childEventListener);
             flagNewMessage = false;
-            Intent intent = new Intent(ChatActivity.this, MainActivity3.class);
-            startActivityForResult(intent, 0);
+//            Intent intent = new Intent(ChatActivity.this, MainActivity3.class);
+//            startActivityForResult(intent, 0);
 
         }
     }

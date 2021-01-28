@@ -1,7 +1,6 @@
 package com.code.chat;
 
 public class Contact {
-
     private Message message;
     private String name = "";
     private String image = "";

@@ -337,14 +337,30 @@ public class ChatFragment extends Fragment {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (snapshot.exists()&&flagNewConcat) {
-                    list();
+                    ArrayList arrayList=new ArrayList();
+                    String uidContact = snapshot.getKey();
+                    arrayList.add(uidContact);
+                    addContact(arrayList,uid);
+
+                   // list();
                 }
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (snapshot.exists()) {
-                    list();
+                    String uidContact = snapshot.getKey();
+                    for(Contact contact:contactArrayList){
+                        if(contact.getUidContacts().equals(uidContact)) {
+                            contactArrayList.remove(contact);
+                            break;
+                        }
+                    }
+                    ArrayList arrayList=new ArrayList();
+                    arrayList.add(uidContact);
+                    addContact(arrayList,uid);
+
+                   // list();
                 }
             }
 
@@ -399,6 +415,7 @@ public class ChatFragment extends Fragment {
                     dialogIsBlocking();
 
                 } else {
+
                     Intent intent = new Intent(getContext(), ChatActivity.class);
                     intent.putExtra("send_message_user_id", uid);
                     intent.putExtra("to_message_user_id", contactArrayList.get(i).getUidContacts());
@@ -408,6 +425,8 @@ public class ChatFragment extends Fragment {
                     // Toast.makeText(getContext(), uid, Toast.LENGTH_LONG).show();
                     intent.putExtra("num_notifications", contactArrayList.get(i).getNotifications());
                     startActivityForResult(intent, 0);
+                    contactArrayList.get(i).setNotifications(0);
+                    contactsAdapter.notifyDataSetChanged();
                 }
             }
 

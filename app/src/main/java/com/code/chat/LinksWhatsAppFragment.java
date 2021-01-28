@@ -255,8 +255,9 @@ public class LinksWhatsAppFragment extends Fragment {
                 Intent intentWhatsapp = new Intent(Intent.ACTION_VIEW);
                 String link = arrayListLink.get(i).getLink();
                 String url = link;
+
                 intentWhatsapp.setData(Uri.parse(url));
-                // intentWhatsapp.setPackage("com.whatsapp");
+               if(!link.contains("bit.")) intentWhatsapp.setPackage("com.whatsapp");
                 startActivity(intentWhatsapp);
 
             }
