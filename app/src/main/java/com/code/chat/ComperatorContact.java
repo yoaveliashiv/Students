@@ -20,7 +20,7 @@ public class ComperatorContact implements Comparator<Contact> {
         if(o2.getMessage().getTime().isEmpty())
             return -1;
         long d=getTimestamp(o1.getMessage().getDateTimeZone());
-        SimpleDateFormat format = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ssZ");
+        SimpleDateFormat format = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss.SSSZ");
         String dateString = format.format(new Date(d));
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
         String date2 = "";
@@ -29,7 +29,7 @@ public class ComperatorContact implements Comparator<Contact> {
             Date value = format.parse(dateString);
 
             SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("dd/MM/yyyy");
-            SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm:ss");
+            SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm:ss.SSS");
             simpleDateFormatDate.setTimeZone(TimeZone.getDefault());
             simpleDateFormatTime.setTimeZone(TimeZone.getDefault());
 
@@ -39,7 +39,7 @@ public class ComperatorContact implements Comparator<Contact> {
             e.printStackTrace();
         }
          d=getTimestamp(o2.getMessage().getDateTimeZone());
-         format = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ssZ");
+         format = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss.SSSZ");
          dateString = format.format(new Date(d));
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
         String date3 = "";
@@ -48,7 +48,7 @@ public class ComperatorContact implements Comparator<Contact> {
             Date value = format.parse(dateString);
 
             SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("dd/MM/yyyy");
-            SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm:ss");
+            SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm:ss.SSS");
             simpleDateFormatDate.setTimeZone(TimeZone.getDefault());
             simpleDateFormatTime.setTimeZone(TimeZone.getDefault());
 
