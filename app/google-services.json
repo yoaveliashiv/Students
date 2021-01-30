@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "345285097098-b480beqc2tet4vat7hau6r703tf3ubed.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.code.students",
+            "certificate_hash": "e7d4c40a38220d4cd59cba500c05df633622caed"
+          }
+        },
+        {
           "client_id": "345285097098-opk4asoffan1lsg1b4kjsaq81rh0ln85.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -29,7 +29,7 @@ public class ComperatorContact implements Comparator<Contact> {
             Date value = format.parse(dateString);
 
             SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("dd/MM/yyyy");
-            SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm:ss");
             simpleDateFormatDate.setTimeZone(TimeZone.getDefault());
             simpleDateFormatTime.setTimeZone(TimeZone.getDefault());
 
@@ -48,7 +48,7 @@ public class ComperatorContact implements Comparator<Contact> {
             Date value = format.parse(dateString);
 
             SimpleDateFormat simpleDateFormatDate = new SimpleDateFormat("dd/MM/yyyy");
-            SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat simpleDateFormatTime = new SimpleDateFormat("HH:mm:ss");
             simpleDateFormatDate.setTimeZone(TimeZone.getDefault());
             simpleDateFormatTime.setTimeZone(TimeZone.getDefault());
 

@@ -300,14 +300,18 @@ public class ChatFragment extends Fragment {
                         contact.setName(nameContact);
                         contact.setUidI(uid);
                         contact.setUidContacts(uidContact.get(0));
-                        contactArrayList.add(contact);
+
+                       contactArrayList.add(contact);
                         uidContact.remove(0);
                         if (uidContact.size() == 0) {
                             if (contactArrayList.size() > 1) {
                                 Collections.sort(contactArrayList, new ComperatorContact());
+                                if(contactArrayList.get(0).getUidContacts().equals(contactArrayList.get(1).getUidContacts()))
+                                    contactArrayList.remove(0);
                             }
                             contactsAdapter.notifyDataSetChanged();
                             progressDialog.dismiss();
+
                         }
 
                         if (uidContact.size() > 0) addContact(uidContact, uid);
@@ -349,15 +353,22 @@ public class ChatFragment extends Fragment {
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (snapshot.exists()) {
                     String uidContact = snapshot.getKey();
-                    for(Contact contact:contactArrayList){
-                        if(contact.getUidContacts().equals(uidContact)) {
-                            contactArrayList.remove(contact);
-                            break;
+
+
+
+                    for(int i=0;i<contactArrayList.size();i++){
+                        if(contactArrayList.get(i).getUidContacts().equals(uidContact)) {
+
+                            contactArrayList.remove(i);
+
                         }
                     }
-                    ArrayList arrayList=new ArrayList();
-                    arrayList.add(uidContact);
-                    addContact(arrayList,uid);
+                    if(contactArrayList.size()>0) {
+                        ArrayList arrayList = new ArrayList();
+                        arrayList.add(uidContact);
+                     if(arrayList.size()==1)  addContact(arrayList, uid);
+
+                    }
 
                    // list();
                 }

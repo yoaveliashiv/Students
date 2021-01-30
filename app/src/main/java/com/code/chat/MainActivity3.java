@@ -1,10 +1,12 @@
 package com.code.chat;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.Dialog;
+import android.app.Notification;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -36,9 +39,8 @@ public class MainActivity3 extends AppCompatActivity {
     protected TabLayout tabLayout;
     private TabsAccessorAdapter tabsAccessorAdapter;
     protected static String search = "";
-
     private boolean flagBloked = false;
-    private String verison = "6";//
+    private String verison = "7";//
     private String urlGoogleStore = "";
 
     @Override
