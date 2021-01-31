@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 
 import com.code.R;
+import com.code.game.BackgammonBoard;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -45,8 +46,10 @@ public class MainActivity3 extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("time");
-        //   databaseReference.setValue(ServerValue.TIMESTAMP);
+        BackgammonBoard board1=new BackgammonBoard();
+        board1.build();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("chek");
+          databaseReference.setValue(board1);
         blocked();
 //if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
 //    NotificationChannel notificationChannel= new NotificationChannel
