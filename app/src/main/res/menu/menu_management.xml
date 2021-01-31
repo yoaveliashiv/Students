@@ -8,6 +8,10 @@
         android:title="לדף הראשי"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/backgammon_menu"
+        android:title="שש בש"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/to_block"
         android:title="לחסום"
         app:showAsAction="never"/>
