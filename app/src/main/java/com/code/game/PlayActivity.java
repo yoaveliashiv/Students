@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -21,7 +23,8 @@ import com.google.firebase.database.ValueEventListener;
 
 public class PlayActivity extends AppCompatActivity {
     private String keyWait;
-
+    private Game game2;
+private boolean flagStart=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +37,24 @@ public class PlayActivity extends AppCompatActivity {
 //
 //                startActivity(intent);
 //                return;
-                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                ProgressDialog progressDialog=new ProgressDialog(PlayActivity.this);
+                progressDialog.setMessage("מחפש שחקן..");
+                progressDialog.show();
+                progressDialog.setCancelable(false);
+                progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+
+                    }
+                });
+                progressDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+
+                    }
+                });
+           //     progressDialog.setCanceledOnTouchOutside(true);
+                final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance()
                         .getReference("Waiting to play backgammon");
@@ -50,60 +70,67 @@ public class PlayActivity extends AppCompatActivity {
                                     DatabaseReference databaseReference1 = FirebaseDatabase.getInstance()
                                             .getReference("Waiting to play backgammon").push();
                                     keyWait = databaseReference1.getKey();
-                                    databaseReference.setValue(uid).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    Game game = new Game();
+                                    game.setKey(keyWait);
+                                    game.setUid(uid);
+                                    databaseReference1.setValue(game).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
                                             DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
                                                     .getReference("Play backgammon").child(uid);
-                                            databaseReference3.addChildEventListener(new ChildEventListener() {
-                                                @Override
-                                                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                                            databaseReference3.addValueEventListener(new ValueEventListener() {
+                                                                                         @Override
+                                                                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                                             if(flagStart) {
+                                                                                                 button.setText("עובד");
+                                                                                                 Intent intent = new Intent(PlayActivity.this, BackgammonActivity.class);
+                                                                                                 intent.putExtra("uid", uid);
+                                                                                                 intent.putExtra("color", "white");
+                                                                                                 startActivity(intent);
+                                                                                                 progressDialog.dismiss();
+                                                                                             }
+                                                                                             flagStart=true;
+                                                                                         }
 
-                                                }
+                                                                                         @Override
+                                                                                         public void onCancelled(@NonNull DatabaseError error) {
 
-                                                @Override
-                                                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                                                                                         }
+                                                                                     });
 
-                                                    Intent intent = new Intent(PlayActivity.this, BackgammonActivity.class);
-                                                    intent.putExtra("uid", uid);
-                                                    startActivity(intent);
-                                                }
-
-                                                @Override
-                                                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-                                                }
-
-                                                @Override
-                                                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-                                                }
-
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                                }
-                                            });
                                         }
                                     });
                                 }
                             });
 
                         } else {
+                            game2 = new Game();
                             for (DataSnapshot child : snapshot.getChildren()) {
-                                final String palyerUid = child.getValue(String.class);
-                                DatabaseReference databaseReference5 = FirebaseDatabase.getInstance()
-                                        .getReference("Play backgammon").child(palyerUid);
-                                databaseReference5.setValue(1).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Intent intent = new Intent(PlayActivity.this, BackgammonActivity.class);
-                                        intent.putExtra("uid", palyerUid);
-                                        startActivity(intent);
-                                    }
-                                });
-
+                                game2 = child.getValue(Game.class);
+                                break;
                             }
+                            DatabaseReference databaseReference7 = FirebaseDatabase.getInstance()
+                                    .getReference("Waiting to play backgammon").child(game2.getKey());
+                            databaseReference7.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    DatabaseReference databaseReference5 = FirebaseDatabase.getInstance()
+                                            .getReference("Play backgammon").child(game2.getUid());
+                                    databaseReference5.setValue(1).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            button.setText("עובד");
+                                            Intent intent = new Intent(PlayActivity.this, BackgammonActivity.class);
+                                            intent.putExtra("uid", game2.getUid());
+                                            intent.putExtra("color", "black");
+
+                                            startActivity(intent);
+                                            progressDialog.dismiss();
+                                        }
+                                    });
+                                }
+                            });
+
                         }
 
                     }

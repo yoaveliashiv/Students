@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.code.R;
 import com.code.game.BackgammonBoard;
+import com.code.game.PlayActivity;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -46,10 +47,10 @@ public class MainActivity3 extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        BackgammonBoard board1=new BackgammonBoard();
-        board1.build();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("chek");
-          databaseReference.setValue(board1);
+//        BackgammonBoard board1=new BackgammonBoard();
+//        board1.build();
+//        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("chek");
+//          databaseReference.setValue(board1);
         blocked();
 //if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
 //    NotificationChannel notificationChannel= new NotificationChannel
@@ -185,7 +186,9 @@ public class MainActivity3 extends AppCompatActivity {
 
             case R.id.mainIconMenu:
                 if (!flagBloked) {
-                    intent2 = new Intent(MainActivity3.this, MainActivity3.class);
+//                    intent2 = new Intent(MainActivity3.this, MainActivity3.class);
+//                    startActivity(intent2);
+                    intent2 = new Intent(MainActivity3.this , PlayActivity.class);
                     startActivity(intent2);
                 }
                 return true;
@@ -210,9 +213,8 @@ public class MainActivity3 extends AppCompatActivity {
                 if (!flagBloked) {
 
                     try {
-
-                        if (FirebaseAuth.getInstance().getCurrentUser().
-                                getPhoneNumber().equals("+972544540185")) {
+String phone=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
+                        if (phone.equals("+972544540185")||phone.equals("+972545555555")) {
                             intent2 = new Intent(MainActivity3.this, Management3.class);
                             startActivity(intent2);
                             return true;

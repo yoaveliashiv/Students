@@ -18,7 +18,7 @@
         android:background="#959191"
 
         android:text="  הוסף קבוצה חדש  "
-        android:textColor="@color/colorBackg"
+        android:textColor="@color/colorWhite"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="@+id/button_search"
         app:layout_constraintStart_toStartOf="@+id/button_search"
