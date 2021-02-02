@@ -34,11 +34,13 @@ public class BackgammonBoard {
     private ImageView imageViewDice2;
     private String color;
     private TextView textViewDice;
-private boolean flagDiceTrow=false;
+private int flagDiceTrow=0;
 private String uid="";
+    private Activity activity;
+
     public BackgammonBoard(ArrayList<TextView> arrayListTextNum, ArrayList<ArrayList<ImageView>> arrayListStackImage,
                            ImageView imageViewDice1, ImageView imageViewDice2,
-                           String color, TextView textViewDice,String uid) {
+                           String color, TextView textViewDice,String uid,Activity activity) {
         this.arrayListTextNum = arrayListTextNum;
         this.arrayListStackImage = arrayListStackImage;
         this.imageViewDice1 = imageViewDice1;
@@ -46,19 +48,52 @@ private String uid="";
         this.color = color;
         this.textViewDice = textViewDice;
         this.uid=uid;
+        this.activity=activity;
     }
 
     public BackgammonBoard() {
 
     }
 
-    public void DiceTrowStart(){
+    public void trowTowDice(){
+flagDiceTrow++;
+roolOneDice(imageViewDice1);
+roolOneDice(imageViewDice2);
+MovesGame movesGame=new MovesGame();
+
 
     }
-    public void moveDice(ImageView imageViewDice, Activity activity) {
+    public void moveTowDice() {
         new Thread() {
             public void run() {
-                while (!flagDiceTrow){
+                final int num=flagDiceTrow;
+                while (num==flagDiceTrow){
+                    try {
+                        activity.runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                int numDice1 = Dice.throwDice();
+                                int numDice2 = Dice.throwDice();
+                                setImage(numDice1, imageViewDice1);
+                                setImage(numDice2, imageViewDice2);
+                            }
+                        });
+                        Thread.sleep(1500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+
+
+    }
+    public void moveDice(ImageView imageViewDice) {
+        new Thread() {
+            public void run() {
+               final int num=flagDiceTrow;
+                while (num==flagDiceTrow){
                     try {
                         activity.runOnUiThread(new Runnable() {
 
@@ -75,38 +110,11 @@ private String uid="";
                 }
             }
         }.start();
-//            Handler handler = new Handler();
-//            handler.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    for (int i = 0; i < 20; i++) {
-//                        activity.runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                //    for (int i = 0; i < 20; i++) {
-//                                int numDice = Dice.throwDice();
-//                                textViewDice.setText("" + numDice);
-//                                setImage(numDice, imageViewDice);
-//
-//                                try {
-//                                    Thread.sleep(1500);
-//                                } catch (InterruptedException e) {
-//                                    e.printStackTrace();
-//                                }
-//                                // }
-//                            }
-//                        });
-//                    }
-//
-//
-//                }
-//            });
-
 
 
         }
 
-    private void setImage(int numDice, ImageView imageViewDice) {
+    public  void setImage(int numDice, ImageView imageViewDice) {
        if(numDice==1)
               imageViewDice.setImageResource(R.drawable.dice1);
        else if(numDice==2)
@@ -131,16 +139,24 @@ private String uid="";
                 @Override
                 public void onClick(View view) {
                     imageViewDice1.setClickable(false);
-                    int numDice=roolOneDice();
+                    flagDiceTrow++;
+                    int numDice=roolOneDice(imageViewDice1);
                     MovesGame movesGame=new MovesGame();
                     movesGame.setType("start1");
+                    movesGame.setInfoTo("black");
                     movesGame.setDice1(numDice);
+                    textViewDice.setText("תור השני: שיזרוק מי מתחיל");
                     DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
                             .getReference("Play backgammon").child(uid);
                     databaseReference3.setValue(movesGame).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             imageViewDice1.setClickable(true);
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            moveDice(imageViewDice2);
                         }
                     });
 
@@ -150,6 +166,7 @@ private String uid="";
         }
         else {
             textViewDice.setText("תור השני: שיזרוק מי מתחיל");
+
         }
         for (ArrayList<ImageView> array : arrayListStackImage) {
             for (ImageView imageView : array) {
@@ -233,12 +250,14 @@ private String uid="";
 //        }
     }
 
-    private int roolOneDice() {
+    public  int roolOneDice(ImageView imageViewDice) {
         int numDice = Dice.throwDice();
-        setImage(numDice, imageViewDice1);
+       setImage(numDice, imageViewDice);
         return  numDice;
     }
-
+public  void flagDiceTrowe(){
+        flagDiceTrow++;
+}
     //public void
 
 

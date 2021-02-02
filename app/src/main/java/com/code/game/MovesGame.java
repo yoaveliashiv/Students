@@ -1,6 +1,7 @@
 package com.code.game;
 
 public class MovesGame {
+    private String infoTo="";
    private String type="";
     private  int dice1;
     private int dice2;
@@ -67,5 +68,13 @@ public class MovesGame {
 
     public void setPosion2MoveTo(int posion2MoveTo) {
         this.posion2MoveTo = posion2MoveTo;
+    }
+
+    public String getInfoTo() {
+        return infoTo;
+    }
+
+    public void setInfoTo(String infoTo) {
+        this.infoTo = infoTo;
     }
 }
