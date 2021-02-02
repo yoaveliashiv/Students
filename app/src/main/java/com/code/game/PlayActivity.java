@@ -24,7 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 public class PlayActivity extends AppCompatActivity {
     private String keyWait;
     private Game game2;
-private boolean flagStart=false;
+private int flagStart=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,25 +78,28 @@ private boolean flagStart=false;
                                         public void onSuccess(Void aVoid) {
                                             DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
                                                     .getReference("Play backgammon").child(uid);
-                                            databaseReference3.addValueEventListener(new ValueEventListener() {
-                                                                                         @Override
-                                                                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                                             if(flagStart) {
-                                                                                                 button.setText("עובד");
-                                                                                                 Intent intent = new Intent(PlayActivity.this, BackgammonActivity.class);
-                                                                                                 intent.putExtra("uid", uid);
-                                                                                                 intent.putExtra("color", "white");
-                                                                                                 startActivity(intent);
-                                                                                                 progressDialog.dismiss();
-                                                                                             }
-                                                                                             flagStart=true;
-                                                                                         }
+                                            ValueEventListener valueEventListener=new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    if(flagStart==1) {
+                                                        button.setText("עובד");
 
-                                                                                         @Override
-                                                                                         public void onCancelled(@NonNull DatabaseError error) {
+                                                        Intent intent = new Intent(PlayActivity.this, BackgammonActivity.class);
+                                                        intent.putExtra("uid", uid);
+                                                        intent.putExtra("color", "white");
+                                                        startActivity(intent);
+                                                        progressDialog.dismiss();
 
-                                                                                         }
-                                                                                     });
+                                                    }
+                                                    flagStart++;
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                                }
+                                            };
+                                            databaseReference3.addValueEventListener(valueEventListener);
 
                                         }
                                     });

@@ -8,15 +8,7 @@
     tools:context=".game.BackgammonActivity">
 
 
-    <ImageView
-        android:id="@+id/imageView_dice2"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="5dp"
-        app:layout_constraintBottom_toTopOf="@+id/textVie18"
-        app:layout_constraintStart_toEndOf="@+id/imageView_dice1"
-        app:layout_constraintTop_toBottomOf="@+id/textVie7"
-        app:srcCompat="@drawable/dice6" />
+
 
     <ImageView
         android:id="@+id/imageVie15"
@@ -2046,11 +2038,22 @@
         android:id="@+id/imageView_dice1"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/textVie18"
-        app:layout_constraintEnd_toEndOf="@+id/textVie7"
-        app:layout_constraintStart_toStartOf="@+id/textVie7"
-        app:layout_constraintTop_toBottomOf="@+id/textVie7"
+        app:layout_constraintBottom_toTopOf="@+id/textVie15"
+        app:layout_constraintEnd_toEndOf="@+id/textVie10"
+        app:layout_constraintStart_toStartOf="@+id/textVie10"
+        app:layout_constraintTop_toBottomOf="@+id/textVie10"
         app:srcCompat="@drawable/dice6" />
+
+
+    <ImageView
+        android:id="@+id/imageView_dice2"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="5dp"
+        app:layout_constraintBottom_toTopOf="@+id/textVie15"
+        app:layout_constraintStart_toEndOf="@+id/imageView_dice1"
+        app:layout_constraintTop_toBottomOf="@+id/textVie10"
+        app:srcCompat="@drawable/white" />
 
     <TextView
         android:id="@+id/textView_dice"

@@ -1,5 +1,6 @@
 package com.code.game;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -10,6 +11,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.code.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -23,6 +29,8 @@ public class BackgammonActivity extends AppCompatActivity {
     private ImageView imageViewDice1;
     private ImageView imageViewDice2;
 private TextView textViewDice;
+    private int flagListener=0;
+private   BackgammonBoard board;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -37,16 +45,56 @@ private TextView textViewDice;
        setId();
       textViewColor.setText("הצבע שלך: " + color);
       if(color.equals("white"))textViewColor.setTextColor(getResources().getColor(R.color.colorWhite));
-     BackgammonBoard board=new BackgammonBoard(arrayListTextNum,arrayListStackImage,
-             imageViewDice1,imageViewDice2,color,textViewDice);
-      board.build();
-     // board.moveDice(imageViewDice1);
+     board=new BackgammonBoard(arrayListTextNum,arrayListStackImage,
+             imageViewDice1,imageViewDice2,color,textViewDice,uid);
+     board.build();
+      board.moveDice(imageViewDice1,BackgammonActivity.this);
+      setOnListener();
         super.onCreate(savedInstanceState);
+    }
+
+    private void setOnListener() {
+        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                .getReference("Play backgammon").child(uid);
+        databaseReference3.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(flagListener>0&&snapshot.exists()){
+                    MovesGame movesGame=snapshot.getValue(MovesGame.class);
+                    moves(movesGame);
+                }
+               else flagListener++;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void moves(MovesGame movesGame) {
+        switch(movesGame.getType())
+        {
+            case "dice1":
+                System.out.println("one");
+                break;
+            case "two":
+                System.out.println("two");
+                break;
+            case "three":
+                System.out.println("three");
+                break;
+            default:
+                System.out.println("no match");
+        }
     }
 
     private void setId() {
       imageViewDice1= findViewById(R.id.imageView_dice1);
         imageViewDice2= findViewById(R.id.imageView_dice2);
+        imageViewDice1.setImageResource(R.drawable.dice6);
+        imageViewDice2.setImageResource(R.drawable.dice6);
         textViewColor = findViewById(R.id.textView_color9);
         textViewDice=findViewById(R.id.textView_dice);
         arrayListStackImage = new ArrayList<>();
