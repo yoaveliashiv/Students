@@ -85,6 +85,9 @@ public class BackgammonBoard {
     }
 
     public void trowTowDice() {
+        imageViewDice1.setClickable(false);
+        imageViewDice2.setClickable(false);
+
         flagDiceTrow++;
         dice1 = roolOneDice(imageViewDice1);
         dice2 = roolOneDice(imageViewDice2);
@@ -98,7 +101,6 @@ public class BackgammonBoard {
                 .getReference("Play backgammon").child(uid);
         databaseReference3.setValue(movesGame);
 
-        stones.setListStonesByColor(yourColor);
         chesSton();
 
 
@@ -114,8 +116,9 @@ public class BackgammonBoard {
                     arrayListStackImage.get(i).get(j).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            clearColorFilter();
                             ImageView imageView = ((ImageView) view);
-                            setCancalClick();
+                           // setCancalClick();
                             indexStone = hashMapIndex.get(imageView);
                             arrayListStackImage.get(indexStone).get(stones.getListStonesColor()
                                     .get(indexStone) - 1)
@@ -132,6 +135,14 @@ public class BackgammonBoard {
         }
     }
 
+    private void clearColorFilter() {
+        for (int i = 0; i < 24; i++) {
+            for (ImageView image : arrayListStackImage.get(i)) {
+                image.clearColorFilter();
+            }
+        }
+    }
+
     private void setCancalClick() {
         for (int i = 0; i < 24; i++) {
             for (ImageView image : arrayListStackImage.get(i)) {
@@ -141,19 +152,30 @@ public class BackgammonBoard {
     }
 
     private void stonMoveTo() {
+        textViewDice.setText("פה מוזר"+indexStone);
+
         for (int i = 0; i < 24; i++) {
             if (stones.getListStonesColorRivel().get(i) < 2 && i != indexStone) {//no go to same place and rivel 1+
                 if ((yourColor.equals("white") && (indexStone - i == dice1 || indexStone - i == dice2))
-                        || (yourColor.equals("black") && (indexStone + i == dice1 || indexStone + i == dice2))) {//dices can
+                        || (yourColor.equals("black") && (indexStone + dice1 == i || indexStone + dice2 == i))) {//dices can
 
-
+                    textViewDice.setText("פה כן");
                     int langth;//max ston visibulity
                     if (stones.getListStonesColor().get(i) > stones.getListStonesColorRivel().get(i))
                         langth = stones.getListStonesColor().get(i);
                     else
                         langth = stones.getListStonesColorRivel().get(i);
+                    if (langth == 0)
+                        langth = 1;
                     for (int j = 0; j < langth; j++) {
+                        textViewDice.setText("פה???" + i + "kk" + j + "pp" + indexStone);
+                        arrayListTextNum.get(i).setText("" + i);
+                        arrayListStackImage.get(i).get(j).setImageResource(R.drawable.black);
+                        arrayListStackImage.get(i).get(j).setVisibility(View.VISIBLE);
 
+                        arrayListTextNum.get(i).setVisibility(View.VISIBLE);
+                        arrayListStackImage.get(i).get(j)
+                                .setColorFilter(Color.parseColor("#F53241"));
                         arrayListStackImage.get(i).get(j).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -220,7 +242,7 @@ public class BackgammonBoard {
                                     arrayListTextNum.get(index).setText("" +
                                             stones.getListStonesColor().get(index));
 
-                                if (stones.getListStonesColor().get(index) <8) {
+                                if (stones.getListStonesColor().get(index) < 8) {
                                     arrayListTextNum.get(indexStone).setVisibility(View.INVISIBLE);
                                 }
                                 if (dice1 != 100 || dice2 != -100)
@@ -397,9 +419,18 @@ public class BackgammonBoard {
                 default:
                     stones.getListStonesWhite().add(0);
                     stones.getListStonesBlack().add(0);
+                    break;
             }
 
+
         }
+        stones.setListStonesByColor(yourColor);
+//        for (int i = 0; i <24 ;i++) {
+//            int num=stones.getListStonesColorRivel().get(i);
+//            if(stones.getListStonesColorRivel().get(i)<stones.getListStonesColor().get(i))
+//                num=stones.getListStonesColor().get(i);
+//            arrayListTextNum.get(i).setText(""+num);
+//        }
         arrayListStackImage.get(0).get(0).setImageResource(R.drawable.black);
         arrayListStackImage.get(0).get(1).setImageResource(R.drawable.black);
         arrayListStackImage.get(0).get(0).setVisibility(View.VISIBLE);
@@ -472,6 +503,23 @@ public class BackgammonBoard {
 //            boardNum.add(0);
 //            boardColor.add("no");
 //        }
+    }
+
+    public void setClick2Dices() {
+        imageViewDice1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                trowTowDice();
+            }
+        });
+        imageViewDice2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                trowTowDice();
+            }
+        });
+        imageViewDice1.setClickable(true);
+        imageViewDice2.setClickable(true);
     }
 
     public int roolOneDice(ImageView imageViewDice) {

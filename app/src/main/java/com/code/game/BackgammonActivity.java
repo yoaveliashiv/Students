@@ -103,6 +103,7 @@ public class BackgammonActivity extends AppCompatActivity {
                         board.flagDiceTrowe();
                         int numDice = board.roolOneDice(imageViewDice2);
                         MovesGame movesGame = new MovesGame();
+                        movesGame.setDice1(movesGame.getDice1());
                         movesGame.setDice2(numDice);
                         movesGame.setType("start2");
                         if (numDice > movesGame.getDice1()) {
@@ -137,10 +138,7 @@ public class BackgammonActivity extends AppCompatActivity {
                 });
                 break;
             case "start2":
-                if (color.equals("white")) {
-                    board.flagDiceTrowe();
-                    board.setImage(movesGame.getDice2(), imageViewDice2);
-                }
+
                 new Thread() {
 
                     public void run() {
@@ -151,12 +149,26 @@ public class BackgammonActivity extends AppCompatActivity {
                             BackgammonActivity.this.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    board.moveTowDice();
-                                    if (color.equals(movesGame.getInfoTo())) {
-                                        textViewDice.setText("תורך: זרוק קוביות");
-                                        roolIsYouToun();
-                                    } else {
-                                        textViewDice.setText("תור השני: אנא המתן");
+                                    if (color.equals("white")) {
+                                        board.flagDiceTrowe();
+                                        board.setImage(movesGame.getDice2(), imageViewDice2);
+                                        board.moveTowDice();
+
+                                        if (color.equals(movesGame.getInfoTo())) {
+                                            textViewDice.setText("תורך: זרוק קוביות");
+                                            board.setClick2Dices();
+
+                                        } else {
+                                            textViewDice.setText("תור השני: אנא המתן");
+                                        }
+                                    }else {//black
+                                        board.moveTowDice();
+                                        if (color.equals(movesGame.getInfoTo())) {
+                                            textViewDice.setText("תורך: זרוק קוביות");
+                                            board.setClick2Dices();
+                                        } else {
+                                            textViewDice.setText("תור השני: אנא המתן");
+                                        }
                                     }
 
 
