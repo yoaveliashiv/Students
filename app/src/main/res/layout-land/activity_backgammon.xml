@@ -8,14 +8,13 @@
     tools:context=".game.BackgammonActivity">
 
 
-
-
     <ImageView
         android:id="@+id/imageVie15"
         android:layout_width="42dp"
         android:layout_height="25dp"
         android:layout_marginStart="23dp"
         android:layout_marginTop="1dp"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageVie14"
         app:srcCompat="@drawable/black" />
@@ -81,6 +80,7 @@
         android:layout_marginStart="23dp"
         android:layout_marginTop="8dp"
         android:visibility="invisible"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/black" />
@@ -416,6 +416,7 @@
         app:layout_constraintStart_toEndOf="@+id/imageVie57"
         app:layout_constraintTop_toTopOf="@+id/imageVie65"
         app:srcCompat="@drawable/black" />
+
 
     <ImageView
         android:id="@+id/imageVie63"
@@ -2065,4 +2066,46 @@
         app:layout_constraintBottom_toTopOf="@+id/imageView_dice1"
         app:layout_constraintEnd_toEndOf="@+id/imageView_dice2"
         app:layout_constraintStart_toStartOf="@+id/imageView_dice1" />
+
+    <TextView
+        android:id="@+id/textViewBlack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:text="2"
+        app:layout_constraintBottom_toTopOf="@+id/imageVieOutSideBlack"
+        app:layout_constraintEnd_toEndOf="@+id/imageVieOutSideBlack"
+        app:layout_constraintStart_toStartOf="@+id/imageVieOutSideBlack" />
+
+    <ImageView
+        android:id="@+id/imageVieOutSideBlack"
+        android:layout_width="42dp"
+        android:layout_height="25dp"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textVie18"
+        app:layout_constraintStart_toEndOf="@+id/textVie19"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/black" />
+
+    <TextView
+        android:id="@+id/textViewWhite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:text="2"
+        app:layout_constraintBottom_toTopOf="@+id/imageVieOutSideWhite"
+        app:layout_constraintEnd_toEndOf="@+id/imageVieOutSideWhite"
+        app:layout_constraintStart_toStartOf="@+id/imageVieOutSideWhite" />
+
+    <ImageView
+        android:id="@+id/imageVieOutSideWhite"
+        android:layout_width="42dp"
+        android:layout_height="25dp"
+
+        android:layout_marginStart="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageVieOutSideBlack"
+        app:layout_constraintStart_toEndOf="@+id/imageVieOutSideBlack"
+        app:layout_constraintTop_toTopOf="@+id/imageVieOutSideBlack"
+        app:srcCompat="@drawable/white" />
 </androidx.constraintlayout.widget.ConstraintLayout>

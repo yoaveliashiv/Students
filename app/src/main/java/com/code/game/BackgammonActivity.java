@@ -20,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 
 public class BackgammonActivity extends AppCompatActivity {
@@ -28,12 +29,16 @@ public class BackgammonActivity extends AppCompatActivity {
     private TextView textViewColor;
     private ArrayList<ArrayList<ImageView>> arrayListStackImage;
     private ArrayList<TextView> arrayListTextNum;
-    private ImageView imageViewDice1;
+    private ImageView imageViewBlackOut;
+    private ImageView imageViewWhiteOut;
+    private TextView textViewBlackOut;
+    private TextView textViewWhiteOut;
     private ImageView imageViewDice2;
+    private ImageView imageViewDice1;
     private TextView textViewDice;
     private int flagListener = 0;
     private BackgammonBoard board;
-
+private HashMap<ImageView,Integer> hashMapIndex;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -50,7 +55,8 @@ public class BackgammonActivity extends AppCompatActivity {
         if (color.equals("white"))
             textViewColor.setTextColor(getResources().getColor(R.color.colorWhite));
         board = new BackgammonBoard(arrayListTextNum, arrayListStackImage,
-                imageViewDice1, imageViewDice2, color, textViewDice, uid, BackgammonActivity.this);
+                imageViewDice1, imageViewDice2, color, textViewDice, uid, BackgammonActivity.this,hashMapIndex
+        ,imageViewWhiteOut,imageViewBlackOut,textViewWhiteOut,textViewBlackOut);
         board.build();
         board.moveDice(imageViewDice1);
         setOnListener();
@@ -180,6 +186,12 @@ public class BackgammonActivity extends AppCompatActivity {
     }
 
     private void setId() {
+        imageViewBlackOut=findViewById(R.id.imageVieOutSideBlack);
+        imageViewWhiteOut=findViewById(R.id.imageVieOutSideWhite);
+        textViewBlackOut=findViewById(R.id.textViewBlack);
+        textViewWhiteOut=findViewById(R.id.textViewWhite);
+
+        hashMapIndex=new HashMap<>();
         imageViewDice1 = findViewById(R.id.imageView_dice1);
         imageViewDice2 = findViewById(R.id.imageView_dice2);
         imageViewDice1.setImageResource(R.drawable.dice6);
@@ -194,6 +206,7 @@ public class BackgammonActivity extends AppCompatActivity {
                 String imageId = "imageVie" + i + "" + j;
                 int resIDimage = getResources().getIdentifier(imageId, "id", getPackageName());
                 ImageView imageView = findViewById(resIDimage);
+                hashMapIndex.put(imageView,i-1);
                 //imageView.setVisibility(View.GONE);
                 stack.add(imageView);
             }
@@ -207,4 +220,5 @@ public class BackgammonActivity extends AppCompatActivity {
             arrayListTextNum.add(textView);
         }
     }
+
 }
