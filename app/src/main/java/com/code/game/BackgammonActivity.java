@@ -38,7 +38,8 @@ public class BackgammonActivity extends AppCompatActivity {
     private TextView textViewDice;
     private int flagListener = 0;
     private BackgammonBoard board;
-private HashMap<ImageView,Integer> hashMapIndex;
+    private HashMap<ImageView, Integer> hashMapIndex;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -55,8 +56,8 @@ private HashMap<ImageView,Integer> hashMapIndex;
         if (color.equals("white"))
             textViewColor.setTextColor(getResources().getColor(R.color.colorWhite));
         board = new BackgammonBoard(arrayListTextNum, arrayListStackImage,
-                imageViewDice1, imageViewDice2, color, textViewDice, uid, BackgammonActivity.this,hashMapIndex
-        ,imageViewWhiteOut,imageViewBlackOut,textViewWhiteOut,textViewBlackOut);
+                imageViewDice1, imageViewDice2, color, textViewDice, uid, BackgammonActivity.this, hashMapIndex
+                , imageViewWhiteOut, imageViewBlackOut, textViewWhiteOut, textViewBlackOut);
         board.build();
         board.moveDice(imageViewDice1);
         setOnListener();
@@ -83,7 +84,7 @@ private HashMap<ImageView,Integer> hashMapIndex;
     }
 
     private void moves(MovesGame movesGame) {
-        if(!movesGame.getType().equals("start2")) {
+        if (!movesGame.getType().equals("start2")) {
             if (!movesGame.getInfoTo().contains(color))
                 return;
         }
@@ -100,19 +101,17 @@ private HashMap<ImageView,Integer> hashMapIndex;
                                 .getReference("Play backgammon").child(uid);
                         imageViewDice2.setClickable(false);
                         board.flagDiceTrowe();
-                        int numDice=board.roolOneDice(imageViewDice2);
-                        MovesGame movesGame=new MovesGame();
+                        int numDice = board.roolOneDice(imageViewDice2);
+                        MovesGame movesGame = new MovesGame();
                         movesGame.setDice2(numDice);
                         movesGame.setType("start2");
-                        if(numDice>movesGame.getDice1()) {
+                        if (numDice > movesGame.getDice1()) {
                             movesGame.setInfoTo("black");
                             textViewDice.setText("תורך: זרוק קוביות");
-                        }
-                        else if(numDice<movesGame.getDice1()) {
+                        } else if (numDice < movesGame.getDice1()) {
                             movesGame.setInfoTo("white");
                             textViewDice.setText("תור השני: אנא המתן");
-                        }
-                        else{
+                        } else {
 
                             movesGame.setType("equal");
                             movesGame.setInfoTo("black white");
@@ -134,11 +133,11 @@ private HashMap<ImageView,Integer> hashMapIndex;
                         });
 
 
-                   }
+                    }
                 });
                 break;
             case "start2":
-                if(color.equals("white")){
+                if (color.equals("white")) {
                     board.flagDiceTrowe();
                     board.setImage(movesGame.getDice2(), imageViewDice2);
                 }
@@ -146,28 +145,27 @@ private HashMap<ImageView,Integer> hashMapIndex;
 
                     public void run() {
 
-                            try {
-                                Thread.sleep(12000);
+                        try {
+                            Thread.sleep(12000);
 
-                                BackgammonActivity.this.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        board.moveTowDice();
-                                       if(color.equals(movesGame.getInfoTo())){
-                                           textViewDice.setText("תורך: זרוק קוביות");
-                                           roolIsYouToun();
-                                        }
-                                       else{
-                                           textViewDice.setText("תור השני: אנא המתן");
-                                       }
-
-
+                            BackgammonActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    board.moveTowDice();
+                                    if (color.equals(movesGame.getInfoTo())) {
+                                        textViewDice.setText("תורך: זרוק קוביות");
+                                        roolIsYouToun();
+                                    } else {
+                                        textViewDice.setText("תור השני: אנא המתן");
                                     }
-                                });
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+
+
+                                }
+                            });
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
+                    }
 
                 }.start();
                 break;
@@ -175,6 +173,12 @@ private HashMap<ImageView,Integer> hashMapIndex;
                 board.flagDiceTrowe();
                 board.build();
                 board.moveDice(imageViewDice1);
+                break;
+            case "dices":
+                board.flagDiceTrowe();
+                board.setImage(movesGame.getDice1(), imageViewDice1);
+                board.setImage(movesGame.getDice2(), imageViewDice2);
+
                 break;
             default:
                 System.out.println("no match");
@@ -186,12 +190,12 @@ private HashMap<ImageView,Integer> hashMapIndex;
     }
 
     private void setId() {
-        imageViewBlackOut=findViewById(R.id.imageVieOutSideBlack);
-        imageViewWhiteOut=findViewById(R.id.imageVieOutSideWhite);
-        textViewBlackOut=findViewById(R.id.textViewBlack);
-        textViewWhiteOut=findViewById(R.id.textViewWhite);
+        imageViewBlackOut = findViewById(R.id.imageVieOutSideBlack);
+        imageViewWhiteOut = findViewById(R.id.imageVieOutSideWhite);
+        textViewBlackOut = findViewById(R.id.textViewBlack);
+        textViewWhiteOut = findViewById(R.id.textViewWhite);
 
-        hashMapIndex=new HashMap<>();
+        hashMapIndex = new HashMap<>();
         imageViewDice1 = findViewById(R.id.imageView_dice1);
         imageViewDice2 = findViewById(R.id.imageView_dice2);
         imageViewDice1.setImageResource(R.drawable.dice6);
@@ -206,7 +210,7 @@ private HashMap<ImageView,Integer> hashMapIndex;
                 String imageId = "imageVie" + i + "" + j;
                 int resIDimage = getResources().getIdentifier(imageId, "id", getPackageName());
                 ImageView imageView = findViewById(resIDimage);
-                hashMapIndex.put(imageView,i-1);
+                hashMapIndex.put(imageView, i - 1);
                 //imageView.setVisibility(View.GONE);
                 stack.add(imageView);
             }

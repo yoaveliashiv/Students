@@ -44,18 +44,20 @@ public class BackgammonBoard {
     private Activity activity;
     private String rivalColor;
     private Stones stones;
-    private boolean flagMoveStone = false;
     private int indexStone;
     private HashMap<ImageView, Integer> hashMapIndex;
+
+    private int dice1;
+    private int dice2;
 
 
     public BackgammonBoard(ArrayList<TextView> arrayListTextNum, ArrayList<ArrayList<ImageView>> arrayListStackImage,
                            ImageView imageViewDice1, ImageView imageViewDice2,
                            String color, TextView textViewDice, String uid, Activity activity, HashMap<ImageView, Integer> hashMapIndex,
-                          ImageView imageViewBlackOut,
-                                    ImageView imageViewWhiteOut,
-                                    TextView textViewBlackOut,
-                                    TextView textViewWhiteOut ) {
+                           ImageView imageViewBlackOut,
+                           ImageView imageViewWhiteOut,
+                           TextView textViewBlackOut,
+                           TextView textViewWhiteOut) {
         this.arrayListTextNum = arrayListTextNum;
         this.arrayListStackImage = arrayListStackImage;
         this.imageViewDice1 = imageViewDice1;
@@ -70,12 +72,10 @@ public class BackgammonBoard {
             rivalColor = "black";
 
         this.hashMapIndex = hashMapIndex;
-        this.imageViewBlackOut=imageViewBlackOut;
-        this.imageViewWhiteOut=imageViewWhiteOut;
-        this.textViewBlackOut=textViewBlackOut;
-        this.textViewWhiteOut=textViewWhiteOut;
-
-
+        this.imageViewBlackOut = imageViewBlackOut;
+        this.imageViewWhiteOut = imageViewWhiteOut;
+        this.textViewBlackOut = textViewBlackOut;
+        this.textViewWhiteOut = textViewWhiteOut;
 
 
     }
@@ -86,8 +86,8 @@ public class BackgammonBoard {
 
     public void trowTowDice() {
         flagDiceTrow++;
-      int dice1=  roolOneDice(imageViewDice1);
-      int dice2=  roolOneDice(imageViewDice2);
+        dice1 = roolOneDice(imageViewDice1);
+        dice2 = roolOneDice(imageViewDice2);
         MovesGame movesGame = new MovesGame();
         movesGame.setDice1(dice1);
         movesGame.setDice2(dice2);
@@ -99,9 +99,15 @@ public class BackgammonBoard {
         databaseReference3.setValue(movesGame);
 
         stones.setListStonesByColor(yourColor);
+        chesSton();
+
+
+    }
+
+    private void chesSton() {
         for (int i = 0; i < 24; i++) {
-            if (stones.getListStonesColor().get(i) > 0) {
-                for (int j = 0; j < stones.getListStonesColor().get(i); j++) {
+            if (stones.getListStonesColor().get(i) > 0) {//only i have ston
+                for (int j = 0; j < stones.getListStonesColor().get(i); j++) {//only soton visibaliti
 
                     arrayListStackImage.get(i).get(j).setClickable(true);
 
@@ -109,14 +115,13 @@ public class BackgammonBoard {
                         @Override
                         public void onClick(View view) {
                             ImageView imageView = ((ImageView) view);
-                            setCanlClick();
+                            setCancalClick();
                             indexStone = hashMapIndex.get(imageView);
                             arrayListStackImage.get(indexStone).get(stones.getListStonesColor()
                                     .get(indexStone) - 1)
-                                    .setColorFilter(Color.parseColor("#F53241"));
-                            flagMoveStone = true;
+                                    .setColorFilter(Color.parseColor("#F53241"));//the top ston index
 
-                            pressStonStart();
+                            stonMoveTo();
 
                         }
                     });
@@ -125,10 +130,9 @@ public class BackgammonBoard {
 
 
         }
-
     }
 
-    private void setCanlClick() {
+    private void setCancalClick() {
         for (int i = 0; i < 24; i++) {
             for (ImageView image : arrayListStackImage.get(i)) {
                 image.setClickable(false);
@@ -136,78 +140,108 @@ public class BackgammonBoard {
         }
     }
 
-    private void pressStonStart() {
+    private void stonMoveTo() {
         for (int i = 0; i < 24; i++) {
-            if (stones.getListStonesColorRivel().get(i) < 2 && i != indexStone) {
-                int langth;
-                if (stones.getListStonesColor().get(i) > stones.getListStonesColorRivel().get(i))
-                    langth = stones.getListStonesColor().get(i);
-                else
-                    langth = stones.getListStonesColorRivel().get(i);
-                for (int j = 0; j < langth; j++) {
+            if (stones.getListStonesColorRivel().get(i) < 2 && i != indexStone) {//no go to same place and rivel 1+
+                if ((yourColor.equals("white") && (indexStone - i == dice1 || indexStone - i == dice2))
+                        || (yourColor.equals("black") && (indexStone + i == dice1 || indexStone + i == dice2))) {//dices can
 
-                    arrayListStackImage.get(i).get(j).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ImageView imageView = ((ImageView) view);
-                            setCanlClick();
 
-                            int index = hashMapIndex.get(imageView);
+                    int langth;//max ston visibulity
+                    if (stones.getListStonesColor().get(i) > stones.getListStonesColorRivel().get(i))
+                        langth = stones.getListStonesColor().get(i);
+                    else
+                        langth = stones.getListStonesColorRivel().get(i);
+                    for (int j = 0; j < langth; j++) {
+
+                        arrayListStackImage.get(i).get(j).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                ImageView imageView = ((ImageView) view);
+                                setCancalClick();
+
+                                int index = hashMapIndex.get(imageView);
+                                if (yourColor.equals("white")) {//delte dice move
+                                    if (indexStone - index == dice1)
+                                        dice1 = -100;
+                                    else
+                                        dice2 = -100;
+                                } else {                                //black
+                                    if (indexStone + index == dice1)
+                                        dice1 = -100;
+                                    else
+                                        dice2 = -100;
+
+                                }
 //                            arrayListStackImage.get(index).get(stones.getListStonesColor()
 //                                    .get(index) - 1)
 //                                    .setColorFilter(Color.parseColor("#F53241"));
-                            if(stones.getListStonesColor().get(index)<8) {
+                                if (stones.getListStonesColor().get(index) < 8) {//move ston he moved
 
-                                ImageView imageViewUp1 =
-                                        arrayListStackImage.get(indexStone).get(stones.getListStonesColor()
-                                                .get(indexStone) - 1);//ston move
-                                imageViewUp1.setVisibility(View.INVISIBLE);
-                            }else{
-                                int num= stones.getListStonesColor().get(indexStone)-1;
-                                arrayListTextNum.get(indexStone).setText(""+ num);
+                                    ImageView imageViewUp1 =
+                                            arrayListStackImage.get(indexStone).get(stones.getListStonesColor()
+                                                    .get(indexStone) - 1);//ston move
+                                    imageViewUp1.setVisibility(View.INVISIBLE);
+                                } else {
 
-                            }
+                                    int num = stones.getListStonesColor().get(indexStone) - 1;
+                                    arrayListTextNum.get(indexStone).setText("" + num);
+                                    arrayListTextNum.get(indexStone).setVisibility(View.VISIBLE);
 
-
-                            stones.getListStonesColor().add(indexStone, stones.getListStonesColor().get(indexStone) - 1);
-                            stones.getListStonesColor().add(index, stones.getListStonesColor().get(index) + 1);
-                            if (stones.getListStonesColorRivel().get(index) == 1) {
-                                stones.getListStonesColorRivel().add(24, stones.getListStonesColorRivel().get(24) + 1);
-                                stones.getListStonesColorRivel().add(index, 0);
-
-                                if (rivalColor.equals("white")) {
-                                    textViewWhiteOut.setText(""+stones.getListStonesColorRivel().get(24));
-                                    imageViewWhiteOut.setVisibility(View.VISIBLE);
                                 }
-                                else{
-                                    textViewBlackOut.setText(""+stones.getListStonesColorRivel().get(24));
-                                    imageViewWhiteOut.setVisibility(View.VISIBLE);
+
+
+                                stones.getListStonesColor().add(indexStone, stones.getListStonesColor().get(indexStone) - 1);//move stone
+                                stones.getListStonesColor().add(index, stones.getListStonesColor().get(index) + 1);//add ston
+                                if (stones.getListStonesColorRivel().get(index) == 1) {//if i eat rivel
+                                    stones.getListStonesColorRivel().add(24, stones.getListStonesColorRivel().get(24) + 1);//add ston out side
+                                    stones.getListStonesColorRivel().add(index, 0);//move ston eated
+
+                                    if (rivalColor.equals("white")) {
+                                        textViewWhiteOut.setText("" + stones.getListStonesColorRivel().get(24));
+                                        imageViewWhiteOut.setVisibility(View.VISIBLE);
+                                    } else {
+                                        textViewBlackOut.setText("" + stones.getListStonesColorRivel().get(24));
+                                        imageViewWhiteOut.setVisibility(View.VISIBLE);
+                                    }
                                 }
-                            }
-                            if(stones.getListStonesColor().get(index)<7) {
-                                ImageView imageViewUp2 =
-                                        arrayListStackImage.get(index).get(stones.getListStonesColor()
-                                                .get(index) - 1);
-                                if (yourColor.equals("white"))
-                                    imageViewUp2.setImageResource(R.drawable.white);
-                                else
-                                    imageViewUp2.setImageResource(R.drawable.black);
-                            }
-                            else
-                                arrayListTextNum.get(index).setText(""+
-                                        stones.getListStonesColor().get(index));
+                                if (stones.getListStonesColor().get(index) < 7) {//show ston move
+                                    ImageView imageViewUp2 =
+                                            arrayListStackImage.get(index).get(stones.getListStonesColor()
+                                                    .get(index) - 1);
+                                    if (yourColor.equals("white")) {
+                                        imageViewUp2.setImageResource(R.drawable.white);
+                                        imageViewUp2.setVisibility(View.VISIBLE);
+                                    } else {
+                                        imageViewUp2.setImageResource(R.drawable.black);
+                                        imageViewUp2.setVisibility(View.VISIBLE);
+                                    }
+                                } else
+                                    arrayListTextNum.get(index).setText("" +
+                                            stones.getListStonesColor().get(index));
 
-                            if(stones.getListStonesColor().get(index)==6){
-                                arrayListTextNum.get(indexStone).setVisibility(View.INVISIBLE);
+                                if (stones.getListStonesColor().get(index) <8) {
+                                    arrayListTextNum.get(indexStone).setVisibility(View.INVISIBLE);
+                                }
+                                if (dice1 != 100 || dice2 != -100)
+                                    chesSton();
+                                else {
+                                    sendDataEndTourn();
+                                }
+
                             }
 
-                        }
-                    });
-                    arrayListStackImage.get(i).get(j).setClickable(true);
+                        });
+                        arrayListStackImage.get(i).get(j).setClickable(true);
+                    }
                 }
             }
         }
     }
+
+    private void sendDataEndTourn() {
+    }
+
 
     public void moveTowDice() {
         new Thread() {
