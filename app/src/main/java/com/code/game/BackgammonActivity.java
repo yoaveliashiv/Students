@@ -33,6 +33,10 @@ public class BackgammonActivity extends AppCompatActivity {
     private ImageView imageViewWhiteOut;
     private TextView textViewBlackOut;
     private TextView textViewWhiteOut;
+    private ImageView imageViewBlackWin;
+    private ImageView imageViewWhiteWin;
+    private TextView textViewBlackWin;
+    private TextView textViewWhiteWin;
     private ImageView imageViewDice2;
     private ImageView imageViewDice1;
     private TextView textViewDice;
@@ -58,6 +62,11 @@ public class BackgammonActivity extends AppCompatActivity {
         board = new BackgammonBoard(arrayListTextNum, arrayListStackImage,
                 imageViewDice1, imageViewDice2, color, textViewDice, uid, BackgammonActivity.this, hashMapIndex
                 , imageViewWhiteOut, imageViewBlackOut, textViewWhiteOut, textViewBlackOut);
+        board.setImageViewBlackWin(imageViewBlackWin);
+        board.setImageViewWhiteWin(imageViewWhiteWin);
+        board.setTextViewBlackWin(textViewBlackWin);
+        board.setTextViewWhiteWin(textViewWhiteWin);
+
         board.build();
         board.moveDice(imageViewDice1);
         setOnListener();
@@ -84,12 +93,13 @@ public class BackgammonActivity extends AppCompatActivity {
     }
 
     private void moves(MovesGame movesGame) {
-        if (!movesGame.getType().equals("start2")) {
-            if (!movesGame.getInfoTo().contains(color))
-                return;
-        }
+
+        if (!movesGame.getInfoTo().contains(color))
+            return;
+
         switch (movesGame.getType()) {
             case "start1":
+
                 board.flagDiceTrowe();
                 board.setImage(movesGame.getDice1(), imageViewDice1);
                 textViewDice.setText("תורך: זרוק מי מתחיל");
@@ -102,29 +112,25 @@ public class BackgammonActivity extends AppCompatActivity {
                         imageViewDice2.setClickable(false);
                         board.flagDiceTrowe();
                         int numDice = board.roolOneDice(imageViewDice2);
-                        MovesGame movesGame = new MovesGame();
-                        movesGame.setDice1(movesGame.getDice1());
-                        movesGame.setDice2(numDice);
-                        movesGame.setType("start2");
-                        if (numDice > movesGame.getDice1()) {
-                            movesGame.setInfoTo("black");
-                            textViewDice.setText("תורך: זרוק קוביות");
-                        } else if (numDice < movesGame.getDice1()) {
-                            movesGame.setInfoTo("white");
-                            textViewDice.setText("תור השני: אנא המתן");
-                        } else {
+                        MovesGame movesGame2 = new MovesGame();
+                        movesGame2.setDice1(movesGame.getDice1());
+                        movesGame2.setDice2(numDice);
+                        movesGame2.setType("start2");
+                        if (numDice == movesGame.getDice1()) {
 
-                            movesGame.setType("equal");
-                            movesGame.setInfoTo("black white");
+
+                            movesGame2.setType("equal");
+                            movesGame2.setInfoTo("black white");
                             databaseReference3.setValue(movesGame);
                             return;
                         }
+                        movesGame2.setInfoTo("black white");
 
 
-                        databaseReference3.setValue(movesGame).addOnFailureListener(new OnFailureListener() {
+                        databaseReference3.setValue(movesGame2).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                imageViewDice1.setClickable(true);
+                                // imageViewDice1.setClickable(true);
                             }
                         }).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -142,28 +148,31 @@ public class BackgammonActivity extends AppCompatActivity {
                 new Thread() {
 
                     public void run() {
+                        if (color.equals("white")) {
+                            board.flagDiceTrowe();
+                            board.setImage(movesGame.getDice2(), imageViewDice2);
+                        }
 
                         try {
-                            Thread.sleep(12000);
+                            Thread.sleep(5000);
 
                             BackgammonActivity.this.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     if (color.equals("white")) {
                                         board.flagDiceTrowe();
-                                        board.setImage(movesGame.getDice2(), imageViewDice2);
                                         board.moveTowDice();
 
-                                        if (color.equals(movesGame.getInfoTo())) {
+                                        if (movesGame.getDice1() > movesGame.getDice2()) {
                                             textViewDice.setText("תורך: זרוק קוביות");
                                             board.setClick2Dices();
 
                                         } else {
                                             textViewDice.setText("תור השני: אנא המתן");
                                         }
-                                    }else {//black
+                                    } else {//black
                                         board.moveTowDice();
-                                        if (color.equals(movesGame.getInfoTo())) {
+                                        if (movesGame.getDice1() < movesGame.getDice2()) {
                                             textViewDice.setText("תורך: זרוק קוביות");
                                             board.setClick2Dices();
                                         } else {
@@ -185,6 +194,7 @@ public class BackgammonActivity extends AppCompatActivity {
                 board.flagDiceTrowe();
                 board.build();
                 board.moveDice(imageViewDice1);
+
                 break;
             case "dices":
                 board.flagDiceTrowe();
@@ -192,6 +202,15 @@ public class BackgammonActivity extends AppCompatActivity {
                 board.setImage(movesGame.getDice2(), imageViewDice2);
 
                 break;
+            case "onlyMoveSton":
+                board.onlyMoveSton(movesGame.getPosion1(), movesGame.getPosion1MoveTo());
+                break;
+            case "MoveStonAndEndTurn":
+                board.onlyMoveSton(movesGame.getPosion1(), movesGame.getPosion1MoveTo());
+                textViewDice.setText("תורך: זרוק קוביות");
+                board.setClick2Dices();
+                board.moveTowDice();
+                break;//"onlyMoveSton"
             default:
                 System.out.println("no match");
         }
@@ -206,6 +225,11 @@ public class BackgammonActivity extends AppCompatActivity {
         imageViewWhiteOut = findViewById(R.id.imageVieOutSideWhite);
         textViewBlackOut = findViewById(R.id.textViewBlack);
         textViewWhiteOut = findViewById(R.id.textViewWhite);
+
+        imageViewBlackWin = findViewById(R.id.imageVieWinBlack);
+        imageViewWhiteWin = findViewById(R.id.imageVieWinWhite);
+        textViewBlackWin = findViewById(R.id.textViewWinBlack);
+        textViewWhiteWin = findViewById(R.id.textViewWinWhite);
 
         hashMapIndex = new HashMap<>();
         imageViewDice1 = findViewById(R.id.imageView_dice1);
@@ -235,6 +259,11 @@ public class BackgammonActivity extends AppCompatActivity {
             TextView textView = findViewById(resIDtext);
             arrayListTextNum.add(textView);
         }
+
+        hashMapIndex.put(imageViewBlackWin,24);
+        hashMapIndex.put(imageViewWhiteOut,-1);
+
+
     }
 
 }

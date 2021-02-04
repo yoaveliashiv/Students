@@ -1742,6 +1742,28 @@
         app:srcCompat="@drawable/black" />
 
     <ImageView
+        android:id="@+id/imageVieWinBlack"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/textVie24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textVie1"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/black" />
+
+    <ImageView
+        android:id="@+id/imageVieWinWhite"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewWinBlack"
+        app:layout_constraintStart_toEndOf="@+id/textViewWinBlack"
+        app:layout_constraintTop_toTopOf="@+id/textViewWinBlack"
+        app:srcCompat="@drawable/white" />
+
+
+
+    <ImageView
         android:id="@+id/imageVie243"
         android:layout_width="42dp"
         android:layout_height="25dp"
@@ -2017,18 +2039,20 @@
         android:id="@+id/textView_color9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="הצבע שלך: שחור"
+        android:layout_marginEnd="5dp"
+        android:text="צבע שלך: שחור"
+        android:textSize="12sp"
         android:textStyle="normal|bold"
-        app:layout_constraintBottom_toTopOf="@+id/textVie23"
-        app:layout_constraintEnd_toEndOf="@+id/textVie2"
-        app:layout_constraintStart_toStartOf="@+id/textVie2"
-        app:layout_constraintTop_toBottomOf="@+id/textVie2" />
+        app:layout_constraintBottom_toTopOf="@+id/textVie20"
+        app:layout_constraintEnd_toStartOf="@+id/textView_color2"
+        app:layout_constraintTop_toBottomOf="@+id/textVie5" />
 
     <TextView
         android:id="@+id/textView_color2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="זמן לתור: 120 ש"
+        android:textSize="12sp"
         android:textStyle="normal|bold"
         app:layout_constraintBottom_toTopOf="@+id/textVie20"
         app:layout_constraintEnd_toEndOf="@+id/textVie5"
@@ -2037,8 +2061,8 @@
 
     <ImageView
         android:id="@+id/imageView_dice1"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         app:layout_constraintBottom_toTopOf="@+id/textVie15"
         app:layout_constraintEnd_toEndOf="@+id/textVie10"
         app:layout_constraintStart_toStartOf="@+id/textVie10"
@@ -2048,13 +2072,13 @@
 
     <ImageView
         android:id="@+id/imageView_dice2"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginStart="5dp"
         app:layout_constraintBottom_toTopOf="@+id/textVie15"
         app:layout_constraintStart_toEndOf="@+id/imageView_dice1"
         app:layout_constraintTop_toBottomOf="@+id/textVie10"
-        app:srcCompat="@drawable/white" />
+        app:srcCompat="@drawable/dice6" />
 
     <TextView
         android:id="@+id/textView_dice"
@@ -2108,4 +2132,24 @@
         app:layout_constraintStart_toEndOf="@+id/imageVieOutSideBlack"
         app:layout_constraintTop_toTopOf="@+id/imageVieOutSideBlack"
         app:srcCompat="@drawable/white" />
+
+    <TextView
+        android:id="@+id/textViewWinBlack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:text="14"
+        app:layout_constraintBottom_toBottomOf="@+id/imageVieWinBlack"
+        app:layout_constraintStart_toEndOf="@+id/imageVieWinBlack"
+        app:layout_constraintTop_toTopOf="@+id/imageVieWinBlack" />
+
+    <TextView
+        android:id="@+id/textViewWinWhite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:text="14"
+        app:layout_constraintBottom_toBottomOf="@+id/imageVieWinWhite"
+        app:layout_constraintStart_toEndOf="@+id/imageVieWinWhite"
+        app:layout_constraintTop_toTopOf="@+id/imageVieWinWhite" />
 </androidx.constraintlayout.widget.ConstraintLayout>

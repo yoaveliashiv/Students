@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".game.BackgammonActivity"></activity>
+        <activity android:name=".game.BackgammonActivity" android:screenOrientation="landscape"></activity>
         <activity android:name=".game.PlayActivity" />
         <activity android:name=".chat.Management3" />
         <activity android:name=".chat.Management2Feedbacks" />
