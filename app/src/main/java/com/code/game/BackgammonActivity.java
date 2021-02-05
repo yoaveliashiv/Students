@@ -116,6 +116,8 @@ public class BackgammonActivity extends AppCompatActivity {
                         movesGame2.setDice1(movesGame.getDice1());
                         movesGame2.setDice2(numDice);
                         movesGame2.setType("start2");
+                        board.setCountMove(board.getCountMove()+1);
+                        movesGame.setCountMove(board.getCountMove());
                         if (numDice == movesGame.getDice1()) {
 
 
@@ -261,7 +263,7 @@ public class BackgammonActivity extends AppCompatActivity {
         }
 
         hashMapIndex.put(imageViewBlackWin,24);
-        hashMapIndex.put(imageViewWhiteOut,-1);
+        hashMapIndex.put(imageViewWhiteWin,-1);
 
 
     }

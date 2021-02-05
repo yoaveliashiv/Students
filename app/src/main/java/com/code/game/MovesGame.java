@@ -9,6 +9,7 @@ public class MovesGame {
     private int posion1MoveTo;
     private int posion2;
     private int posion2MoveTo;
+    private int countMove;
 
     public MovesGame() {
     }
@@ -76,5 +77,13 @@ public class MovesGame {
 
     public void setInfoTo(String infoTo) {
         this.infoTo = infoTo;
+    }
+
+    public int getCountMove() {
+        return countMove;
+    }
+
+    public void setCountMove(int countMove) {
+        this.countMove = countMove;
     }
 }
