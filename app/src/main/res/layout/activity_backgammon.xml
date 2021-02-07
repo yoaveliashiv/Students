@@ -2024,7 +2024,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textVie2" />
 
     <TextView
-        android:id="@+id/textView_color2"
+        android:id="@+id/textView_time_b"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="זמן לתור: 120 ש"

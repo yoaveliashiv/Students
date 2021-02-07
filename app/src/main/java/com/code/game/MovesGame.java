@@ -1,16 +1,27 @@
 package com.code.game;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class MovesGame {
-    private String infoTo="";
-   private String type="";
-    private  int dice1;
+    private String infoTo = "";
+    private String type = "";
+    private int dice1;
     private int dice2;
+    private int dice3;
+    private int dice4;
     private int posion1;
     private int posion1MoveTo;
-    private int posion2;
-    private int posion2MoveTo;
     private int countMove;
+    private boolean lose = false;
+    private HashMap<String, List<Integer>> hashMapBord = new HashMap<>();
+    private HashMap<String, String> hashMapUid = new HashMap<>();
 
+    private HashMap<String, String> hashMapColor = new HashMap<>();
+    private String sendUidToRive = "";
+    private String uidPrimery="";
+    private String tournUid="";
     public MovesGame() {
     }
 
@@ -55,21 +66,6 @@ public class MovesGame {
         this.posion1MoveTo = posion1MoveTo;
     }
 
-    public int getPosion2() {
-        return posion2;
-    }
-
-    public void setPosion2(int posion2) {
-        this.posion2 = posion2;
-    }
-
-    public int getPosion2MoveTo() {
-        return posion2MoveTo;
-    }
-
-    public void setPosion2MoveTo(int posion2MoveTo) {
-        this.posion2MoveTo = posion2MoveTo;
-    }
 
     public String getInfoTo() {
         return infoTo;
@@ -85,5 +81,77 @@ public class MovesGame {
 
     public void setCountMove(int countMove) {
         this.countMove = countMove;
+    }
+
+    public boolean getLose() {
+        return lose;
+    }
+
+    public void setLose(boolean lose) {
+        this.lose = lose;
+    }
+
+    public HashMap<String, List<Integer>> getHashMapBord() {
+        return hashMapBord;
+    }
+
+    public void setHashMapBord(HashMap<String, List<Integer>> hashMapBord) {
+        this.hashMapBord = hashMapBord;
+    }
+
+    public HashMap<String, String> getHashMapColor() {
+        return hashMapColor;
+    }
+
+    public void setHashMapColor(HashMap<String, String> hashMapColor) {
+        this.hashMapColor = hashMapColor;
+    }
+
+    public String getSendUidToRive() {
+        return sendUidToRive;
+    }
+
+    public void setSendUidToRive(String sendUidToRive) {
+        this.sendUidToRive = sendUidToRive;
+    }
+
+    public String getTournUid() {
+        return tournUid;
+    }
+
+    public void setTournUid(String tournUid) {
+        this.tournUid = tournUid;
+    }
+
+    public String getUidPrimery() {
+        return uidPrimery;
+    }
+
+    public void setUidPrimery(String uidPrimery) {
+        this.uidPrimery = uidPrimery;
+    }
+
+    public HashMap<String, String> getHashMapUid() {
+        return hashMapUid;
+    }
+
+    public void setHashMapUid(HashMap<String, String> hashMapUid) {
+        this.hashMapUid = hashMapUid;
+    }
+
+    public int getDice3() {
+        return dice3;
+    }
+
+    public void setDice3(int dice3) {
+        this.dice3 = dice3;
+    }
+
+    public int getDice4() {
+        return dice4;
+    }
+
+    public void setDice4(int dice4) {
+        this.dice4 = dice4;
     }
 }
