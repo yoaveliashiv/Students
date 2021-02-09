@@ -3,14 +3,17 @@ package com.code.game;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.code.R;
+import com.code.chat.MainActivity3;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,12 +22,28 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.sinch.android.rtc.PushPair;
+import com.sinch.android.rtc.Sinch;
+import com.sinch.android.rtc.SinchClient;
+import com.sinch.android.rtc.calling.Call;
+import com.sinch.android.rtc.calling.CallClient;
+import com.sinch.android.rtc.calling.CallClientListener;
+import com.sinch.android.rtc.calling.CallListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Stack;
 
 public class BackgammonActivity extends AppCompatActivity {
+    private ImageView buttonMic;
+    private boolean flagCall = true;
+    private boolean flagCallBlakStart = true;
+
+    private SinchClient sinchClient;
+    private Call call = null;
+    private DatabaseReference databaseRef;
+    private ValueEventListener valueEventListener;
     private String color = "";
     private String uid = "";
     private TextView textViewColor;
@@ -44,7 +63,8 @@ public class BackgammonActivity extends AppCompatActivity {
     private TextView textViewTime;
     protected static String uidMe;
     protected static String uidRivel;
-    private int flagListener = 0;
+    protected static int flagListener = 0;
+    private boolean flagExsit = false;
     private BackgammonBoard board;
     private HashMap<ImageView, Integer> hashMapIndex;
 
@@ -88,27 +108,41 @@ public class BackgammonActivity extends AppCompatActivity {
         if (color.equals("white"))
             textViewColor.setTextColor(getResources().getColor(R.color.colorWhite));
         setOnListener();
+        calling();
         super.onCreate(savedInstanceState);
     }
 
 
+
+
     private void setOnListener() {
-        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
-                .getReference("Play backgammon").child(uid);
-        databaseReference3.addValueEventListener(new ValueEventListener() {
+        valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (flagListener > 0 && snapshot.exists()) {
                     MovesGame movesGame = snapshot.getValue(MovesGame.class);
                     moves(movesGame);
-                } else flagListener++;
+                } else if (snapshot.exists()) {
+                    flagListener++;
+                    MovesGame movesGame = snapshot.getValue(MovesGame.class);
+
+                    uidRivel = movesGame.getHashMapUid().get(uidMe);
+
+
+                } else {
+                    flagListener++;
+
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        };
+        databaseRef = FirebaseDatabase.getInstance()
+                .getReference("Play backgammon").child(uid);
+        databaseRef.addValueEventListener(valueEventListener);
     }
 
     private void moves(MovesGame movesGame) {
@@ -118,113 +152,11 @@ public class BackgammonActivity extends AppCompatActivity {
 
         switch (movesGame.getType()) {
             case "start1":
-                uidRivel = movesGame.getSendUidToRive();
-                board.getTimer().stop();
-                board.getTimer().start("תורך");
-                board.flagDiceTrowe();
-                board.setImage(movesGame.getDice1(), imageViewDice1);
-                textViewDice.setText("תורך: זרוק מי מתחיל");
-                board.moveDice(imageViewDice2);
-                imageViewDice2.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
-                                .getReference("Play backgammon").child(uid);
-                        imageViewDice2.setClickable(false);
-                        board.flagDiceTrowe();
-                        int numDice = board.roolOneDice(imageViewDice2);
-                        MovesGame movesGame2 = new MovesGame();
-                        movesGame2.setDice1(movesGame.getDice1());
-                        movesGame2.setDice2(numDice);
-                        movesGame2.setType("start2");
-                        movesGame2.setSendUidToRive(uidMe);
-                        board.setCountMove(board.getCountMove() + 1);
-                        movesGame2.setCountMove(board.getCountMove());
-                        if (numDice == movesGame.getDice1()) {
-
-
-                            movesGame2.setType("equal");
-                            movesGame2.setInfoTo("black white");
-                            databaseReference3.setValue(movesGame2);
-                            return;
-                        }
-                        movesGame2.setInfoTo("black white");
-
-
-                        databaseReference3.setValue(movesGame2).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                // imageViewDice1.setClickable(true);
-                            }
-                        }).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                board.getTimer().stop();
-                                board.getTimer().start("תור השני");
-                            }
-                        });
-
-
-                    }
-                });
+                start1(movesGame);
                 break;
             case "start2":
 
-                new Thread() {
-
-                    public void run() {
-                        if (color.equals("white")) {
-                            uidRivel = movesGame.getSendUidToRive();
-                            board.flagDiceTrowe();
-                            board.setImage(movesGame.getDice2(), imageViewDice2);
-                        }
-
-                        try {
-                            Thread.sleep(5000);
-
-                            BackgammonActivity.this.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    if (color.equals("white")) {
-                                        board.flagDiceTrowe();
-                                        board.moveTowDice();
-
-                                        if (movesGame.getDice1() > movesGame.getDice2()) {
-                                            textViewDice.setText("תורך: זרוק קוביות");
-                                            board.setClick2Dices();
-                                            board.getTimer().stop();
-                                            board.getTimer().start("תורך");
-
-                                        } else {
-                                            board.getTimer().stop();
-                                            board.getTimer().start("תור השני");
-                                            textViewDice.setText("תור השני: אנא המתן");
-                                        }
-                                    } else {//black
-                                        board.moveTowDice();
-                                        if (movesGame.getDice1() < movesGame.getDice2()) {
-                                            board.getTimer().stop();
-                                            board.getTimer().start("תורך");
-                                            textViewDice.setText("תורך: זרוק קוביות");
-                                            board.setClick2Dices();
-                                        } else {
-                                            board.getTimer().stop();
-                                            board.getTimer().start("תור השני");
-                                            textViewDice.setText("תור השני: אנא המתן");
-                                        }
-                                    }
-
-
-                                }
-                            });
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                }.start();
-                break;
+                start2(movesGame);
             case "equal":
                 board.flagDiceTrowe();
                 board.build();
@@ -245,18 +177,178 @@ public class BackgammonActivity extends AppCompatActivity {
             case "MoveStonAndEndTurn":
                 board.getTimer().stop();
                 board.onlyMoveSton(movesGame.getPosion1(), movesGame.getPosion1MoveTo());
-                if (movesGame.getLose())
+                if (movesGame.getLose()) {
                     textViewDice.setText("הפסדת");
-                else {
+                    DatabaseReference databaseReference9 = FirebaseDatabase.getInstance()
+                            .getReference("Play backgammon").child(uidMe);
+                    databaseReference9.removeValue();
+                    DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                            .getReference("Play backgammon").child(uidRivel);
+                    databaseReference3.removeValue();
+                    flagListener = 0;
+                } else {
                     board.getTimer().start("תורך");
                     textViewDice.setText("תורך: זרוק קוביות");
                     board.setClick2Dices();
                     board.moveTowDice();
                 }
                 break;//"onlyMoveSton"
+            case "exsit":
+                flagListener = 0;
+                flagExsit = true;
+                board.setCancalClick();
+                imageViewDice1.setClickable(false);
+                imageViewDice2.setClickable(false);
+                board.getTimer().stop();
+                textViewDice.setText("ניצחת: השני יצא מהמשחק");
+                DatabaseReference databaseReference9 = FirebaseDatabase.getInstance()
+                        .getReference("Play backgammon").child(uidMe);
+                databaseReference9.removeValue();
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                        .getReference("Play backgammon").child(uidRivel);
+                databaseReference3.removeValue();
+                break;
             default:
                 break;
         }
+    }
+
+    private void start2(MovesGame movesGame) {
+        new Thread() {
+
+            public void run() {
+                if (color.equals("white")) {
+                    uidRivel = movesGame.getSendUidToRive();
+                    board.flagDiceTrowe();
+                    board.setImage(movesGame.getDice1(), imageViewDice1);
+
+                    board.setImage(movesGame.getDice2(), imageViewDice2);
+                }
+
+                try {
+                    Thread.sleep(5000);
+
+                    BackgammonActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            if (color.equals("white")) {
+                                board.flagDiceTrowe();
+                                board.moveTowDice();
+
+                                if (movesGame.getDice1() > movesGame.getDice2()) {
+                                    textViewDice.setText("תורך: זרוק קוביות");
+                                    board.setClick2Dices();
+                                    board.getTimer().stop();
+                                    board.getTimer().start("תורך");
+
+                                } else {
+                                    board.getTimer().stop();
+                                    board.getTimer().start("תור השני");
+                                    textViewDice.setText("תור השני: אנא המתן");
+                                }
+                            } else {//black
+                                board.moveTowDice();
+                                if (movesGame.getDice1() < movesGame.getDice2()) {
+                                    board.getTimer().stop();
+                                    board.getTimer().start("תורך");
+                                    textViewDice.setText("תורך: זרוק קוביות");
+                                    board.setClick2Dices();
+                                } else {
+                                    board.getTimer().stop();
+                                    board.getTimer().start("תור השני");
+                                    textViewDice.setText("תור השני: אנא המתן");
+                                }
+                            }
+
+
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }.start();
+
+    }
+
+    private void start1(MovesGame movesGame) {
+        uidRivel = movesGame.getSendUidToRive();
+        board.getTimer().stop();
+        board.getTimer().start("תורך");
+        board.flagDiceTrowe();
+        board.setImage(movesGame.getDice1(), imageViewDice1);
+        textViewDice.setText("תורך: זרוק מי מתחיל");
+        board.moveDice(imageViewDice2);
+        imageViewDice2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                        .getReference("Play backgammon").child(uid);
+                imageViewDice2.setClickable(false);
+                board.flagDiceTrowe();
+                int numDice = board.roolOneDice(imageViewDice2);
+                MovesGame movesGame2 = new MovesGame();
+                movesGame2.setDice1(movesGame.getDice1());
+                movesGame2.setDice2(numDice);
+                HashMap<String, String> hashMapUid = new HashMap<>();
+                hashMapUid.put(BackgammonActivity.uidMe, BackgammonActivity.uidRivel);
+                hashMapUid.put(BackgammonActivity.uidRivel, BackgammonActivity.uidMe);
+                movesGame2.setHashMapUid(hashMapUid);
+                HashMap<String, List<Integer>> hashMapBord = new HashMap<>();
+                hashMapBord.put(BackgammonActivity.uidMe, board.getStones().getListStonesColor());
+                hashMapBord.put(BackgammonActivity.uidRivel, board.getStones().getListStonesColorRivel());
+
+                HashMap<String, String> hashMapColor = new HashMap<>();
+                hashMapColor.put(BackgammonActivity.uidMe, color);
+                hashMapColor.put(BackgammonActivity.uidRivel, board.rivalColor);
+
+                movesGame2.setUidPrimery(uid);
+
+                movesGame2.setHashMapColor(hashMapColor);
+                movesGame2.setHashMapBord(hashMapBord);
+                movesGame2.setType("start2");
+                movesGame2.setSendUidToRive(uidMe);
+                board.setCountMove(board.getCountMove() + 1);
+                movesGame2.setCountMove(board.getCountMove());
+                movesGame2.setTournUid(uidMe);
+                if (numDice == movesGame.getDice1()) {
+
+
+                    movesGame2.setType("equal");
+                    movesGame2.setInfoTo("black white");
+                    databaseReference3.setValue(movesGame2);
+                    return;
+                }
+
+                movesGame2.setInfoTo("black white");
+
+                String uidOut;
+                if (uid.equals(BackgammonActivity.uidMe))
+                    uidOut = BackgammonActivity.uidRivel;
+                else
+                    uidOut = BackgammonActivity.uidMe;
+                DatabaseReference databaseReference9 = FirebaseDatabase.getInstance()
+                        .getReference("Play backgammon").child(uidOut);
+                databaseReference9.setValue(movesGame2);
+
+                databaseReference3.setValue(movesGame2).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // imageViewDice1.setClickable(true);
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        board.getTimer().stop();
+                        board.getTimer().start("תור השני");
+                    }
+                });
+
+
+            }
+        });
     }
 
     private void roolIsYouToun() {
@@ -308,10 +400,23 @@ public class BackgammonActivity extends AppCompatActivity {
         hashMapIndex.put(imageViewBlackWin, 24);
         hashMapIndex.put(imageViewWhiteWin, -1);
 
+        buttonMic = findViewById(R.id.imageView_mic);
+        setBottunExit();
 
     }
 
+
     private void buildBord() {
+        MovesGame movesGameMiddel = PlayActivity.movesGame;
+        color = movesGameMiddel.getHashMapColor().get(uidMe);
+        uid = movesGameMiddel.getUidPrimery();
+        uidRivel = movesGameMiddel.getHashMapUid().get(uidMe);
+        if (movesGameMiddel.getType().equals("start")) {
+
+            return;
+        }
+
+
         textViewWhiteOut.setVisibility(View.INVISIBLE);
         textViewBlackOut.setVisibility(View.INVISIBLE);
         textViewBlackWin.setVisibility(View.INVISIBLE);
@@ -325,11 +430,6 @@ public class BackgammonActivity extends AppCompatActivity {
             textView.setVisibility(View.INVISIBLE);
         }
 
-
-        MovesGame movesGameMiddel = PlayActivity.movesGame;
-        color = movesGameMiddel.getHashMapColor().get(uidMe);
-        uid = movesGameMiddel.getUidPrimery();
-        uidRivel = movesGameMiddel.getHashMapUid().get(uidMe);
 
         for (int i = 0; i < arrayListStackImage.size(); i++) {
             String colorr;
@@ -373,12 +473,12 @@ public class BackgammonActivity extends AppCompatActivity {
             if (movesGameMiddel.getHashMapColor().get(uidRivel).equals("white")) {
                 imageViewWhiteOut.setImageResource(R.drawable.white);
                 imageViewWhiteOut.setVisibility(View.VISIBLE);
-                textViewWhiteOut.setText("" + movesGameMiddel.getHashMapBord().get(uidMe).get(24));
+                textViewWhiteOut.setText("" + movesGameMiddel.getHashMapBord().get(uidRivel).get(24));
                 textViewWhiteOut.setVisibility(View.VISIBLE);
             } else {
                 imageViewBlackOut.setImageResource(R.drawable.black);
                 imageViewBlackOut.setVisibility(View.VISIBLE);
-                textViewBlackOut.setText("" + movesGameMiddel.getHashMapBord().get(uidMe).get(24));
+                textViewBlackOut.setText("" + movesGameMiddel.getHashMapBord().get(uidRivel).get(24));
                 textViewBlackOut.setVisibility(View.VISIBLE);
             }
         }
@@ -401,12 +501,12 @@ public class BackgammonActivity extends AppCompatActivity {
             if (movesGameMiddel.getHashMapColor().get(uidRivel).equals("white")) {
                 imageViewWhiteWin.setImageResource(R.drawable.white);
                 imageViewWhiteWin.setVisibility(View.VISIBLE);
-                textViewWhiteWin.setText("" + movesGameMiddel.getHashMapBord().get(uidMe).get(25));
+                textViewWhiteWin.setText("" + movesGameMiddel.getHashMapBord().get(uidRivel).get(25));
                 textViewWhiteWin.setVisibility(View.VISIBLE);
             } else {
                 imageViewBlackWin.setImageResource(R.drawable.black);
                 imageViewBlackWin.setVisibility(View.VISIBLE);
-                textViewBlackWin.setText("" + movesGameMiddel.getHashMapBord().get(uidMe).get(25));
+                textViewBlackWin.setText("" + movesGameMiddel.getHashMapBord().get(uidRivel).get(25));
                 textViewBlackWin.setVisibility(View.VISIBLE);
             }
         }
@@ -415,15 +515,29 @@ public class BackgammonActivity extends AppCompatActivity {
     }
 
     private void continiouBuild() {
+        MovesGame movesGameMiddel = PlayActivity.movesGame;
+
+        if (movesGameMiddel.getType().equals("start")) {
+            board.build();
+            board.moveDice(imageViewDice1);
+            return;
+        }
         Stones stones = new Stones();
         stones.setListStonesColor(PlayActivity.movesGame.getHashMapBord().get(uidMe));
         stones.setListStonesColorRivel(PlayActivity.movesGame.getHashMapBord().get(uidRivel));
         board.setStones(stones);
 
-        MovesGame movesGameMiddel = PlayActivity.movesGame;
 
         if (movesGameMiddel.getTournUid().equals(uidMe)) {//my tourn
             switch (movesGameMiddel.getType()) {
+                case "start1":
+                    start1(movesGameMiddel);
+
+                    break;
+                case "start2":
+                    start2(movesGameMiddel);
+
+                    break;
                 case "dices":
                     board.setImage(movesGameMiddel.getDice1(), imageViewDice1);
                     board.setImage(movesGameMiddel.getDice2(), imageViewDice2);
@@ -444,7 +558,7 @@ public class BackgammonActivity extends AppCompatActivity {
                         imageViewDice2.setVisibility(View.INVISIBLE);
                         board.setDice1(movesGameMiddel.getDice1());
                     } else if (movesGameMiddel.getDice4() == -100) {
-                        board.setImage(movesGameMiddel.getDice1(), imageViewDice2);
+                        board.setImage(movesGameMiddel.getDice2(), imageViewDice2);
                         imageViewDice1.setVisibility(View.INVISIBLE);
                     } else {
                         board.setImage(movesGameMiddel.getDice4(), imageViewDice1);
@@ -471,9 +585,18 @@ public class BackgammonActivity extends AppCompatActivity {
                 default:
                     break;
             }
-        }
-        else{
+        } else {
             switch (movesGameMiddel.getType()) {
+                case "start1":
+                    board.setImage(movesGameMiddel.getDice1(), imageViewDice1);
+                    board.moveDice(imageViewDice2);
+                    textViewDice.setText("תור השני: שיזרוק מי מתחיל");
+
+                    break;
+                case "start2":
+                    start2(movesGameMiddel);
+
+                    break;
                 case "dices":
                     board.setImage(movesGameMiddel.getDice1(), imageViewDice1);
                     board.setImage(movesGameMiddel.getDice2(), imageViewDice2);
@@ -493,7 +616,7 @@ public class BackgammonActivity extends AppCompatActivity {
                         imageViewDice2.setVisibility(View.INVISIBLE);
                         board.setDice1(movesGameMiddel.getDice1());
                     } else if (movesGameMiddel.getDice4() == -100) {
-                        board.setImage(movesGameMiddel.getDice1(), imageViewDice2);
+                        board.setImage(movesGameMiddel.getDice2(), imageViewDice2);
                         imageViewDice1.setVisibility(View.INVISIBLE);
                     } else {
                         board.setImage(movesGameMiddel.getDice4(), imageViewDice1);
@@ -515,6 +638,164 @@ public class BackgammonActivity extends AppCompatActivity {
                 default:
                     break;
             }
+        }
+    }
+
+    private void setBottunExit() {
+        Button button = findViewById(R.id.button_exsit_play);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (flagExsit) {
+                    databaseRef.removeEventListener(valueEventListener);
+                    Intent intent = new Intent(BackgammonActivity.this, PlayActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    textViewDice.setText("הפסדת");
+                    MovesGame movesGame3 = new MovesGame();
+                    movesGame3.setType("exsit");
+                    movesGame3.setInfoTo(board.rivalColor);
+                    DatabaseReference databaseReference11 = FirebaseDatabase.getInstance()
+                            .getReference("Play backgammon").child(uid);
+                    databaseReference11.setValue(movesGame3).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            DatabaseReference databaseReference9 = FirebaseDatabase.getInstance()
+                                    .getReference("Play backgammon").child(uidMe);
+                            databaseReference9.removeValue();
+                            DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                                    .getReference("Play backgammon").child(uidRivel);
+                            databaseReference3.removeValue();
+                            databaseRef.removeEventListener(valueEventListener);
+
+                            Intent intent = new Intent(BackgammonActivity.this, PlayActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+
+    private void calling() {
+        sinchClient = Sinch.getSinchClientBuilder().
+                context(this).
+                userId(uidMe).
+                applicationKey("2de04868-43cb-4164-bd44-16a36717876a")
+                .applicationSecret("9M+hiRILrEaY0R7DvdXozg==")
+                .environmentHost("clientapi.sinch.com")
+                .build();
+        sinchClient.setSupportCalling(true);
+        sinchClient.startListeningOnActiveConnection();
+        sinchClient.getCallClient().addCallClientListener(new CallClientListener() {
+            @Override
+            public void onIncomingCall(CallClient callClient, Call callStart) {
+                if (flagCallBlakStart && color.equals("black")) {
+                    buttonMic.setImageResource(R.drawable.microphone_off);
+                    flagCallBlakStart = false;
+                }
+                if (flagCall) {
+
+                    call = callStart;
+                    call.answer();
+                    call.addCallListener(new SinchCallListener());
+                } else {
+                    call = callStart;
+                    call.hangup();
+                }
+            }
+        });
+        sinchClient.start();
+
+        if (color.equals("whith")) {
+            new Thread() {
+                public void run() {
+
+                    try {
+                        runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                if (call == null) {
+                                    call = sinchClient.getCallClient().callUser(uidRivel);
+                                    call.addCallListener(new SinchCallListener());
+                                    buttonMic.setImageResource(R.drawable.microphone_on);
+
+                                    //  call.hangup();
+                                }
+                            }
+                        });
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
+
+        }
+        new Thread() {
+            public void run() {
+
+                try {
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            buttonMic.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    if (flagCall) {
+                                        flagCall = false;
+                                        buttonMic.setImageResource(R.drawable.microphone_off);
+                                        call.hangup();
+                                    } else {
+                                        if (call == null) {
+                                            flagCall = true;
+                                            call = sinchClient.getCallClient().callUser(uidRivel);
+                                            call.addCallListener(new SinchCallListener());
+                                            buttonMic.setImageResource(R.drawable.microphone_on);
+
+                                            //  call.hangup();
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+
+    }
+
+    private class SinchCallListener implements CallListener {
+
+        @Override
+        public void onCallProgressing(Call call) {
+
+        }
+
+        @Override
+        public void onCallEstablished(Call call) {
+
+        }
+
+        @Override
+        public void onCallEnded(Call callEnd) {
+            call = null;
+            callEnd.hangup();
+        }
+
+        @Override
+        public void onShouldSendPushNotification(Call call, List<PushPair> list) {
+
         }
     }
 }

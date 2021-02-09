@@ -21,11 +21,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+
 public class PlayActivity extends AppCompatActivity {
     private String keyWait;
     private Game game2;
     protected static MovesGame movesGame;
-private int flagStart=0;
+    private int flagStart = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +41,7 @@ private int flagStart=0;
 //
 //                startActivity(intent);
 //                return;
-                ProgressDialog progressDialog=new ProgressDialog(PlayActivity.this);
+                ProgressDialog progressDialog = new ProgressDialog(PlayActivity.this);
                 progressDialog.setMessage("מחפש שחקן..");
                 progressDialog.show();
                 progressDialog.setCancelable(false);
@@ -54,7 +57,7 @@ private int flagStart=0;
 
                     }
                 });
-           //     progressDialog.setCanceledOnTouchOutside(true);
+                //     progressDialog.setCanceledOnTouchOutside(true);
                 final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 //serchIfInMiddelGame
                 DatabaseReference databaseReference5 = FirebaseDatabase.getInstance()
@@ -62,13 +65,12 @@ private int flagStart=0;
                 databaseReference5.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(!snapshot.exists()){
-                            contiuo(uid,button,progressDialog);
-                        }
-                        else{
+                        if (!snapshot.exists()) {
+                            contiuo(uid, button, progressDialog);
+                        } else {
                             Intent intent = new Intent(PlayActivity.this, BackgammonActivity.class);
                             intent.putExtra("middelGame", true);
-                            movesGame=snapshot.getValue(MovesGame.class);
+                            movesGame = snapshot.getValue(MovesGame.class);
                             startActivity(intent);
                             progressDialog.dismiss();
 
@@ -109,10 +111,10 @@ private int flagStart=0;
                                 public void onSuccess(Void aVoid) {
                                     DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
                                             .getReference("Play backgammon").child(uid);
-                                    ValueEventListener valueEventListener=new ValueEventListener() {
+                                    ValueEventListener valueEventListener = new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            if(flagStart==1) {
+                                            if (flagStart == 1) {
                                                 button.setText("עובד");
 
                                                 Intent intent = new Intent(PlayActivity.this, BackgammonActivity.class);
@@ -148,11 +150,26 @@ private int flagStart=0;
                     databaseReference7.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
+                            MovesGame movesGame2 = new MovesGame();
+                            HashMap<String, String> hashMapColor = new HashMap<>();
+                            hashMapColor.put(uid, "black");
+                            hashMapColor.put(game2.getUid(), "white");
+                            movesGame2.setHashMapColor(hashMapColor);
+
+                            HashMap<String, String> hashMapUid = new HashMap<>();
+                            hashMapUid.put(uid, game2.getUid());
+                            hashMapUid.put(game2.getUid(), uid);
+                            movesGame2.setHashMapUid(hashMapUid);
+                            movesGame2.setUidPrimery(game2.getUid());
+                            movesGame2.setType("start");
                             DatabaseReference databaseReference5 = FirebaseDatabase.getInstance()
                                     .getReference("Play backgammon").child(game2.getUid());
-                            databaseReference5.setValue(1).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            databaseReference5.setValue(movesGame2).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
+                                    DatabaseReference databaseReference12 = FirebaseDatabase.getInstance()
+                                            .getReference("Play backgammon").child(uid);
+                                    databaseReference12.setValue(movesGame2);
                                     button.setText("עובד");
                                     Intent intent = new Intent(PlayActivity.this, BackgammonActivity.class);
                                     intent.putExtra("uid", game2.getUid());

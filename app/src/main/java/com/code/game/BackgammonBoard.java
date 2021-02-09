@@ -47,7 +47,7 @@ public class BackgammonBoard {
     private int flagDiceTrow = 0;
     private String uid = "";
     private Activity activity;
-    private String rivalColor;
+    protected  String rivalColor;
     private Stones stones;
     private ImageView imageViewBlackWin;
     private ImageView imageViewWhiteWin;
@@ -67,10 +67,10 @@ public class BackgammonBoard {
     public BackgammonBoard(ArrayList<TextView> arrayListTextNum, ArrayList<ArrayList<ImageView>> arrayListStackImage,
                            ImageView imageViewDice1, ImageView imageViewDice2,
                            String color, TextView textViewDice, String uid, Activity activity, HashMap<ImageView, Integer> hashMapIndex,
-                           ImageView imageViewBlackOut,
                            ImageView imageViewWhiteOut,
-                           TextView textViewBlackOut,
-                           TextView textViewWhiteOut, TextView textViewTime) {
+                           ImageView imageViewBlackOut,
+                           TextView textViewWhiteOut, TextView textViewBlackOut,
+                           TextView textViewTime) {
         this.arrayListTextNum = arrayListTextNum;
         this.arrayListStackImage = arrayListStackImage;
         this.imageViewDice1 = imageViewDice1;
@@ -298,7 +298,7 @@ public class BackgammonBoard {
         }
     }
 
-    private void setCancalClick() {
+    public void setCancalClick() {
         imageViewBlackOut.setClickable(false);
         imageViewWhiteOut.setClickable(false);
         imageViewBlackWin.setClickable(false);
@@ -1020,8 +1020,16 @@ public class BackgammonBoard {
             public void onSuccess(Void aVoid) {
                 timer.stop();
 
-                if (bigIndex == -3)
+                if (bigIndex == -3) {
                     textViewDice.setText(" ניצחת");
+                    BackgammonActivity.flagListener=0;
+                    DatabaseReference databaseReference9 = FirebaseDatabase.getInstance()
+                            .getReference("Play backgammon").child(BackgammonActivity.uidMe);
+                    databaseReference9.removeValue();
+                    DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
+                            .getReference("Play backgammon").child(BackgammonActivity.uidRivel);
+                    databaseReference3.removeValue();
+                }
                 else
                     timer.start("תור השני");
             }
@@ -1264,10 +1272,38 @@ public class BackgammonBoard {
                     movesGame.setType("start1");
                     movesGame.setInfoTo("black");
                     movesGame.setDice1(numDice);
+                    movesGame.setTournUid(BackgammonActivity.uidRivel);
+                    HashMap<String, String> hashMapUid = new HashMap<>();
+                    hashMapUid.put(BackgammonActivity.uidMe, BackgammonActivity.uidRivel);
+                    hashMapUid.put(BackgammonActivity.uidRivel, BackgammonActivity.uidMe);
+                    movesGame.setHashMapUid(hashMapUid);
+                    HashMap<String, List<Integer>> hashMapBord = new HashMap<>();
+                    hashMapBord.put(BackgammonActivity.uidMe, stones.getListStonesColor());
+                    hashMapBord.put(BackgammonActivity.uidRivel, stones.getListStonesColorRivel());
+
+                    HashMap<String, String> hashMapColor = new HashMap<>();
+                    hashMapColor.put(BackgammonActivity.uidMe, yourColor);
+                    hashMapColor.put(BackgammonActivity.uidRivel, rivalColor);
+
+                    movesGame.setUidPrimery(uid);
+
+                    movesGame.setHashMapColor(hashMapColor);
+                    movesGame.setHashMapBord(hashMapBord);
+
                     countMove++;
                     movesGame.setSendUidToRive(BackgammonActivity.uidMe);
                     movesGame.setCountMove(countMove);
                     textViewDice.setText("תור השני: שיזרוק מי מתחיל");
+
+                    String uidOut;
+                    if (uid.equals(BackgammonActivity.uidMe))
+                        uidOut = BackgammonActivity.uidRivel;
+                    else
+                        uidOut = BackgammonActivity.uidMe;
+                    DatabaseReference databaseReference9 = FirebaseDatabase.getInstance()
+                            .getReference("Play backgammon").child(uidOut);
+                    databaseReference9.setValue(movesGame);
+
                     DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
                             .getReference("Play backgammon").child(uid);
                     databaseReference3.setValue(movesGame).addOnFailureListener(new OnFailureListener() {
