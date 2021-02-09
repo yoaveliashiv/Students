@@ -32,12 +32,31 @@ public class PlayActivity extends AppCompatActivity {
     private String keyWait;
     private Game game2;
     protected static MovesGame movesGame;
+
+    protected static  Microphone microphone;
     private int flagStart = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
+
+        DatabaseReference databaseR=FirebaseDatabase.getInstance().getReference("Microphone");
+
+        databaseR.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists())
+                microphone=snapshot.getValue(Microphone.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
         Button button = findViewById(R.id.button_play);
         premisonAodio();
         button.setOnClickListener(new View.OnClickListener() {

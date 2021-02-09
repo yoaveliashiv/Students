@@ -90,7 +90,7 @@ public class BackgammonActivity extends AppCompatActivity {
             board.setImageViewWhiteWin(imageViewWhiteWin);
             board.setTextViewBlackWin(textViewBlackWin);
             board.setTextViewWhiteWin(textViewWhiteWin);
-
+flagCall=false;
             continiouBuild();
         } else {
             board = new BackgammonBoard(arrayListTextNum, arrayListStackImage,
@@ -653,6 +653,8 @@ public class BackgammonActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 } else {
+                    if(call!=null)
+                        call.hangup();
                     textViewDice.setText("הפסדת");
                     MovesGame movesGame3 = new MovesGame();
                     movesGame3.setType("exsit");
@@ -686,9 +688,9 @@ public class BackgammonActivity extends AppCompatActivity {
         sinchClient = Sinch.getSinchClientBuilder().
                 context(this).
                 userId(uidMe).
-                applicationKey("2de04868-43cb-4164-bd44-16a36717876a")
-                .applicationSecret("9M+hiRILrEaY0R7DvdXozg==")
-                .environmentHost("clientapi.sinch.com")
+                applicationKey(PlayActivity.microphone.getKey())
+                .applicationSecret(PlayActivity.microphone.getSecret())
+                .environmentHost(PlayActivity.microphone.getHostname())
                 .build();
         sinchClient.setSupportCalling(true);
         sinchClient.startListeningOnActiveConnection();
@@ -726,7 +728,7 @@ public class BackgammonActivity extends AppCompatActivity {
                                     call = sinchClient.getCallClient().callUser(uidRivel);
                                     call.addCallListener(new SinchCallListener());
                                     buttonMic.setImageResource(R.drawable.microphone_on);
-
+flagCall=true;
                                     //  call.hangup();
                                 }
                             }
@@ -794,11 +796,20 @@ public class BackgammonActivity extends AppCompatActivity {
         public void onCallEnded(Call callEnd) {
             call = null;
             callEnd.hangup();
+            textViewDice.setText("nnnn");
         }
 
         @Override
         public void onShouldSendPushNotification(Call call, List<PushPair> list) {
 
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(call!=null)
+            call.hangup();
+        call=null;
     }
 }
