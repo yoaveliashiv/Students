@@ -401,6 +401,7 @@ public class BackgammonActivity extends AppCompatActivity {
         hashMapIndex.put(imageViewWhiteWin, -1);
 
         buttonMic = findViewById(R.id.imageView_mic);
+        buttonMic.setImageResource(R.drawable.microphone_off);
         setBottunExit();
 
     }
@@ -695,7 +696,7 @@ public class BackgammonActivity extends AppCompatActivity {
             @Override
             public void onIncomingCall(CallClient callClient, Call callStart) {
                 if (flagCallBlakStart && color.equals("black")) {
-                    buttonMic.setImageResource(R.drawable.microphone_off);
+                    buttonMic.setImageResource(R.drawable.microphone_on);
                     flagCallBlakStart = false;
                 }
                 if (flagCall) {
@@ -711,11 +712,12 @@ public class BackgammonActivity extends AppCompatActivity {
         });
         sinchClient.start();
 
-        if (color.equals("whith")) {
+        if (color.equals("white")) {
             new Thread() {
                 public void run() {
 
                     try {
+                        Thread.sleep(5000);
                         runOnUiThread(new Runnable() {
 
                             @Override
@@ -729,7 +731,7 @@ public class BackgammonActivity extends AppCompatActivity {
                                 }
                             }
                         });
-                        Thread.sleep(5000);
+
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -741,6 +743,8 @@ public class BackgammonActivity extends AppCompatActivity {
             public void run() {
 
                 try {
+                    Thread.sleep(5000);
+
                     runOnUiThread(new Runnable() {
 
                         @Override
@@ -766,7 +770,6 @@ public class BackgammonActivity extends AppCompatActivity {
                             });
                         }
                     });
-                    Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
