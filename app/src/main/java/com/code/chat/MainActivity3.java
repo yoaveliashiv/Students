@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.code.R;
 import com.code.game.BackgammonBoard;
 import com.code.game.PlayActivity;
+import com.code.game.PlayActivity2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -42,7 +43,7 @@ public class MainActivity3 extends AppCompatActivity {
     private TabsAccessorAdapter tabsAccessorAdapter;
     protected static String search = "";
     private boolean flagBloked = false;
-    private String verison = "9";//
+    private String verison = "10";//
     private String urlGoogleStore = "https://play.google.com/store/apps/details?id=com.code.students";
 
     @Override
@@ -188,7 +189,7 @@ public class MainActivity3 extends AppCompatActivity {
                 if (!flagBloked) {
 //                    intent2 = new Intent(MainActivity3.this, MainActivity3.class);
 //                    startActivity(intent2);
-                    intent2 = new Intent(MainActivity3.this , PlayActivity.class);
+                    intent2 = new Intent(MainActivity3.this , PlayActivity2.class);
                     startActivity(intent2);
                 }
                 return true;

@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -90,8 +91,9 @@ public class BackgammonActivity extends AppCompatActivity {
             board.setImageViewWhiteWin(imageViewWhiteWin);
             board.setTextViewBlackWin(textViewBlackWin);
             board.setTextViewWhiteWin(textViewWhiteWin);
-flagCall=false;
             continiouBuild();
+
+
         } else {
             board = new BackgammonBoard(arrayListTextNum, arrayListStackImage,
                     imageViewDice1, imageViewDice2, color, textViewDice, uid, BackgammonActivity.this, hashMapIndex
@@ -103,6 +105,7 @@ flagCall=false;
 
             board.build();
             board.moveDice(imageViewDice1);
+            eXsitCallingFriend();
         }
         textViewColor.setText("הצבע שלך: " + color);
         if (color.equals("white"))
@@ -112,7 +115,8 @@ flagCall=false;
         super.onCreate(savedInstanceState);
     }
 
-
+    private void eXsitCallingFriend() {
+    }
 
 
     private void setOnListener() {
@@ -120,11 +124,25 @@ flagCall=false;
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (flagListener > 0 && snapshot.exists()) {
-                    MovesGame movesGame = snapshot.getValue(MovesGame.class);
+                    MovesGame movesGame;
+                    try {
+                         movesGame = snapshot.getValue(MovesGame.class);
+
+                    }
+                   catch (DatabaseException e){
+                        return;
+                   }
                     moves(movesGame);
                 } else if (snapshot.exists()) {
                     flagListener++;
-                    MovesGame movesGame = snapshot.getValue(MovesGame.class);
+                    MovesGame movesGame;
+                    try {
+                        movesGame = snapshot.getValue(MovesGame.class);
+
+                    }
+                    catch (DatabaseException e){
+                        return;
+                    }
 
                     uidRivel = movesGame.getHashMapUid().get(uidMe);
 
@@ -194,6 +212,8 @@ flagCall=false;
                 }
                 break;//"onlyMoveSton"
             case "exsit":
+                databaseRef.removeEventListener(valueEventListener);
+
                 flagListener = 0;
                 flagExsit = true;
                 board.setCancalClick();
@@ -408,7 +428,7 @@ flagCall=false;
 
 
     private void buildBord() {
-        MovesGame movesGameMiddel = PlayActivity.movesGame;
+        MovesGame movesGameMiddel = PlayActivity2.movesGame;
         color = movesGameMiddel.getHashMapColor().get(uidMe);
         uid = movesGameMiddel.getUidPrimery();
         uidRivel = movesGameMiddel.getHashMapUid().get(uidMe);
@@ -516,7 +536,7 @@ flagCall=false;
     }
 
     private void continiouBuild() {
-        MovesGame movesGameMiddel = PlayActivity.movesGame;
+        MovesGame movesGameMiddel = PlayActivity2.movesGame;
 
         if (movesGameMiddel.getType().equals("start")) {
             board.build();
@@ -524,8 +544,8 @@ flagCall=false;
             return;
         }
         Stones stones = new Stones();
-        stones.setListStonesColor(PlayActivity.movesGame.getHashMapBord().get(uidMe));
-        stones.setListStonesColorRivel(PlayActivity.movesGame.getHashMapBord().get(uidRivel));
+        stones.setListStonesColor(PlayActivity2.movesGame.getHashMapBord().get(uidMe));
+        stones.setListStonesColorRivel(PlayActivity2.movesGame.getHashMapBord().get(uidRivel));
         board.setStones(stones);
 
 
@@ -648,12 +668,11 @@ flagCall=false;
             @Override
             public void onClick(View view) {
                 if (flagExsit) {
-                    databaseRef.removeEventListener(valueEventListener);
-                    Intent intent = new Intent(BackgammonActivity.this, PlayActivity.class);
+                    Intent intent = new Intent(BackgammonActivity.this, PlayActivity2.class);
                     startActivity(intent);
                     finish();
                 } else {
-                    if(call!=null)
+                    if (call != null)
                         call.hangup();
                     textViewDice.setText("הפסדת");
                     MovesGame movesGame3 = new MovesGame();
@@ -672,7 +691,7 @@ flagCall=false;
                             databaseReference3.removeValue();
                             databaseRef.removeEventListener(valueEventListener);
 
-                            Intent intent = new Intent(BackgammonActivity.this, PlayActivity.class);
+                            Intent intent = new Intent(BackgammonActivity.this, PlayActivity2.class);
                             startActivity(intent);
                             finish();
                         }
@@ -688,9 +707,9 @@ flagCall=false;
         sinchClient = Sinch.getSinchClientBuilder().
                 context(this).
                 userId(uidMe).
-                applicationKey(PlayActivity.microphone.getKey())
-                .applicationSecret(PlayActivity.microphone.getSecret())
-                .environmentHost(PlayActivity.microphone.getHostname())
+                applicationKey(PlayActivity2.microphone.getKey())
+                .applicationSecret(PlayActivity2.microphone.getSecret())
+                .environmentHost(PlayActivity2.microphone.getHostname())
                 .build();
         sinchClient.setSupportCalling(true);
         sinchClient.startListeningOnActiveConnection();
@@ -698,10 +717,11 @@ flagCall=false;
             @Override
             public void onIncomingCall(CallClient callClient, Call callStart) {
                 if (flagCallBlakStart && color.equals("black")) {
-                    buttonMic.setImageResource(R.drawable.microphone_on);
+                  //  buttonMic.setImageResource(R.drawable.microphone_on);
                     flagCallBlakStart = false;
                 }
                 if (flagCall) {
+                    buttonMic.setImageResource(R.drawable.microphone_on);
 
                     call = callStart;
                     call.answer();
@@ -713,8 +733,13 @@ flagCall=false;
             }
         });
         sinchClient.start();
-
-        if (color.equals("white")) {
+//        if (getIntent().hasExtra("middelGame")) {
+//            call = sinchClient.getCallClient().callUser(uidRivel);
+//            call.addCallListener(new SinchCallListener());
+//            buttonMic.setImageResource(R.drawable.microphone_on);
+//            flagCall = true;
+//        }
+         if (color.equals("white")||getIntent().hasExtra("middelGame")) {
             new Thread() {
                 public void run() {
 
@@ -727,8 +752,7 @@ flagCall=false;
                                 if (call == null) {
                                     call = sinchClient.getCallClient().callUser(uidRivel);
                                     call.addCallListener(new SinchCallListener());
-                                    buttonMic.setImageResource(R.drawable.microphone_on);
-flagCall=true;
+                                    flagCall = true;
                                     //  call.hangup();
                                 }
                             }
@@ -754,7 +778,7 @@ flagCall=true;
                             buttonMic.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    if (flagCall) {
+                                    if (flagCall &&call!=null) {
                                         flagCall = false;
                                         buttonMic.setImageResource(R.drawable.microphone_off);
                                         call.hangup();
@@ -763,7 +787,6 @@ flagCall=true;
                                             flagCall = true;
                                             call = sinchClient.getCallClient().callUser(uidRivel);
                                             call.addCallListener(new SinchCallListener());
-                                            buttonMic.setImageResource(R.drawable.microphone_on);
 
                                             //  call.hangup();
                                         }
@@ -789,6 +812,7 @@ flagCall=true;
 
         @Override
         public void onCallEstablished(Call call) {
+            buttonMic.setImageResource(R.drawable.microphone_on);
 
         }
 
@@ -796,7 +820,6 @@ flagCall=true;
         public void onCallEnded(Call callEnd) {
             call = null;
             callEnd.hangup();
-            textViewDice.setText("nnnn");
         }
 
         @Override
@@ -806,10 +829,19 @@ flagCall=true;
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        if (call != null)
+            call.hangup();
+        call = null;
+
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(call!=null)
+        if (call != null)
             call.hangup();
-        call=null;
+        call = null;
     }
 }
