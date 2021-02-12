@@ -30,6 +30,7 @@ import com.bumptech.glide.Glide;
 import com.code.Hikers.RegisterInformation2;
 import com.code.Hikers.RegisterLoginActivity;
 import com.code.R;
+import com.code.game.PlayActivity2;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -146,7 +147,7 @@ public class ActivitySettings extends AppCompatActivity {
             buttonSkip.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(ActivitySettings.this, MainActivity3.class);
+                    Intent intent = new Intent(ActivitySettings.this, PlayActivity2.class);
                     startActivity(intent);
 
                 }
@@ -410,7 +411,7 @@ dialogDeleteBlock(arrayListBlok2.get(i),d);
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
             databaseReference.child(uid).child("name").setValue(name);
             progressDialog.dismiss();
-            Intent intent = new Intent(ActivitySettings.this, MainActivity3.class);
+            Intent intent = new Intent(ActivitySettings.this, PlayActivity2.class);
             startActivity(intent);
             finish();
             return;
@@ -432,7 +433,7 @@ dialogDeleteBlock(arrayListBlok2.get(i),d);
                                 databaseReference = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
                                 databaseReference.child(uid).child("imageUrl").setValue(uri.toString());
                                 progressDialog.dismiss();
-                                Intent intent = new Intent(ActivitySettings.this, MainActivity3.class);
+                                Intent intent = new Intent(ActivitySettings.this, PlayActivity2.class);
                                 startActivity(intent);
                                 finish();
 
@@ -475,7 +476,7 @@ dialogDeleteBlock(arrayListBlok2.get(i),d);
         switch (item.getItemId()) {
 
             case R.id.mainIconMenu:
-                intent2 = new Intent(ActivitySettings.this, MainActivity3.class);
+                intent2 = new Intent(ActivitySettings.this, PlayActivity2.class);
                 startActivity(intent2);
                 return true;
 
@@ -488,7 +489,7 @@ dialogDeleteBlock(arrayListBlok2.get(i),d);
             case R.id.refresh:
 
 
-                intent2 = new Intent(ActivitySettings.this, MainActivity3.class);
+                intent2 = new Intent(ActivitySettings.this, PlayActivity2.class);
                 startActivity(intent2);
                 return true;
             default:

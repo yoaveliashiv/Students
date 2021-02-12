@@ -31,17 +31,16 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
     private boolean go = false;
     private View view;
     private boolean flagSee = false;
-    private String uidVist;
+    private LocationMy locationMy;
     private Player player;
 
 
     public PlayerAdapter(Context context, int resource, int textViewResourceId, List<Player> listContact
-            , String uidVist) {
+            , LocationMy locationMy) {
         super(context, resource, textViewResourceId, listContact);
-        this.flagSee = false;
         this.context = context;
         this.listContact = listContact;
-        this.uidVist = uidVist;
+        this.locationMy=locationMy;
 
     }
 
@@ -58,7 +57,15 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
         view = layoutInflater.inflate(R.layout.list_player, parent, false);
         player = listContact.get(position);
         TextView textView = (TextView)view.findViewById(R.id.textView_name_player);
-        textView.setText(""+player.getName());
+        if(player.getLocation().getLongitude()!=0&&locationMy.getLongitude()!=0) {
+            int distnsce=locationMy.distance(player.getLocation())/1000;
+            if (distnsce<1)
+                distnsce=1;
+            textView.setText("שם: " + player.getName() + "  מרחק ממך:" +distnsce );
+        }
+        else
+            textView.setText(""+player.getName());
+
 
 
         return view;

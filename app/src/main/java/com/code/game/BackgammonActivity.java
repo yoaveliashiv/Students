@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -40,6 +41,7 @@ public class BackgammonActivity extends AppCompatActivity {
     private ImageView buttonMic;
     private boolean flagCall = true;
     private boolean flagCallBlakStart = true;
+
 
     private SinchClient sinchClient;
     private Call call = null;
@@ -844,4 +846,6 @@ public class BackgammonActivity extends AppCompatActivity {
             call.hangup();
         call = null;
     }
+
+
 }

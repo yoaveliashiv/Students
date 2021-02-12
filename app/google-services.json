@@ -1,58 +1,42 @@
 {
   "project_info": {
-    "project_number": "345285097098",
-    "firebase_url": "https://students-d5a2b-default-rtdb.europe-west1.firebasedatabase.app",
-    "project_id": "students-d5a2b",
-    "storage_bucket": "students-d5a2b.appspot.com"
+    "project_number": "359532434922",
+    "firebase_url": "https://fun-to-play-games-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "fun-to-play-games",
+    "storage_bucket": "fun-to-play-games.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:345285097098:android:afe11d46a4e3a94923df73",
+        "mobilesdk_app_id": "1:359532434922:android:3ad8d226e7b0f512b5ce93",
         "android_client_info": {
-          "package_name": "com.code.students"
+          "package_name": "com.code.game"
         }
       },
       "oauth_client": [
         {
-          "client_id": "345285097098-1jdsvd1ieh74apqbvtf626voi7qj89i6.apps.googleusercontent.com",
+          "client_id": "359532434922-3sji9bedkcidkrmeghla34es528g767l.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.code.students",
-            "certificate_hash": "b5c21b66e470b4755d70e9ef2f2cc21bda0c1ddf"
-          }
-        },
-        {
-          "client_id": "345285097098-b480beqc2tet4vat7hau6r703tf3ubed.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.code.students",
-            "certificate_hash": "e7d4c40a38220d4cd59cba500c05df633622caed"
-          }
-        },
-        {
-          "client_id": "345285097098-opk4asoffan1lsg1b4kjsaq81rh0ln85.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.code.students",
+            "package_name": "com.code.game",
             "certificate_hash": "e0cd3bcf9e8b5a2eec56c90a759e439b4bce045f"
           }
         },
         {
-          "client_id": "345285097098-udbvmfadnginvj2uqarffql7i3ofr39m.apps.googleusercontent.com",
+          "client_id": "359532434922-ph6bv94i6c069h40fdtrrjh56gqt81ht.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBY7rohuZ9OyXq70DcOKW8o0ytmLw6HA3U"
+          "current_key": "AIzaSyCQfcjMnMxg779oHRyKXxJ8hPKlyx1tB1s"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "345285097098-udbvmfadnginvj2uqarffql7i3ofr39m.apps.googleusercontent.com",
+              "client_id": "359532434922-ph6bv94i6c069h40fdtrrjh56gqt81ht.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

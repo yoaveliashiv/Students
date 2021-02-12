@@ -3,6 +3,7 @@ package com.code.game;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,21 +24,28 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.code.R;
+import com.code.chat.ComperatorContact;
 import com.code.chat.FeedbackChat;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.webrtc.EglBase;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 public class PlayActivity2 extends AppCompatActivity {
+    private Context context;
+    private int PERMISSION_ID = 44;
     private String keyWait;
     private Game game2;
     private MovesGame movesGame4 = null;
@@ -60,12 +68,14 @@ public class PlayActivity2 extends AppCompatActivity {
     private ValueEventListener valueEventListenerOpenGame;
     private ChildEventListener childEventListenerGameRequests;
     private ChildEventListener childEventListenerPlayer;
+    private  Button button;
 
     private Boolean flagPlayerOut = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        LocationGame locationGame=new LocationGame();
+        locationGame.getLocation(this);
         setContentView(R.layout.activity_play2);
 
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -77,6 +87,8 @@ public class PlayActivity2 extends AppCompatActivity {
     }
 
     private void build() {
+
+
         arrayListIAmRequests = new ArrayList<>();
         databaseReferenceI = FirebaseDatabase.getInstance()
                 .getReference("Play backgammon").child(uid);
@@ -90,12 +102,12 @@ public class PlayActivity2 extends AppCompatActivity {
         microphoneSet();
         openGameListener();
         lisnerNamePlayer();
-        dialogNameLogin();
         listenerGameRequestsׂׂ();
         onClickListsItemes();
 
 
-        Button button = findViewById(R.id.button_play);
+         button = findViewById(R.id.button_play);
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -133,12 +145,22 @@ progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
-                    build();
+                    dialogNameLogin();
+
                 } else {
-                    Intent intent = new Intent(PlayActivity2.this, BackgammonActivity.class);
-                    intent.putExtra("middelGame", true);
-                    movesGame = snapshot.getValue(MovesGame.class);
-                    startActivity(intent);
+                    try {
+                        Intent intent = new Intent(PlayActivity2.this, BackgammonActivity.class);
+                        intent.putExtra("middelGame", true);
+                        movesGame = snapshot.getValue(MovesGame.class);
+                        startActivity(intent);
+                        removeAll();
+
+                    }
+                    catch (DatabaseException e){
+                        dialogNameLogin();
+
+
+                    }
 
 
                 }
@@ -181,15 +203,21 @@ progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                         if (flagStart == 1) {
-                            movesGame4 = snapshot.getValue(MovesGame.class);
-                            if (movesGame4.getUidPrimery().equals(uid)) {
-                                removeAll();
-                                Intent intent = new Intent(PlayActivity2.this, BackgammonActivity.class);
-                                intent.putExtra("uid", uid);
-                                intent.putExtra("color", "white");
-                                startActivity(intent);
-                            }
+                            try {
 
+
+                                movesGame4 = snapshot.getValue(MovesGame.class);
+                                if (movesGame4.getUidPrimery().equals(uid)) {
+                                    removeAll();
+                                    Intent intent = new Intent(PlayActivity2.this, BackgammonActivity.class);
+                                    intent.putExtra("uid", uid);
+                                    intent.putExtra("color", "white");
+                                    startActivity(intent);
+                                }
+                            }
+                            catch (DatabaseException e){
+
+                            }
                         }
 
                         flagStart++;
@@ -246,29 +274,32 @@ progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
         listViewGameRequests.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                button.setClickable(false);
+                listViewGameRequests.setClickable(false);
+                listViewPlayer.setClickable(false);
                 final Player player = arrayListGameRequests.get(i);
                 removeAll();
 
-                MovesGame movesGame2 = new MovesGame();
+                 movesGame = new MovesGame();
                 HashMap<String, String> hashMapColor = new HashMap<>();
                 hashMapColor.put(uid, "black");
                 hashMapColor.put(player.getUid(), "white");
-                movesGame2.setHashMapColor(hashMapColor);
+                movesGame.setHashMapColor(hashMapColor);
 
                 HashMap<String, String> hashMapUid = new HashMap<>();
                 hashMapUid.put(uid, player.getUid());
                 hashMapUid.put(player.getUid(), uid);
-                movesGame2.setHashMapUid(hashMapUid);
-                movesGame2.setUidPrimery(player.getUid());
-                movesGame2.setType("start");
+                movesGame.setHashMapUid(hashMapUid);
+                movesGame.setUidPrimery(player.getUid());
+                movesGame.setType("start");
                 DatabaseReference databaseReference5 = FirebaseDatabase.getInstance()
                         .getReference("Play backgammon").child(player.getUid());
-                databaseReference5.setValue(movesGame2).addOnSuccessListener(new OnSuccessListener<Void>() {
+                databaseReference5.setValue(movesGame).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         DatabaseReference databaseReference12 = FirebaseDatabase.getInstance()
                                 .getReference("Play backgammon").child(uid);
-                        databaseReference12.setValue(movesGame2);
+                        databaseReference12.setValue(movesGame);
                         removeAll();
                         Intent intent = new Intent(PlayActivity2.this, BackgammonActivity.class);
                         intent.putExtra("uid", player.getUid());
@@ -289,7 +320,7 @@ progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
         textViewGameRequests = findViewById(R.id.textViewGameRequestsׂׂ);
         // textViewGameRequests.setVisibility(View.GONE);
         arrayAdapterGameRequests = new PlayerAdapter(PlayActivity2.this,
-                0, 0, arrayListGameRequests);
+                0, 0, arrayListGameRequests,playerI.getLocation());
         listViewGameRequests.setAdapter(arrayAdapterGameRequests);
 
         childEventListenerGameRequests = new ChildEventListener() {
@@ -297,7 +328,9 @@ progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (snapshot.exists()) {
                     Player player = snapshot.getValue(Player.class);
-                    arrayListGameRequests.add(snapshot.getValue(Player.class));
+                    arrayListGameRequests.add(player);
+                    Collections.sort(arrayListGameRequests, new ComperatorLocation(playerI));
+
                     arrayAdapterGameRequests.notifyDataSetChanged();
 
                 }
@@ -352,16 +385,19 @@ progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
         listViewPlayer = findViewById(R.id.list_view_player);
 
         arrayAdapterPlayer = new PlayerAdapter(PlayActivity2.this,
-                0, 0, arrayListPlayer);
+                0, 0, arrayListPlayer,playerI.getLocation());
         listViewPlayer.setAdapter(arrayAdapterPlayer);
 
         childEventListenerPlayer = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (snapshot.exists()) {
+
                     Player player = snapshot.getValue(Player.class);
                     if (!player.getUid().equals(uid)) {
-                        arrayListPlayer.add(snapshot.getValue(Player.class));
+                        arrayListPlayer.add(player);
+                        Collections.sort(arrayListPlayer, new ComperatorLocation(playerI));
+
                         arrayAdapterPlayer.notifyDataSetChanged();
                     }
                 }
@@ -416,29 +452,51 @@ progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
         d2.setCancelable(false);
         EditText editText = d2.findViewById(R.id.editTextText_name_player);
         Button button = d2.findViewById(R.id.button_name_plyer);
+          context=this;
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                LocationGame locationGame=new LocationGame();
+//                if (!locationGame.checkPermissions(context)) {
+//                    editText.setError("אנא אשר");
+//                    editText.requestFocus();
+//                    return;
+//                }
                 String text = editText.getText().toString();
                 if (text.isEmpty()) {
                     editText.setError("אנא הכנס שם");
                     editText.requestFocus();
                     return;
                 }
-                for (Player player : arrayListPlayer) {
-                    if (player.getName().equals(text)) {
-                        editText.setError("שם כבר קיים, בחר שם חדש");
-                        editText.requestFocus();
-                        return;
-                    }
+//                for (Player player : arrayListPlayer) {
+//                    if (player.getName().equals(text)) {
+//                        editText.setError("שם כבר קיים, בחר שם חדש");
+//                        editText.requestFocus();
+//                        return;
+//                    }
+//
+//                }
 
+                playerI = new Player();
+                LocationMy locationMy=new LocationMy();
+                if (locationGame.checkPermissions(context)&&locationGame.isLocationEnabled(context)) {
+                    locationMy.setAltitude(LocationGame.location.getAltitude());
+                    locationMy.setLatitude(LocationGame.location.getLatitude());
+                    locationMy.setLongitude(LocationGame.location.getLongitude());
                 }
+                else{
+                    locationMy.setAltitude(0);
+                    locationMy.setLatitude(0);
+                    locationMy.setLongitude(0);
+                }
+                playerI.setLocation(locationMy);
 
-
-                playerI = new Player(uid, text);
+                playerI.setName(text);
+                playerI.setUid(uid);
                 DatabaseReference databaseReference1 = FirebaseDatabase.getInstance()
                         .getReference("ListNamePlayerOnlineBackgammonBoard").child(uid);
                 databaseReference1.setValue(playerI);
+                build();
                 d2.dismiss();
 
             }
@@ -500,6 +558,7 @@ progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                                     intent.putExtra("color", "black");
 
                                     startActivity(intent);
+                                    removeAll();
                                     progressDialog.dismiss();
                                 }
                             });
@@ -623,4 +682,25 @@ progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
         }
     }
 
+    @Override
+    public void
+    onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == PERMISSION_ID) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                LocationGame locationGame=new LocationGame();
+                locationGame.getLocation(this);
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        LocationGame locationGame=new LocationGame();
+//        if (locationGame.checkPermissions(this)) {
+//            locationGame.getLocation(this);
+//        }
+    }
 }

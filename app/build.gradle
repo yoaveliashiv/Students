@@ -9,7 +9,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     defaultConfig {
-        applicationId "com.code.students"
+        applicationId "com.code.game"
         minSdkVersion 19
         targetSdkVersion 30
         versionCode 10
@@ -70,6 +70,9 @@ dependencies {
 
     implementation 'com.squareup.retrofit2:retrofit:2.6.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.6.1'
+
+    implementation 'com.google.android.gms:play-services-location:17.1.0'
+
 
 
 

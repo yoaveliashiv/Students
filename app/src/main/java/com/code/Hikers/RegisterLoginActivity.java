@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import com.code.R;
 import com.code.chat.ActivitySettings;
-import com.code.chat.MainActivity3;
+import com.code.game.PlayActivity2;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -66,7 +66,7 @@ public class RegisterLoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null) {
-            Intent intent = new Intent(RegisterLoginActivity.this, MainActivity3.class);
+            Intent intent = new Intent(RegisterLoginActivity.this, PlayActivity2.class);
             startActivity(intent);
             finish();
         }
@@ -104,12 +104,12 @@ public class RegisterLoginActivity extends AppCompatActivity {
                     progressDialog.dismiss();
                     return;
                 }
-                if (nameCollegeEnglish.isEmpty() || nameCollegeEnglish.equals("בחר מוסד אקדמי")) {
-                    editTextPhone.setError("בחר מוסד אקדמי למטה");
-                    editTextPhone.requestFocus();
-                    progressDialog.dismiss();
-                    return;
-                }
+//                if (nameCollegeEnglish.isEmpty() || nameCollegeEnglish.equals("בחר מוסד אקדמי")) {
+//                    editTextPhone.setError("בחר מוסד אקדמי למטה");
+//                    editTextPhone.requestFocus();
+//                    progressDialog.dismiss();
+//                    return;
+//                }
 
                 sendVerificationCode(mobile);
                 buttonSendPass.setVisibility(View.GONE);
@@ -125,12 +125,12 @@ public class RegisterLoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 progressDialog.setMessage("אנא המתן להשלמת התהליך..");
                 progressDialog.show();
-                if (nameCollegeEnglish.isEmpty() || nameCollegeEnglish.equals("בחר מוסד אקדמי")) {
-                    editTextPass.setError("בחר מוסד אקדמי למטה");
-                    editTextPass.requestFocus();
-                    progressDialog.dismiss();
-                    return;
-                }
+//                if (nameCollegeEnglish.isEmpty() || nameCollegeEnglish.equals("בחר מוסד אקדמי")) {
+//                    editTextPass.setError("בחר מוסד אקדמי למטה");
+//                    editTextPass.requestFocus();
+//                    progressDialog.dismiss();
+//                    return;
+//                }
                 String pass = editTextPass.getText().toString();
                 if (pass.isEmpty() || pass.length() < 3) {
                     editTextPass.setError("הכנס קוד תקין");
