@@ -1,8 +1,11 @@
 package com.code.game;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
@@ -172,7 +175,13 @@ public class BackgammonBoard {
                     imageViewWhiteOut.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
+                            if(!conction(BackgammonActivity.contextGame)) {
+                                textViewDice.setText("אין קליטה");
+                                textViewDice.setError("אין קליטה");
+                                textViewDice.requestFocus();
+                                return;
+                            }
+                            textViewDice.clearFocus();
                             imageViewWhiteOut.setClickable(false);
                             imageViewWhiteOut.setColorFilter(Color.RED, PorterDuff.Mode.LIGHTEN);//the top ston index
                             textViewDice.setText("אנא הוזז אבן");
@@ -191,7 +200,13 @@ public class BackgammonBoard {
                     imageViewBlackOut.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
+                            if(!conction(BackgammonActivity.contextGame)) {
+                                textViewDice.setText("אין קליטה");
+                                textViewDice.setError("אין קליטה");
+                                textViewDice.requestFocus();
+                                return;
+                            }
+                            textViewDice.clearFocus();
                             imageViewBlackOut.setClickable(false);
                             imageViewBlackOut.setColorFilter(Color.RED, PorterDuff.Mode.LIGHTEN);//the top ston index
                             textViewDice.setText("אנא הוזז אבן");
@@ -218,6 +233,14 @@ public class BackgammonBoard {
                             arrayListStackImage.get(i).get(j).setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
+
+                                    if(!conction(BackgammonActivity.contextGame)) {
+                                        textViewDice.setText("אין קליטה");
+                                        textViewDice.setError("אין קליטה");
+                                        textViewDice.requestFocus();
+                                        return;
+                                    }
+                                    textViewDice.clearFocus();
                                     ImageView imageView = ((ImageView) view);
                                     setCancalClick();
                                     int index = hashMapIndex.get(imageView);
@@ -382,6 +405,13 @@ public class BackgammonBoard {
                         imageView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                if(!conction(BackgammonActivity.contextGame)) {
+                                    textViewDice.setText("אין קליטה");
+                                    textViewDice.setError("אין קליטה");
+                                    textViewDice.requestFocus();
+                                    return;
+                                }
+                                textViewDice.clearFocus();
                                 ImageView imageView = ((ImageView) view);
                                 setCancalClick();
 
@@ -584,6 +614,15 @@ public class BackgammonBoard {
                         imageView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+
+                                if(!conction(BackgammonActivity.contextGame)) {
+                                    textViewDice.setText("אין קליטה");
+                                    textViewDice.setError("אין קליטה");
+                                    textViewDice.requestFocus();
+                                    return;
+                                }
+                                textViewDice.clearFocus();
+
                                 ImageView imageView = ((ImageView) view);
                                 setCancalClick();
 
@@ -806,6 +845,14 @@ public class BackgammonBoard {
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if(!conction(BackgammonActivity.contextGame)) {
+                        textViewDice.setText("אין קליטה");
+                        textViewDice.setError("אין קליטה");
+                        textViewDice.requestFocus();
+                        return;
+                    }
+                    textViewDice.clearFocus();
+
                     ImageView imageView = ((ImageView) view);
                     setCancalClick();
 
@@ -1265,6 +1312,13 @@ public class BackgammonBoard {
             imageViewDice1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if(!conction(BackgammonActivity.contextGame)) {
+                        textViewDice.setText("אין קליטה");
+                        textViewDice.setError("אין קליטה");
+                        textViewDice.requestFocus();
+                        return;
+                    }
+                    textViewDice.clearFocus();
                     imageViewDice1.setClickable(false);
                     flagDiceTrow++;
                     int numDice = roolOneDice(imageViewDice1);
@@ -1467,12 +1521,28 @@ public class BackgammonBoard {
         imageViewDice1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!conction(BackgammonActivity.contextGame)) {
+                    textViewDice.setText("אין קליטה");
+                    textViewDice.setError("אין קליטה");
+                    textViewDice.requestFocus();
+                    return;
+                }
+                textViewDice.clearFocus();
+
                 trowTowDice();
             }
         });
         imageViewDice2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!conction(BackgammonActivity.contextGame)) {
+                    textViewDice.setText("אין קליטה");
+                    textViewDice.setError("אין קליטה");
+                    textViewDice.requestFocus();
+                    return;
+                }
+                textViewDice.clearFocus();
+
                 trowTowDice();
             }
         });
@@ -1642,5 +1712,14 @@ public class BackgammonBoard {
 
     public void setDice4(int dice4) {
         this.dice4 = dice4;
+    }
+    public boolean conction(Context context){
+        ConnectivityManager connectivityManager =(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            //we are connected to a network
+            return true;
+        }
+        return false;
     }
 }
