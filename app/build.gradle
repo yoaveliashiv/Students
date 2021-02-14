@@ -12,8 +12,8 @@ android {
         applicationId "com.code.students"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 10
-        versionName "10.0"    //change also in main3
+        versionCode 11
+        versionName "11.0"    //change also in main3
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }

@@ -27,5 +27,17 @@
         android:id="@+id/refresh"
         android:title="רענן"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/games"
+        android:title="משחקים"
+        app:showAsAction="never" >
+        <menu>
+
+            <item
+                android:id="@+id/backgammon"
+                android:title="שש בש"
+                app:showAsAction="never"/>
+        </menu>
+    </item>
 
 </menu>

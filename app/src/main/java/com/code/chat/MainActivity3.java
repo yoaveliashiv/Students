@@ -43,7 +43,7 @@ public class MainActivity3 extends AppCompatActivity {
     private TabsAccessorAdapter tabsAccessorAdapter;
     protected static String search = "";
     private boolean flagBloked = false;
-    private String verison = "10";//
+    private String verison = "11";//
     private String urlGoogleStore = "https://play.google.com/store/apps/details?id=com.code.students";
 
     @Override
@@ -189,7 +189,7 @@ public class MainActivity3 extends AppCompatActivity {
                 if (!flagBloked) {
 //                    intent2 = new Intent(MainActivity3.this, MainActivity3.class);
 //                    startActivity(intent2);
-                    intent2 = new Intent(MainActivity3.this , PlayActivity2.class);
+                    intent2 = new Intent(MainActivity3.this , MainActivity3.class);
                     startActivity(intent2);
                 }
                 return true;
@@ -225,6 +225,12 @@ String phone=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
                     intent2 = new Intent(MainActivity3.this, MainActivity3.class);
                     startActivity(intent2);
                 }
+                return true;
+            case R.id.backgammon:
+
+                    intent2 = new Intent(MainActivity3.this, PlayActivity2.class);
+                    startActivity(intent2);
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
