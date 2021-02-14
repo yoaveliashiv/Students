@@ -3,6 +3,7 @@ package com.code.game;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -42,7 +43,7 @@ public class BackgammonActivity extends AppCompatActivity {
     private boolean flagCall = true;
     private boolean flagCallBlakStart = true;
 
-
+protected static Context contextGame;
     private SinchClient sinchClient;
     private Call call = null;
     private DatabaseReference databaseRef;
@@ -73,6 +74,7 @@ public class BackgammonActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        contextGame=this;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -306,6 +308,14 @@ public class BackgammonActivity extends AppCompatActivity {
         imageViewDice2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!board.conction(BackgammonActivity.contextGame)) {
+                    textViewDice.setText("אין קליטה");
+                    textViewDice.setError("אין קליטה");
+                    textViewDice.requestFocus();
+                    return;
+                }
+                textViewDice.clearFocus();
+
                 DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
                         .getReference("Play backgammon").child(uid);
                 imageViewDice2.setClickable(false);
@@ -669,6 +679,12 @@ public class BackgammonActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!board.conction(BackgammonActivity.contextGame)) {
+                    textViewDice.setText("אין קליטה");
+                    textViewDice.setError("אין קליטה");
+                    textViewDice.requestFocus();
+                    return;
+                }
                 if (flagExsit) {
                     Intent intent = new Intent(BackgammonActivity.this, PlayActivity2.class);
                     startActivity(intent);
@@ -780,6 +796,14 @@ public class BackgammonActivity extends AppCompatActivity {
                             buttonMic.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
+                                    if(!board.conction(BackgammonActivity.this)) {
+                                        textViewDice.setText("אין קליטה");
+                                        textViewDice.setError("אין קליטה");
+                                        textViewDice.requestFocus();
+                                        return;
+                                    }
+                                    textViewDice.clearFocus();
+
                                     if (flagCall &&call!=null) {
                                         flagCall = false;
                                         buttonMic.setImageResource(R.drawable.microphone_off);
