@@ -29,6 +29,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -65,10 +66,14 @@ public class PlayActivity2 extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+arrayListIAmRequests=new ArrayList<>();
         setContentView(R.layout.activity_play2);
 
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        premisonAodio();
+
+        microphoneSet();
+
         chakIfInMideelGame();
 
 
@@ -85,9 +90,7 @@ public class PlayActivity2 extends AppCompatActivity {
         databaseReferenceGameRequest = FirebaseDatabase.getInstance()
                 .getReference("GameRequestsׂׂBackgammonBoard").child(uid);
 
-        premisonAodio();
 
-        microphoneSet();
         openGameListener();
         lisnerNamePlayer();
         dialogNameLogin();
@@ -135,10 +138,19 @@ progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 if (!snapshot.exists()) {
                     build();
                 } else {
+
                     Intent intent = new Intent(PlayActivity2.this, BackgammonActivity.class);
                     intent.putExtra("middelGame", true);
-                    movesGame = snapshot.getValue(MovesGame.class);
-                    startActivity(intent);
+                    try {
+                        movesGame = snapshot.getValue(MovesGame.class);
+                        flagPlayerOut=false;//onStop
+                        startActivity(intent);
+
+                    }
+
+                    catch (DatabaseException e){
+                        build();
+                    }
 
 
                 }

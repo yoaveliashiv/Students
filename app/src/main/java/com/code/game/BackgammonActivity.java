@@ -42,7 +42,6 @@ public class BackgammonActivity extends AppCompatActivity {
     private boolean flagCall = true;
     private boolean flagCallBlakStart = true;
     protected static Context contextGame;
-
     private SinchClient sinchClient;
     private Call call = null;
     private DatabaseReference databaseRef;
@@ -108,7 +107,7 @@ public class BackgammonActivity extends AppCompatActivity {
 
             board.build();
             board.moveDice(imageViewDice1);
-            eXsitCallingFriend();
+
         }
         textViewColor.setText("הצבע שלך: " + color);
         if (color.equals("white"))
@@ -769,6 +768,7 @@ public class BackgammonActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 if (call == null) {
+                                    flagCallBlakStart = false;
                                     call = sinchClient.getCallClient().callUser(uidRivel);
                                     call.addCallListener(new SinchCallListener());
                                     flagCall = true;
@@ -865,8 +865,19 @@ public class BackgammonActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (call == null&&flagCall&& !flagCallBlakStart) {
+
+            call = sinchClient.getCallClient().callUser(uidRivel);
+            call.addCallListener(new SinchCallListener());
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+
         if (call != null)
             call.hangup();
         call = null;
