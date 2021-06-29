@@ -43,7 +43,7 @@ public class MainActivity3 extends AppCompatActivity {
     private TabsAccessorAdapter tabsAccessorAdapter;
     protected static String search = "";
     private boolean flagBloked = false;
-    private String verison = "11";//
+    private String verison = "12";//
     private String urlGoogleStore = "https://play.google.com/store/apps/details?id=com.code.students";
 
     @Override

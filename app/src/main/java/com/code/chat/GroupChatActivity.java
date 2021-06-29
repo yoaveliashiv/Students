@@ -145,9 +145,9 @@ public class GroupChatActivity extends AppCompatActivity {
     }
 
     private void showMessage() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("NamesGroups")
+        DatabaseReference reference =  FirebaseDatabase.getInstance().getReference("NamesGroups")
                 .child(nameCologeEnglish).child(nameGroup);
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.limitToLast(1000).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Message message;

@@ -42,6 +42,7 @@
         android:text="העתק לינק"
         android:textColor="@color/colorBlack"
         android:textSize="20sp"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_go_my_group" />
 
