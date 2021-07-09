@@ -3,6 +3,7 @@ package com.code.Hikers;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -68,8 +69,13 @@ public class RegisterLoginActivity extends AppCompatActivity {
         if (mAuth.getCurrentUser() != null) {
             Intent intent = new Intent(RegisterLoginActivity.this, MainActivity3.class);
             startActivity(intent);
-            finish();
+
+
+             finish();
+            super.onCreate(savedInstanceState);
+            return;
         }
+        dialodTerms();
 
         setContentView(R.layout.activity_register_login);
         buttonSendPass = findViewById(R.id.button_send_code);
@@ -460,5 +466,43 @@ public class RegisterLoginActivity extends AppCompatActivity {
         }
     }
 
+    private void dialodTerms() {
+        final Dialog d = new Dialog(RegisterLoginActivity.this);
+        d.setContentView(R.layout.dialog_terms_aprove);
+        d.setTitle("Manage");
 
+        d.setCancelable(false);
+        Button button_terms = d.findViewById(R.id.button_terms);
+
+        Button button_aprove_terms = d.findViewById(R.id.button_aprove_terms);
+        Button button_exit_app = d.findViewById(R.id.button_exit_app);
+        button_exit_app.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                System.exit(0);
+                return;
+            }
+        });
+        button_terms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+              Intent  intent2 = new Intent(RegisterLoginActivity.this, Terms.class);
+                startActivity(intent2);
+                return;
+            }
+        });
+        button_aprove_terms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+              d.cancel();
+                return;
+
+            }
+
+        });
+
+        d.show();
+
+    }
 }

@@ -59,6 +59,8 @@ public class ContactsAdapter extends ArrayAdapter<Contact> {
         view = layoutInflater.inflate(R.layout.list_contacts_and, parent, false);
         contact = listContact.get(position);
 
+contact.getUidContacts();
+
 
         TextView textViewName = (TextView) view.findViewById(R.id.textView_name_list);
         if(contact.getMessage().getPhone().equals("הודעת מערכת"))
@@ -95,7 +97,9 @@ public class ContactsAdapter extends ArrayAdapter<Contact> {
             }
         }
 
-        String name = contact.getName();
+        String name = contact.getMessage().getName();
+        if(contact.getUidContacts().equals(contact.getMessage().getUid()))
+            name = contact.getName();
 
         TextView textViewMessage = (TextView) view.findViewById(R.id.textView_message_list);
         textViewMessage.setText(name + ": " + contact.getMessage().getMessage());

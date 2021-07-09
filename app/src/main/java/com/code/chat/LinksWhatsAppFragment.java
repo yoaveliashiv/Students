@@ -233,9 +233,15 @@ public class LinksWhatsAppFragment extends Fragment {
         TextView textViewJoinGroup = d.findViewById(R.id.textView_go_whatapps);
         TextView textViewFeed = d.findViewById(R.id.feed_block_i);
 
-      //  TextView textViewCopyLink = d.findViewById(R.id.textView_copy_link);
+        TextView textViewCopyLink = d.findViewById(R.id.textView_copy_link);
         TextView textViewMyGroup = d.findViewById(R.id.textView_go_my_group);
-
+textViewFeed.setOnLongClickListener(new View.OnLongClickListener() {
+    @Override
+    public boolean onLongClick(View view) {
+        textViewCopyLink.setVisibility(View.VISIBLE);
+        return false;
+    }
+});
         textViewMyGroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -266,16 +272,16 @@ public class LinksWhatsAppFragment extends Fragment {
         });
 
 
-//        textViewCopyLink.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-//                ClipData clip = ClipData.newPlainText("1", arrayListLink.get(i).getLink());
-//                clipboard.setPrimaryClip(clip);
-//                Toast.makeText(getContext(), "הלינק הועתק", Toast.LENGTH_SHORT).show();
-//                d.dismiss();
-//            }
-//        });
+        textViewCopyLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("1", arrayListLink.get(i).getLink());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(getContext(), "הלינק הועתק", Toast.LENGTH_SHORT).show();
+                d.dismiss();
+            }
+        });
         textViewFeed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

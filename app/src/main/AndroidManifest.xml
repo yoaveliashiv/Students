@@ -10,8 +10,6 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
-
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/student_icon"
@@ -20,10 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".game.BackgammonActivity" android:screenOrientation="landscape"></activity>
-        <activity android:name=".game.PlayActivity" />
-        <activity android:name=".game.PlayActivity2" />
-
+        <activity android:name=".Hikers.Terms"></activity>
         <activity android:name=".chat.Management3" />
         <activity android:name=".chat.Management2Feedbacks" />
         <activity android:name=".chat.ActivityFeedbackChat" />
@@ -35,17 +30,9 @@
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
         <activity android:name=".chat.ActivitySettings" />
-        <activity android:name=".chat.MainActivity3" android:configChanges="orientation|screenSize|keyboardHidden"/>
-        <activity android:name=".Hikers.MainActivityChat" />
-        <activity android:name=".students.MainActivityAddExpertise" />
-        <activity android:name=".students.MainActivityListFeedbackPage" />
-        <activity android:name=".students.MainActivity_Feedback" />
-        <activity android:name=".students.MainActivityCardView" />
-        <activity android:name=".students.MainActivityManagementCardsApprov" />
-        <activity android:name=".students.MainActivityPageUser" />
-        <activity android:name=".students.MainActivityRegisterTutor" />
-        <activity android:name=".students.MainActivityRegister" />
-        <activity android:name=".students.MainActivity1" />
+        <activity
+            android:name=".chat.MainActivity3"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity android:name=".Hikers.RegisterLoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

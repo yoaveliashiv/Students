@@ -66,15 +66,16 @@ public class LinksToWhatsAppAdapter extends ArrayAdapter<LinksToWhatsApp> {
 
             textViewName.setText(listLink.get(position).getNameGroup()+"  מספר משתתפים:"+
                     listLink.get(position).getNumOfMembers()+" נכון ל- "+time2+" "+date2 );
-
+            TextView textViewLink = (TextView) view.findViewById(R.id.textView_link);
+            textViewLink.setText(listLink.get(position).getNumOfMembers()+" חברים בקבוצה זו נכון ל- "+time2+" "+date2);
         }
-        else
         textViewName.setText(listLink.get(position).getNameGroup());
 
 
-
-        TextView textViewLink = (TextView) view.findViewById(R.id.textView_link);
-       textViewLink.setText(listLink.get(position).getLink());
+//        if(!listLink.get(position).getNumOfMembers().isEmpty()) {
+//            TextView textViewLink = (TextView) view.findViewById(R.id.textView_link);
+//            textViewLink.setText(listLink.get(position).getNumOfMembers()+" חברים בקבוצה זו נכון ל-");
+//        }
         return view;
     }
     @Exclude

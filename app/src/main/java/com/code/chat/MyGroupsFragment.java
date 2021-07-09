@@ -71,6 +71,7 @@ public class MyGroupsFragment extends Fragment {
     private ArrayList<String> arrayListNameCologeEnglish2;
 
     private ProgressDialog progressDialog;
+    private boolean wait=false;
 
     public MyGroupsFragment() {
 
@@ -169,9 +170,9 @@ public class MyGroupsFragment extends Fragment {
 
                 for (DataSnapshot child : snapshot.getChildren()) {
 
-                    String uidContact = child.getKey();
-                    arrayList.add(uidContact);
-                    arrayListName2.add(uidContact);
+                    String nameGroup = child.getKey();
+                    arrayList.add(nameGroup);
+                    arrayListName2.add(nameGroup);
                     arrayListNameCologeEnglish.add(child.getValue(String.class));
                     arrayListNameCologeEnglish2.add(child.getValue(String.class));
 
@@ -179,6 +180,7 @@ public class MyGroupsFragment extends Fragment {
                 onStart1();
                 if (arrayList.size() > 0) {
                     buttonSearch.setVisibility(View.VISIBLE);
+
                     addContact(uid);
                 }
 
@@ -231,6 +233,7 @@ public class MyGroupsFragment extends Fragment {
     private void addContact(final String uid) {
 
         DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("NamesGroups");
+        //  if(arrayList.size()<1 ||arrayListNameCologeEnglish.size()<1)return;
         databaseReference1.child(arrayListNameCologeEnglish.get(0)).child(arrayList.get(0)).limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -294,35 +297,58 @@ public class MyGroupsFragment extends Fragment {
 
     public void onStart1() {
         ArrayList < DatabaseReference> arrayListRe=new ArrayList<>();
+
         for (int i=0;i<arrayListName2.size();i++) {
             arrayListRe.add(FirebaseDatabase.getInstance().getReference("NamesGroups"));
         }
         for (int i=0;i<arrayListName2.size();i++) {
             final String nameGroup2 = arrayListName2.get(i);
 
-             arrayListRe.get(i).child(arrayListNameCologeEnglish2.get(i)).child(nameGroup2)
-            .addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                    if (snapshot.exists() && flagStart1) {
-                        arrayListNameCologeEnglish = new ArrayList<>();
-                        for (Contact contact : contactArrayList) {
-                            if (contact.getName().equals(nameGroup2)) {
-                                arrayListNameCologeEnglish.add(contact.getNameCollegeEnglish());
-                                contactArrayList.remove(contact);
-                                break;
+            arrayListRe.get(i).child(arrayListNameCologeEnglish2.get(i)).child(nameGroup2)
+                    .addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                            if (!snapshot.exists())
+                                return;
+//                    else{
+//                        buttonSearch.setText(snapshot.toString());
+//                       // return;
+//                    }
+                            final ArrayList<String> arrayListTemp= new ArrayList<>();
+                            final ArrayList<String> arrayListName2Temp=arrayListName2;
+
+                            ArrayList<String> arrayListNameCologeEnglishTemp=new ArrayList<>();
+                            ArrayList<String> arrayListNameCologeEnglish2Temp;
+
+                            Message temp=new Message();
+                            temp = snapshot.getValue(Message.class);
+
+                            final Message  messageContact1=temp;
+                            Contact contact1=new Contact();
+                            String NameCologeEnglishTemp1="";
+                            if (snapshot.exists() && flagStart1) {
+                                for (Contact contact : contactArrayList) {
+                                    if (contact.getName().equals(nameGroup2)) {
+                                        NameCologeEnglishTemp1=contact.getNameCollegeEnglish();
+                                        contact1=contact;
+                                  //buttonSearch.setText("lklk");
+                                        break;
+                                    }
+                                }
+                                final Contact contact2=contact1;
+                                final     String NameCologeEnglishTemp2=NameCologeEnglishTemp1;
+                                // arrayList = new ArrayList<>();
+                                arrayListTemp.add(nameGroup2);
+                                //addContact(uid);
+                                addContact2(arrayListTemp,messageContact1,NameCologeEnglishTemp2,contact2);
+
+
+
                             }
                         }
-                        arrayList = new ArrayList<>();
-                        arrayList.add(nameGroup2);
-                        addContact(uid);
 
-
-                    }
-                }
-
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 //                    if (snapshot.exists() && flagStart1) {
 //                        if (snapshot.exists()) {
 //                            arrayListNameCologeEnglish = new ArrayList<>();
@@ -340,24 +366,66 @@ public class MyGroupsFragment extends Fragment {
 //
 //                        }
 //                    }
-                }
+                        }
 
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
-                }
+                        }
 
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                }
+                        }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
 
-                }
-            });
+                        }
+                    });
         }
+    }
+
+    private void addContact2(ArrayList<String> arrayListTemp, Message messageContact1, String nameCologeEnglishTemp2, Contact contact2) {
+        DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference("NotificationsIdSeeLast");
+        databaseReference1.child(uid).child(arrayListTemp.get(0)).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                int lastSee = 0;
+                if (snapshot.exists())
+                    lastSee = snapshot.getValue(Integer.class);
+                int numNewMessage = messageContact1.getId() - lastSee;
+                contact2.setNotifications(numNewMessage);
+
+                contact2.setMessage(messageContact1);
+                contact2.setName(arrayListTemp.get(0));
+                contact2.setUidI(uid);
+                //contactsAdapter.notifyDataSetChanged();
+                contact2.setNameCollegeEnglish(nameCologeEnglishTemp2);
+                // contactArrayList.add(contact);
+
+                arrayListTemp.remove(0);
+                if (arrayListTemp.size() == 0) {
+                    contactArrayList2 = new ArrayList<>(contactArrayList);
+                    if (contactArrayList.size() > 1)
+                        Collections.sort(contactArrayList, new ComperatorContact());
+
+                    contactsAdapter.notifyDataSetChanged();
+                    getView().setClickable(true);
+                    progressDialog.dismiss();
+                }
+
+//                if (arrayListTemp.size() > 0)
+//                    addContact2(arrayListTemp,messageContact1,nameCologeEnglishTemp2);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void search() {
@@ -396,8 +464,8 @@ public class MyGroupsFragment extends Fragment {
 
             }
         });
-        Button buttonBlokeDialog = d.findViewById(R.id.button_delete_dialog);
-        Button buttonNoBloke = d.findViewById(R.id.button_exit_delete);
+        Button buttonBlokeDialog = d.findViewById(R.id.button_aprove_terms);
+        Button buttonNoBloke = d.findViewById(R.id.button_exit_app);
         buttonNoBloke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

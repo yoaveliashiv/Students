@@ -180,8 +180,8 @@ public class ChatFragment extends Fragment {
 
             }
         });
-        Button buttonBlokeDialog = d.findViewById(R.id.button_delete_dialog);
-        Button buttonNoBloke = d.findViewById(R.id.button_exit_delete);
+        Button buttonBlokeDialog = d.findViewById(R.id.button_aprove_terms);
+        Button buttonNoBloke = d.findViewById(R.id.button_exit_app);
         buttonNoBloke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

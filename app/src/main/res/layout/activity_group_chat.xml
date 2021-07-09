@@ -85,7 +85,10 @@ android:layout_below="@id/con"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:divider="@null"
-                android:dividerHeight="10sp" />
+                android:dividerHeight="10sp"
+
+                android:transcriptMode="alwaysScroll"
+                android:stackFromBottom="true"/>
 
 
         </LinearLayout>

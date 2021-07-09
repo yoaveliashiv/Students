@@ -325,8 +325,8 @@ dialogDeleteBlock(arrayListBlok2.get(i),d);
         d.setTitle("Manage");
 
         d.setCancelable(true);
-        Button buttonDeleteDialog = d.findViewById(R.id.button_delete_dialog);
-        Button buttonNodelete = d.findViewById(R.id.button_exit_delete);
+        Button buttonDeleteDialog = d.findViewById(R.id.button_aprove_terms);
+        Button buttonNodelete = d.findViewById(R.id.button_exit_app);
         buttonNodelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

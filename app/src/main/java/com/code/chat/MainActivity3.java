@@ -20,9 +20,6 @@ import android.widget.TextView;
 
 
 import com.code.R;
-import com.code.game.BackgammonBoard;
-import com.code.game.PlayActivity;
-import com.code.game.PlayActivity2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -226,12 +223,7 @@ String phone=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
                     startActivity(intent2);
                 }
                 return true;
-            case R.id.backgammon:
 
-                    intent2 = new Intent(MainActivity3.this, PlayActivity2.class);
-                    startActivity(intent2);
-
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

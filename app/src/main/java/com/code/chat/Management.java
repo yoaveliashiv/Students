@@ -28,7 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.code.R;
-import com.code.game.PlayActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
@@ -551,10 +550,7 @@ public class Management extends AppCompatActivity {
                 intent2 = new Intent(Management.this, Management.class);
                 startActivity(intent2);
                 return true;
-            case R.id.backgammon_menu:
-                intent2 = new Intent(Management.this ,PlayActivity.class);
-                startActivity(intent2);
-                return true;
+
             case R.id.new_cologe:
                 newCologe();
                 return true;

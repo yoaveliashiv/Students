@@ -54,12 +54,14 @@ public class GroupChatActivity extends AppCompatActivity {
     private EditText editText;
     private ListView listView;
     private Boolean flag;
+    private Boolean flagOnStart=true;
+
     private TextView textViewGroupDetails;
     private int numMembers;
     private int numNotifications = -1;
     private Boolean flagNewMessage = false;
     private String nameCologeEnglish = "";
-    ChildEventListener childEventListener=null;
+    ChildEventListener childEventListener = null;
 
     // private TextView textViewDisplay;
     @Override
@@ -145,7 +147,7 @@ public class GroupChatActivity extends AppCompatActivity {
     }
 
     private void showMessage() {
-        DatabaseReference reference =  FirebaseDatabase.getInstance().getReference("NamesGroups")
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("NamesGroups")
                 .child(nameCologeEnglish).child(nameGroup);
         reference.limitToLast(1000).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -157,7 +159,7 @@ public class GroupChatActivity extends AppCompatActivity {
                     arrayListMessage.add(message);
 
                 }
-                if (arrayListMessage.size() == 0){
+                if (arrayListMessage.size() == 0) {
                     flagNewMessage = true;
 
                     return;
@@ -173,7 +175,12 @@ public class GroupChatActivity extends AppCompatActivity {
                 databaseReference3.setValue(arrayListMessage.get(arrayListMessage.size() - 1).getId());
                 arrayAdapter.notifyDataSetChanged();
 
-                listView.setSelection(listView.getAdapter().getCount() - 1);
+                //  listView.setSelection(listView.getAdapter().getCount()-1);
+
+//
+                if (numNotifications > 4)
+                    listView.setSelection(listView.getAdapter().getCount() - numNotifications );//-1
+
                 flagNewMessage = true;
             }
 
@@ -232,8 +239,7 @@ public class GroupChatActivity extends AppCompatActivity {
 
                         }
                     });
-                }
-                else                                 textViewGroupDetails.setVisibility(View.VISIBLE);
+                } else textViewGroupDetails.setVisibility(View.VISIBLE);
 
             }
 
@@ -399,7 +405,7 @@ public class GroupChatActivity extends AppCompatActivity {
                 if (snapshot.exists()) id = (int) snapshot.getChildrenCount();
 
 
-                message.setId(id+1);
+                message.setId(id + 1);
                 databaseReference = FirebaseDatabase.getInstance().getReference("NamesGroups")
                         .child(nameCologeEnglish).child(nameGroup).push();
                 message.setKey(databaseReference.getKey());
@@ -451,9 +457,9 @@ public class GroupChatActivity extends AppCompatActivity {
 
 
     protected void onStart1() {//TODO:
-      //  databaseReference.removeEventListener();
+        //  databaseReference.removeEventListener();
 
-        childEventListener=new ChildEventListener() {
+        childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (snapshot.exists() && flagNewMessage) {
@@ -591,8 +597,8 @@ public class GroupChatActivity extends AppCompatActivity {
         d.setTitle("Manage");
         d.setCancelable(true);
 
-        Button buttonBlokeDialog = d.findViewById(R.id.button_delete_dialog);
-        Button buttonNoBloke = d.findViewById(R.id.button_exit_delete);
+        Button buttonBlokeDialog = d.findViewById(R.id.button_aprove_terms);
+        Button buttonNoBloke = d.findViewById(R.id.button_exit_app);
         buttonNoBloke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -692,12 +698,57 @@ public class GroupChatActivity extends AppCompatActivity {
         d.show();
 
     }
+
     @Override
-    protected void onDestroy()
-    {
+    protected void onStop() {
+        super.onStop();
+        if (childEventListener != null) {
+            databaseReference.removeEventListener(childEventListener);
+            flagOnStart=false;
+//           Intent intent2 = new Intent(GroupChatActivity.this, MainActivity3.class);
+//            startActivity(intent2);
+//            finish();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (childEventListener != null) {
+            databaseReference.removeEventListener(childEventListener);
+            flagOnStart = false;
+        }
+    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        if (childEventListener != null) {
+//            databaseReference.removeEventListener(childEventListener);
+//            flagOnStart=false;
+//
+////            Intent intent2 = new Intent(GroupChatActivity.this, MainActivity3.class);
+////            startActivity(intent2);
+////            finish();
+//        }
+//    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!flagOnStart) {
+            onStart1();
+            flagOnStart=true;
+        }
+    }
+
+
+
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
         if (childEventListener != null) {
             databaseReference.removeEventListener(childEventListener);
+            finish();
         }
     }
 }

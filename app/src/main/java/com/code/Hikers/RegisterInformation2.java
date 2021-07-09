@@ -13,6 +13,7 @@ public class RegisterInformation2 {
     private int idImageSend = 0;
     private String imageUrl = "";
     private String dateRegister = "";
+   // private Boolean termsOk= false;
 
     public RegisterInformation2() {
         ;
@@ -85,4 +86,12 @@ public class RegisterInformation2 {
     public void setDateRegister(String dateRegister) {
         this.dateRegister = dateRegister;
     }
+
+//    public Boolean getTermsOk() {
+//        return termsOk;
+//    }
+//
+//    public void setTermsOk(Boolean termsOk) {
+//        this.termsOk = termsOk;
+//    }
 }
