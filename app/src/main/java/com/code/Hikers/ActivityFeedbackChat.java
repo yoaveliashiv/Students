@@ -1,7 +1,4 @@
-package com.code.chat;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+package com.code.Hikers;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +13,12 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.code.R;
+import com.code.Chat.ActivitySettings;
+import com.code.Chat.Message;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;

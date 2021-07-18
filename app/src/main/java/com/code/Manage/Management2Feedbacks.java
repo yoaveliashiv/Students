@@ -1,7 +1,4 @@
-package com.code.chat;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+package com.code.Manage;
 
 import android.app.Dialog;
 import android.content.ClipData;
@@ -19,8 +16,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.code.Hikers.FeedbackChat;
 import com.code.Hikers.RegisterInformation2;
 import com.code.R;
+import com.code.Chat.Message;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -206,7 +208,7 @@ public class Management2Feedbacks extends AppCompatActivity {
                     editText.requestFocus();
                     return;
                 }
-                com.code.chat.Message message = new Message();
+                Message message = new Message();
                 message.setMessage(messageEdit);
                 message.setName("הודעת מערכת");
                 message.setPhone("הודעת מערכת");

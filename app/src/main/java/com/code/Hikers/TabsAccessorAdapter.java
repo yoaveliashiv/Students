@@ -1,4 +1,4 @@
-package com.code.chat;
+package com.code.Hikers;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -6,12 +6,17 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
+import com.code.Links.LinksWhatsAppFragment;
+import com.code.Chat.AllGroupsFragment;
+import com.code.Chat.ChatFragment;
+import com.code.Chat.MyGroupsFragment;
+
 import java.util.ArrayList;
 
 public class TabsAccessorAdapter extends FragmentStatePagerAdapter {
 private ArrayList<Fragment> arrayList;
 
-    public TabsAccessorAdapter(@NonNull FragmentManager fm,ArrayList<Fragment> arrayList) {
+    public TabsAccessorAdapter(@NonNull FragmentManager fm, ArrayList<Fragment> arrayList) {
         super(fm);
         this.arrayList=arrayList;
     }

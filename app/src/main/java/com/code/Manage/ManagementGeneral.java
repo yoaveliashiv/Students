@@ -1,7 +1,4 @@
-package com.code.chat;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+package com.code.Manage;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -15,6 +12,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.code.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,7 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class Management3 extends AppCompatActivity {
+public class ManagementGeneral extends AppCompatActivity {
     Button buttonFeed, buttonLinks, buttonGroups, buttonPrice, buttonNumUsers, buttonNumNewUsers, buttonNumDeleteUsers;
     ArrayList<String> arrayListLink;
     ArrayAdapter<String> arrayAdapterLink;
@@ -127,14 +127,14 @@ public class Management3 extends AppCompatActivity {
         });
     }
     private void dialogNumUesrsDelete() {
-        final Dialog d = new Dialog(Management3.this);
+        final Dialog d = new Dialog(ManagementGeneral.this);
         d.setContentView(R.layout.dialog_list_menage);
         d.setTitle("Manage");
 
         d.setCancelable(true);
         ListView listView = d.findViewById(R.id.dialog_list_mange);
 
-        arrayAdapterNumUsersDelete = new ArrayAdapter<String>(Management3.this,
+        arrayAdapterNumUsersDelete = new ArrayAdapter<String>(ManagementGeneral.this,
                 android.R.layout.simple_list_item_1, arrayListNumUsersDelete);
         listView.setAdapter(arrayAdapterNumUsersDelete);
         arrayAdapterNumUsersDelete.notifyDataSetChanged();
@@ -214,14 +214,14 @@ public class Management3 extends AppCompatActivity {
         });
     }
     private void dialogNumUesrsNew() {
-        final Dialog d = new Dialog(Management3.this);
+        final Dialog d = new Dialog(ManagementGeneral.this);
         d.setContentView(R.layout.dialog_list_menage);
         d.setTitle("Manage");
 
         d.setCancelable(true);
         ListView listView = d.findViewById(R.id.dialog_list_mange);
 
-        arrayAdapterNumUsersNew = new ArrayAdapter<String>(Management3.this,
+        arrayAdapterNumUsersNew = new ArrayAdapter<String>(ManagementGeneral.this,
                 android.R.layout.simple_list_item_1, arrayListNumUsersNew);
         listView.setAdapter(arrayAdapterNumUsersNew);
         arrayAdapterNumUsersNew.notifyDataSetChanged();
@@ -296,14 +296,14 @@ buttonNumUsers.setOnClickListener(new View.OnClickListener() {
     }
 
     private void dialogNumUesrs() {
-        final Dialog d = new Dialog(Management3.this);
+        final Dialog d = new Dialog(ManagementGeneral.this);
         d.setContentView(R.layout.dialog_list_menage);
         d.setTitle("Manage");
 
         d.setCancelable(true);
         ListView listView = d.findViewById(R.id.dialog_list_mange);
 
-        arrayAdapterNumUsers = new ArrayAdapter<String>(Management3.this,
+        arrayAdapterNumUsers = new ArrayAdapter<String>(ManagementGeneral.this,
                 android.R.layout.simple_list_item_1, arrayListNumUsers);
         listView.setAdapter(arrayAdapterNumUsers);
        arrayAdapterNumUsers.notifyDataSetChanged();
@@ -321,7 +321,7 @@ buttonNumUsers.setOnClickListener(new View.OnClickListener() {
 
     private void priceMake() {
         arrayListPrice = new ArrayList<>();
-        arrayAdapterPrice = new ArrayAdapter<String>(Management3.this,
+        arrayAdapterPrice = new ArrayAdapter<String>(ManagementGeneral.this,
                 android.R.layout.simple_list_item_1, arrayListPrice);
         DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
                 .getReference("GroupsPriceOffer");
@@ -358,7 +358,7 @@ buttonNumUsers.setOnClickListener(new View.OnClickListener() {
     }
 
     private void dialogPrice() {
-        final Dialog d = new Dialog(Management3.this);
+        final Dialog d = new Dialog(ManagementGeneral.this);
         d.setContentView(R.layout.dialog_list_menage);
         d.setTitle("Manage");
 
@@ -370,7 +370,7 @@ buttonNumUsers.setOnClickListener(new View.OnClickListener() {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(Management3.this, Management.class);
+                Intent intent = new Intent(ManagementGeneral.this, Management.class);
                 String nameCollegeEnglish = arrayListPrice.get(i).substring(0,
                         arrayListPrice.get(i).indexOf(":"));
                 intent.putExtra("flagPrice", nameCollegeEnglish);
@@ -384,7 +384,7 @@ buttonNumUsers.setOnClickListener(new View.OnClickListener() {
 
     private void groupsMake() {
         arrayListGroups = new ArrayList<>();
-        arrayAdapterGroups = new ArrayAdapter<String>(Management3.this,
+        arrayAdapterGroups = new ArrayAdapter<String>(ManagementGeneral.this,
                 android.R.layout.simple_list_item_1, arrayListGroups);
         DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
                 .getReference("NewGroups");
@@ -421,7 +421,7 @@ buttonNumUsers.setOnClickListener(new View.OnClickListener() {
     }
 
     private void dialogGroups() {
-        final Dialog d = new Dialog(Management3.this);
+        final Dialog d = new Dialog(ManagementGeneral.this);
         d.setContentView(R.layout.dialog_list_menage);
         d.setTitle("Manage");
 
@@ -433,7 +433,7 @@ buttonNumUsers.setOnClickListener(new View.OnClickListener() {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(Management3.this, Management.class);
+                Intent intent = new Intent(ManagementGeneral.this, Management.class);
                 String nameCollegeEnglish = arrayListGroups.get(i).substring(0,
                         arrayListGroups.get(i).indexOf(":"));
                 intent.putExtra("flagGroups", nameCollegeEnglish);
@@ -446,7 +446,7 @@ buttonNumUsers.setOnClickListener(new View.OnClickListener() {
 
     private void linksMake() {
         arrayListLink = new ArrayList<>();
-        arrayAdapterLink = new ArrayAdapter<String>(Management3.this,
+        arrayAdapterLink = new ArrayAdapter<String>(ManagementGeneral.this,
                 android.R.layout.simple_list_item_1, arrayListLink);
         DatabaseReference databaseReference3 = FirebaseDatabase.getInstance()
                 .getReference("NewLinks");
@@ -483,7 +483,7 @@ buttonNumUsers.setOnClickListener(new View.OnClickListener() {
     }
 
     private void dialogLinks() {
-        final Dialog d = new Dialog(Management3.this);
+        final Dialog d = new Dialog(ManagementGeneral.this);
         d.setContentView(R.layout.dialog_list_menage);
         d.setTitle("Manage");
 
@@ -495,7 +495,7 @@ buttonNumUsers.setOnClickListener(new View.OnClickListener() {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(Management3.this, Management.class);
+                Intent intent = new Intent(ManagementGeneral.this, Management.class);
                 String nameCollegeEnglish = arrayListLink.get(i).substring(0,
                         arrayListLink.get(i).indexOf(":"));
                 intent.putExtra("flagLinks", nameCollegeEnglish);
@@ -526,7 +526,7 @@ buttonNumUsers.setOnClickListener(new View.OnClickListener() {
                 buttonFeed.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(Management3.this, Management2Feedbacks.class);
+                        Intent intent = new Intent(ManagementGeneral.this, Management2Feedbacks.class);
 
                         startActivity(intent);
                     }
@@ -555,7 +555,7 @@ buttonNumUsers.setOnClickListener(new View.OnClickListener() {
         switch (item.getItemId()) {
 
             case R.id.mainIconMenuManga:
-                intent2 = new Intent(Management3.this, Management.class);
+                intent2 = new Intent(ManagementGeneral.this, Management.class);
                 startActivity(intent2);
                 return true;
 

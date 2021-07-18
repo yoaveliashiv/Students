@@ -1,4 +1,4 @@
-package com.code.chat;
+package com.code.Chat;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.code.Hikers.MainActivity3;
 import com.code.Hikers.RegisterInformation2;
 import com.code.R;
 import com.google.firebase.auth.FirebaseAuth;

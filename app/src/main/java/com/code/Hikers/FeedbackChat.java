@@ -1,5 +1,7 @@
-package com.code.chat;
+package com.code.Hikers;
 
+import com.code.Links.LinksToWhatsApp;
+import com.code.Chat.Message;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties

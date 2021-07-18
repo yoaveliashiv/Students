@@ -1,4 +1,4 @@
-package com.code.chat;
+package com.code.Links;
 
 public class LinksToWhatsApp {
     private String nameGroup = "";

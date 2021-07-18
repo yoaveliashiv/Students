@@ -1,4 +1,4 @@
-package com.code.chat;
+package com.code.Chat;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.code.Hikers.ActivityFeedbackChat;
+import com.code.Hikers.MainActivity3;
 import com.code.Hikers.RegisterInformation2;
 import com.code.R;
 import com.google.firebase.auth.FirebaseAuth;

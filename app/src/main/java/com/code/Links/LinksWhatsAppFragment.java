@@ -1,4 +1,4 @@
-package com.code.chat;
+package com.code.Links;
 
 import android.app.Dialog;
 import android.content.ClipData;
@@ -7,10 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +17,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
+import com.code.Hikers.FeedbackChat;
+import com.code.Hikers.MainActivity3;
 import com.code.Hikers.RegisterInformation2;
 import com.code.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -280,7 +281,13 @@ textViewFeed.setOnLongClickListener(new View.OnLongClickListener() {
 
                 intentWhatsapp.setData(Uri.parse(url));
                if(!link.contains("bit.")) intentWhatsapp.setPackage("com.whatsapp");
-                startActivity(intentWhatsapp);
+               try {
+                   startActivity(intentWhatsapp);
+
+               }
+               catch (Exception E){
+
+               }
 
             }
         });

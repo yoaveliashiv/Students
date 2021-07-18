@@ -1,4 +1,4 @@
-package com.code.chat;
+package com.code.Chat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.code.Hikers.MainActivity3;
 import com.code.Hikers.RegisterInformation2;
 import com.code.Hikers.RegisterLoginActivity;
 import com.code.R;

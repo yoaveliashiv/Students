@@ -1,10 +1,4 @@
-package com.code.chat;
-
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
+package com.code.Chat;
 
 public class Blocked {
     private String date = "";

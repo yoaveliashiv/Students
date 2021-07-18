@@ -1,4 +1,4 @@
-package com.code.chat;
+package com.code.Chat;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

@@ -19,20 +19,18 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity android:name=".Hikers.Terms"></activity>
-        <activity android:name=".chat.Management3" />
-        <activity android:name=".chat.Management2Feedbacks" />
-        <activity android:name=".chat.ActivityFeedbackChat" />
-        <activity android:name=".chat.Management" />
-        <activity android:name=".chat.ChatActivity" />
-        <activity android:name=".chat.ProfileActivity" />
-        <activity android:name=".chat.GroupChatActivity" />
+        <activity android:name=".Chat.ChatActivity" />
+        <activity android:name=".Chat.ProfileActivity" />
+        <activity android:name=".Chat.GroupChatActivity" />
+        <activity android:name=".Manage.ManagementGeneral" />
+        <activity android:name=".Manage.Management" />
+        <activity android:name=".Manage.Management2Feedbacks" />
+        <activity android:name=".Hikers.MainActivity3" />
+
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name=".chat.ActivitySettings" />
-        <activity
-            android:name=".chat.MainActivity3"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity android:name=".Chat.ActivitySettings" />
         <activity android:name=".Hikers.RegisterLoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

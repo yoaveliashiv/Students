@@ -19,8 +19,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.code.R;
-import com.code.chat.ActivitySettings;
-import com.code.chat.MainActivity3;
+import com.code.Chat.ActivitySettings;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;

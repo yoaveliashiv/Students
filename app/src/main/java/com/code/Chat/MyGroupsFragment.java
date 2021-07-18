@@ -1,4 +1,4 @@
-package com.code.chat;
+package com.code.Chat;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.code.Hikers.MainActivity3;
 import com.code.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;

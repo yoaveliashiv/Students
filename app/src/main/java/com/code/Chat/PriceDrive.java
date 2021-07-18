@@ -1,4 +1,4 @@
-package com.code.chat;
+package com.code.Chat;
 
 public class PriceDrive {
     private String key="";

@@ -1,6 +1,5 @@
-package com.code.chat;
+package com.code.Chat;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -23,7 +22,7 @@ import java.util.TimeZone;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ContactsAdapter extends ArrayAdapter<Contact> {
+public class GroupsAdapter extends ArrayAdapter<Contact> {
 
     private ImageView ivProduct;
     private Context context;
@@ -35,7 +34,7 @@ public class ContactsAdapter extends ArrayAdapter<Contact> {
     private Contact contact;
 
 
-    public ContactsAdapter(Context context, int resource, int textViewResourceId, List<Contact> listContact
+    public GroupsAdapter(Context context, int resource, int textViewResourceId, List<Contact> listContact
             , String uidVist) {
         super(context, resource, textViewResourceId, listContact);
         this.flagSee = false;
@@ -45,39 +44,36 @@ public class ContactsAdapter extends ArrayAdapter<Contact> {
 
     }
 
-    public ContactsAdapter(Context context, int resource, int textViewResourceId, List<Contact> objects) {
+    public GroupsAdapter(Context context, int resource, int textViewResourceId, List<Contact> objects) {
         super(context, resource, textViewResourceId, objects);
         this.context = context;
         this.listContact = objects;
     }
 
-    @SuppressLint("ResourceAsColor")
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
+
         LayoutInflater layoutInflater = ((Activity) context).getLayoutInflater();
-        view = layoutInflater.inflate(R.layout.list_contacts_and, parent, false);
+        view = layoutInflater.inflate(R.layout.list_and_group, parent, false);
         contact = listContact.get(position);
 
-contact.getUidContacts();
-
-
         TextView textViewName = (TextView) view.findViewById(R.id.textView_name_list);
-        if(contact.getMessage().getPhone().equals("הודעת מערכת"))
-            textViewName.setText("הודעת מערכת");
-       else  textViewName.setText(contact.getName());
 
-            if (!contact.getImage().isEmpty()) {
+        textViewName.setText(contact.getName());
+        if (!contact.getImage().isEmpty()) {
             CircleImageView circleImageView = (CircleImageView) view.findViewById(R.id.circleimageview_list);
 
             Glide.with(view)
                     .load(contact.getImage())
                     .into(circleImageView);
         }
+        TextView textViewTime = (TextView) view.findViewById(R.id.textView_time);
         String date2 = "";
         String time2 = "";
-        if(contact.getMessage().getDateTimeZone()!=null) {
-            long d = getTimestamp(contact.getMessage().getDateTimeZone());
+
+        if(contact.getMessage().getDateTimeZone()!=null){
+            long d=getTimestamp(contact.getMessage().getDateTimeZone());
             SimpleDateFormat format = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ssZ");
             String dateString = format.format(new Date(d));
             format.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -95,25 +91,28 @@ contact.getUidContacts();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+
         }
 
-        String name = contact.getMessage().getName();
-        if(contact.getUidContacts().equals(contact.getMessage().getUid()))
-            name = contact.getName();
 
+
+            String name = contact.getMessage().getName();
+        if(name.isEmpty())
+            name=contact.getMessage().getPhone();
         TextView textViewMessage = (TextView) view.findViewById(R.id.textView_message_list);
-        textViewMessage.setText(name + ": " + contact.getMessage().getMessage());
 
-        TextView textViewTime = (TextView) view.findViewById(R.id.textView_time);
+        textViewMessage.setText(name + ": " + contact.getMessage().getMessage());
+        if (name.isEmpty())
+            textViewMessage.setText("");
 
         if (contact.getNotifications() > 0) {
-            textViewTime.setText(date2+" "+time2 + "\n" + contact.getNotifications() + " הודעות חדשות");
+            textViewTime.setText(""+time2+" "+date2 + "\n" + contact.getNotifications() + " הודעות חדשות");
             textViewTime.setTextSize(15);
             textViewTime.setTextColor(Color.BLUE);
             return view;
 
         }
-        textViewTime.setText(date2+" "+time2);
+        textViewTime.setText(""+time2+" "+date2 );
         return view;
     }
     @Exclude

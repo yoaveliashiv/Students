@@ -1,12 +1,6 @@
-package com.code.chat;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
+package com.code.Hikers;
 
 import android.app.Dialog;
-import android.app.Notification;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,13 +8,18 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import com.code.BuildConfig;
+import com.code.Manage.ManagementGeneral;
 import com.code.R;
+import com.code.Chat.ActivitySettings;
+import com.code.Chat.Blocked;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -36,10 +35,10 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class MainActivity3 extends AppCompatActivity {
-    private ViewPager viewPager;
+    public static String search = "";
     protected TabLayout tabLayout;
+    private ViewPager viewPager;
     private TabsAccessorAdapter tabsAccessorAdapter;
-    protected static String search = "";
     private boolean flagBloked = false;
     private String verison = "17";//
     private String urlGoogleStore = "https://play.google.com/store/apps/details?id=com.code.students";
@@ -180,7 +179,10 @@ public class MainActivity3 extends AppCompatActivity {
 
     }
 
+
+
     @Override
+
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         Intent intent2;
         switch (item.getItemId()) {
@@ -214,13 +216,15 @@ public class MainActivity3 extends AppCompatActivity {
                 if (!flagBloked) {
 
                     try {
-String phone=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
+                      String phone=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
                         if (phone.equals("+972544540185")||phone.equals("+972545555555")) {
-                            intent2 = new Intent(MainActivity3.this, Management3.class);
-                            startActivity(intent2);
+                            Intent intent;
+                            intent = new Intent(MainActivity3.this, ManagementGeneral.class);
+                            startActivity(intent);
                             return true;
                         }
                     } catch (RuntimeException e) {
+
                     }
                     intent2 = new Intent(MainActivity3.this, MainActivity3.class);
                     startActivity(intent2);
