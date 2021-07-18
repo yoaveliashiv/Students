@@ -35,7 +35,7 @@
                 android:layout_marginRight="17dp"
                 android:background="@drawable/common_google_signin_btn_text_light_normal_background"
                 android:drawableStart="@drawable/phone"
-                android:hint="פלאפון..."
+                android:hint="טלפון סלולרי..."
                 android:inputType="number"
                 android:padding="4dp" />
 

@@ -4,6 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.code.Hikers.RegisterInformation2;
 import com.code.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class Management2Feedbacks extends AppCompatActivity {
-
+    RegisterInformation2 registerInformation ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,6 +104,18 @@ public class Management2Feedbacks extends AppCompatActivity {
         TextView textView_block_he = d.findViewById(R.id.feed_block_he);
         TextView textView_block_i = d.findViewById(R.id.feed_block_i);
 
+        TextView textViewCopyLink = d.findViewById(R.id.copy5);
+
+        textViewCopyLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) Management2Feedbacks.this.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("1", arrayList.get(i).getFeedback());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(Management2Feedbacks.this, "הלינק הועתק", Toast.LENGTH_SHORT).show();
+                d.dismiss();
+            }
+        });
         textViewDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -175,15 +191,17 @@ public class Management2Feedbacks extends AppCompatActivity {
         final Dialog d = new Dialog(Management2Feedbacks.this);
         d.setContentView(R.layout.dialog_send_message_menger);
         d.setTitle("Manage");
-
+        EditText editText = d.findViewById(R.id.mange_send_message);
+        editText.setText(feedbackChat.getFeedback()+"\n תשובה: ");
         d.setCancelable(true);
         Button button = d.findViewById(R.id.button_menge_send);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText editText = d.findViewById(R.id.mange_send_message);
+
                 String messageEdit = editText.getText().toString();
-                if (messageEdit.length() < 2) {
+                String text=feedbackChat.getFeedback()+"\n תשובה: ";
+                if (messageEdit.length()< 2+text.length()) {
                     editText.setError("הכנס הודעה תקינה");
                     editText.requestFocus();
                     return;
@@ -205,8 +223,11 @@ public class Management2Feedbacks extends AppCompatActivity {
                 message.setDateTimeZone(ServerValue.TIMESTAMP);
 
                 String uidI = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Contacts")
-                        .child(feedbackChat.getUidReportingSend()).child(uidI).push();
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Contacts/" +
+                        feedbackChat.getUidReportingSend()+"/"+uidI).push();
+
+
+               // databaseReference.push();
                 databaseReference.setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -214,6 +235,42 @@ public class Management2Feedbacks extends AppCompatActivity {
                         d.dismiss();
                     }
                 });
+
+                DatabaseReference databaseReferenceI = FirebaseDatabase.getInstance().getReference("Contacts/" +
+                        uidI+"/"+ feedbackChat.getUidReportingSend()).push();
+
+
+                //databaseReferenceI.push();
+                databaseReferenceI.setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(Management2Feedbacks.this, "הודעה נשלחה בהצלחה", Toast.LENGTH_SHORT).show();
+                        d.dismiss();
+                    }
+                });
+                DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference("RegisterInformation2/"
+                        + feedbackChat.getUidReportingSend());
+                databaseReference3.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+
+                        registerInformation = snapshot.getValue(RegisterInformation2.class);
+                       editText.setText(registerInformation.getDeviceToken());
+                       message.setDeviceToken(registerInformation.getDeviceToken());
+                        DatabaseReference databaseReference4 = FirebaseDatabase.getInstance().getReference("Notifications")
+                                .push();
+
+                        databaseReference4.setValue(message);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+
 
             }
         });

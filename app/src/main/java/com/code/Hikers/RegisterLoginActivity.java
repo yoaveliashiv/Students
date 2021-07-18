@@ -75,7 +75,20 @@ public class RegisterLoginActivity extends AppCompatActivity {
             super.onCreate(savedInstanceState);
             return;
         }
-        dialodTerms();
+        DatabaseReference databaseReference =FirebaseDatabase.getInstance().getReference("StartApp");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists() &&snapshot.getValue(Integer.class)==1)
+                    dialodTerms();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+      //  dialodTerms();
 
         setContentView(R.layout.activity_register_login);
         buttonSendPass = findViewById(R.id.button_send_code);

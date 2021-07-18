@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 
+import com.code.BuildConfig;
 import com.code.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,7 +41,7 @@ public class MainActivity3 extends AppCompatActivity {
     private TabsAccessorAdapter tabsAccessorAdapter;
     protected static String search = "";
     private boolean flagBloked = false;
-    private String verison = "12";//
+    private String verison = "17";//
     private String urlGoogleStore = "https://play.google.com/store/apps/details?id=com.code.students";
 
     @Override
@@ -139,6 +140,8 @@ public class MainActivity3 extends AppCompatActivity {
     }
 
     private void newVersion() {
+        final String versionCode =""+ BuildConfig.VERSION_CODE;
+
         DatabaseReference databaseReference = FirebaseDatabase.getInstance()
                 .getReference("VersionNotifications");
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -152,7 +155,7 @@ public class MainActivity3 extends AppCompatActivity {
                 int i = data.indexOf(" ");
                 String verisonSnap = data.substring(0, i);
                 String type = data.substring(i + 1, i + 2);
-                if (verisonSnap.equals(verison)) {
+                if (Integer.valueOf(verisonSnap)<=Integer.valueOf(versionCode)) {
                     build();
                     return;
                 }
@@ -269,7 +272,6 @@ String phone=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
     }
 
     private void dialodVerison(String type) {
-
         final Dialog d = new Dialog(MainActivity3.this);
         d.setContentView(R.layout.dialog_verison);
         d.setTitle("Manage");

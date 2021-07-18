@@ -251,7 +251,8 @@ public class ChatFragment extends Fragment {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                         for (DataSnapshot child : snapshot.getChildren()) {
-                            messageContact = child.getValue(Message.class);
+
+                           messageContact = child.getValue(Message.class);
 
                         }
                         notifications(uidContact, uid);

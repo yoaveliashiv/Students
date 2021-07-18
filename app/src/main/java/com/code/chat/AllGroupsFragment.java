@@ -98,13 +98,40 @@ public class AllGroupsFragment extends Fragment {
         viewGroup = inflater.inflate(R.layout.fragment_all_groups, container, false);
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         listView = (ListView) viewGroup.findViewById(R.id.list_view);
+
+
+        DatabaseReference databaseReference =FirebaseDatabase.getInstance().getReference("StartApp");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists() &&snapshot.getValue(Integer.class)==1) {
+                    TextView textView =viewGroup.findViewById(R.id.textViewOpenSoon);
+                    textView.setVisibility(View.GONE);
+                    listView.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+
         textViewNoFond = viewGroup.findViewById(R.id.textView_no_found);
         editTextSearch = viewGroup.findViewById(R.id.editText_search);
         textViewNameColeg = viewGroup.findViewById(R.id.textView_name_cologe1);
         buttonSearch = viewGroup.findViewById(R.id.button_search);
         buttonSeeAllGroups = viewGroup.findViewById(R.id.button_all_groups);
         allGroups();
-
+        buttonSearch.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                listView.setVisibility(View.VISIBLE);
+                return false;
+            }
+        });
         // Inflate the layout for this fragment
         buttonSearch.setOnClickListener(new View.OnClickListener() {
             @Override

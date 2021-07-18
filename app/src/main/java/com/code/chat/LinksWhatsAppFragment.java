@@ -235,6 +235,20 @@ public class LinksWhatsAppFragment extends Fragment {
 
         TextView textViewCopyLink = d.findViewById(R.id.textView_copy_link);
         TextView textViewMyGroup = d.findViewById(R.id.textView_go_my_group);
+        DatabaseReference databaseReference =FirebaseDatabase.getInstance().getReference("StartApp");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(!snapshot.exists() ||snapshot.getValue(Integer.class)!=1) {
+                   textViewMyGroup.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 textViewFeed.setOnLongClickListener(new View.OnLongClickListener() {
     @Override
     public boolean onLongClick(View view) {

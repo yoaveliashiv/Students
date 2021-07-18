@@ -2,7 +2,17 @@ package com.code.chat;
 
 public class Group {
 
-
+// <ListView
+//    android:id="@+id/list_view"
+//    android:layout_width="match_parent"
+//    android:layout_height="match_parent"
+//    android:layout_marginTop="140dp"
+//    android:visibility="gone"
+//    app:layout_constraintTop_toBottomOf="@+id/button_new_link">
+//
+//
+//
+//    </ListView>
 
         private String name="";
         private String key="";

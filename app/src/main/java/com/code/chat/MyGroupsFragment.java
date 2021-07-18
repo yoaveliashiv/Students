@@ -107,6 +107,23 @@ public class MyGroupsFragment extends Fragment {
 
         listView = (ListView) viewContacts.findViewById(R.id.list_view);
 
+        DatabaseReference databaseReference =FirebaseDatabase.getInstance().getReference("StartApp");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists() &&snapshot.getValue(Integer.class)==1) {
+                    TextView textView =viewContacts.findViewById(R.id.textViewOpenSoon);
+                    textView.setVisibility(View.GONE);
+                    listView.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
         secrchId();
 
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -199,6 +216,13 @@ public class MyGroupsFragment extends Fragment {
         textViewNoFond = viewContacts.findViewById(R.id.textView_no_found);
         editTextSearch = viewContacts.findViewById(R.id.editText_search);
         buttonSearch = viewContacts.findViewById(R.id.button_search);
+        buttonSearch.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                listView.setVisibility(View.VISIBLE);
+                return false;
+            }
+        });
         buttonSeeAllGroups = viewContacts.findViewById(R.id.button_all_groups);
         buttonSearch.setOnClickListener(new View.OnClickListener() {
             @Override
