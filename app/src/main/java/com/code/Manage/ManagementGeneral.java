@@ -558,7 +558,10 @@ buttonNumUsers.setOnClickListener(new View.OnClickListener() {
                 intent2 = new Intent(ManagementGeneral.this, Management.class);
                 startActivity(intent2);
                 return true;
-
+            case R.id.backgammon_menu:
+                intent2 = new Intent(ManagementGeneral.this, Lottery.class);
+                startActivity(intent2);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -116,7 +116,7 @@ public class RegisterLoginActivity extends AppCompatActivity {
                 progressDialog.setCancelable(false);
 
                 mobile = editTextPhone.getText().toString().trim();
-                if (mobile.isEmpty() || (mobile.length() < 10 || mobile.length() > 13)) {
+                if (mobile.isEmpty() || (mobile.length() < 10 || mobile.length() > 20)) {
                     editTextPhone.setError("הכנס מספר תקין");
                     editTextPhone.requestFocus();
                     progressDialog.dismiss();
@@ -128,6 +128,15 @@ public class RegisterLoginActivity extends AppCompatActivity {
                     progressDialog.dismiss();
                     return;
                 }
+                for (int i = 0; i <mobile.length() ; i++) {
+                    if(mobile.charAt(i)=='-')
+                        mobile=mobile.substring(0,i)+mobile.substring(i+1);
+                }
+                if (!mobile.startsWith("+")) {
+                    mobile = mobile.substring(1);
+                    mobile = "+972" + mobile;
+                }
+
 
                 sendVerificationCode(mobile);
                 buttonSendPass.setVisibility(View.GONE);
@@ -285,10 +294,7 @@ public class RegisterLoginActivity extends AppCompatActivity {
                                 deviceToken = "";
                             }
                             registerInformation = null;
-                            if (!mobile.startsWith("+972")) {
-                                mobile = mobile.substring(1);
-                                mobile = "+972" + mobile;
-                            }
+
                             DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference("RegisterInformation2");
                             ref3.orderByChild("email").equalTo(mobile).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -448,7 +454,7 @@ public class RegisterLoginActivity extends AppCompatActivity {
 
     private void sendVerificationCode(String mobile) {
         PhoneAuthOptions options = PhoneAuthOptions.newBuilder(mAuth)
-                .setPhoneNumber("+972" + mobile)
+                .setPhoneNumber( mobile)
                 .setTimeout(60L, TimeUnit.SECONDS)
                 .setActivity(RegisterLoginActivity.this)
                 .setCallbacks(mCallBacks)

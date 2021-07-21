@@ -177,7 +177,7 @@ public class MyGroupsFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
                     TextView textView = viewContacts.findViewById(R.id.textView_empty);
-                    textView.setVisibility(View.VISIBLE);
+                   // textView.setVisibility(View.VISIBLE);
                     return;
                 }
                 progressDialog.show();

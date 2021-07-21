@@ -40,11 +40,12 @@ public class MainActivity3 extends AppCompatActivity {
     private ViewPager viewPager;
     private TabsAccessorAdapter tabsAccessorAdapter;
     private boolean flagBloked = false;
-    private String verison = "17";//
+    //private String verison = "17";//
     private String urlGoogleStore = "https://play.google.com/store/apps/details?id=com.code.students";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
 //        BackgammonBoard board1=new BackgammonBoard();
 //        board1.build();
 //        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("chek");

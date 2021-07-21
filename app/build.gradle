@@ -12,8 +12,8 @@ android {
         applicationId "com.code.students"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 17
-        versionName "17"    //change also in main3
+        versionCode 20
+        versionName "20"    //change also in main3
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         ndk {
@@ -39,6 +39,8 @@ android {
 }
 
 dependencies {
+
+
     implementation "androidx.multidex:multidex:2.0.1"
     implementation 'com.google.android.material:material:1.2.1'
 
@@ -58,6 +60,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:19.2.0'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation project(path: ':sinch-android-rtc-3.17.5')
+    implementation 'com.google.firebase:firebase-core:19.0.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.google.firebase:firebase-installations:16.3.5'
 

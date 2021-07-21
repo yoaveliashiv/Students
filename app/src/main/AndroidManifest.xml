@@ -18,15 +18,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Hikers.Terms"></activity>
+        <activity android:name=".Manage.Lottery"></activity>
+        <activity android:name=".Hikers.Terms" />
         <activity android:name=".Chat.ChatActivity" />
         <activity android:name=".Chat.ProfileActivity" />
         <activity android:name=".Chat.GroupChatActivity" />
+        <activity android:name=".Hikers.ActivityFeedbackChat" />
         <activity android:name=".Manage.ManagementGeneral" />
         <activity android:name=".Manage.Management" />
         <activity android:name=".Manage.Management2Feedbacks" />
         <activity android:name=".Hikers.MainActivity3" />
-
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
